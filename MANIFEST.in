@@ -1,0 +1,6 @@
+graft src/sphinx_codeautolink
+graft docs
+prune docs/build
+graft tests
+include readme_pypi.rst
+global-exclude *.py[cod] __pycache__ *.so

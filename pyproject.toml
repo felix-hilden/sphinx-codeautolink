@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=41.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+python_files = "*.py"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+command_line = "-m pytest"
+
+[tool.coverage.report]
+precision = 1
+skip_covered = true
+
+[tool.pydocstyle]
+ignore = "D203,D212,D413,D416"

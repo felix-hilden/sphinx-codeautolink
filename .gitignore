@@ -1,0 +1,74 @@
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+__pypackages__/
+
+# Distribution / packaging
+.Python
+/build/
+/develop-eggs/
+/dist/
+/downloads/
+/eggs/
+/.eggs/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
+/wheels/
+/share/python-wheels/
+/.installed.cfg
+*.egg-info/
+*.egg
+/MANIFEST
+
+# Testing
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Documentation
+/docs/_build/
+/docs/build/
+/site/
+
+# Notebooks
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# Environments
+/.env/
+/.venv/
+/env/
+/venv/
+/ENV/
+/env.bak/
+/venv.bak/
+
+# Type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Editors
+.idea/
+.vim/
+
+# Misc
+/*.egg-info/

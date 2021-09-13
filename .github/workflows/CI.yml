@@ -1,0 +1,51 @@
+# CI build:
+# Test on each supported Python version and full Tox build
+# on one target version for static checks and documentation.
+
+name: CI
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '*'
+  pull_request:
+
+jobs:
+  matrix:
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+    name: Pytest on ${{matrix.python-version}}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{matrix.python-version}}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{matrix.python-version}}
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[tests]
+      - name: Run test suite
+        run: pytest
+
+  full-build:
+    name: Full 3.9 build
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev]
+      - name: Run tox environments
+        run: tox
+      - name: Build documentation
+        run: cd docs && make html

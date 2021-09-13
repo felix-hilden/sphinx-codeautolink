@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub discussions
+    url: https://github.com/felix-hilden/sphinx-codeautolink/discussions
+    about: sphinx-codeautolink Q&A and general discussions
+  - name: r/leanpython
+    url: https://www.reddit.com/r/learnpython/
+    about: Forum for asking and answering questions about Python
+  - name: Stack Overflow
+    url: https://stackoverflow.com/questions/tagged/sphinx-codeautolink
+    about: Forum for asking and answering programming questions
