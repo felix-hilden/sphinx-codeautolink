@@ -16,11 +16,11 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
+    "sphinx_codeautolink",
 ]
 
 # Builtin options
 html_theme = "sphinx_rtd_theme"
-nitpicky = True
 python_use_unqualified_type_names = True
 
 # Autodoc options

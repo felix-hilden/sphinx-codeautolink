@@ -1,23 +1,42 @@
 sphinx-codeautolink
 ===================
-|pypi|
-|license|
-|readthedocs|
-|build|
+|pypi| |license| |readthedocs| |build|
 
-Automatic links from code examples to reference documentation.
+Automatic links from Python code examples to reference documentation
+at the flick of a switch!
+sphinx-codeautolink analyses the code in your documentation
+and inserts links to definitions that you use.
 
-.. code:: python
-
-   import sphinx_codeautolink
-
-   print(sphinx_codeautolink.__version__)
+For a live demo, see our online documentation on
+`Read The Docs <https://sphinx-codeautolink.rtfd.org>`_.
 
 sphinx-codeautolink elsewhere:
 
 - Package on `PyPI <https://pypi.org/project/sphinx-codeautolink>`_
-- Online documentation on `Read The Docs <https://sphinx-codeautolink.rtfd.org>`_
+- How to contribute on `GitHub <https://github.com/felix-hilden/
+  sphinx-codeautolink/blob/master/contributing.rst>`_
 
+Installation
+------------
+
+.. code:: sh
+
+   $ pip install sphinx-codeautolink
+
+To enable sphinx-codeautolink, modify the extension list in ``conf.py``.
+Note that the extension name uses an underscore rather than a hyphen.
+
+.. code:: python
+
+   extensions = [
+       ...,
+       "sphinx_codeautolink",
+   ]
+
+That's it! Now your code examples are linked.
+For ways of concatenating multiple examples
+and setting default import statements among other things,
+have a look at the online documentation.
 
 .. |pypi| image:: https://img.shields.io/pypi/v/sphinx-codeautolink.svg
    :target: https://pypi.org/project/sphinx-codeautolink

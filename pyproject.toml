@@ -16,4 +16,4 @@ precision = 1
 skip_covered = true
 
 [tool.pydocstyle]
-ignore = "D203,D212,D413,D416"
+ignore = "D107,D203,D212,D413,D416"

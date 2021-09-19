@@ -4,3 +4,139 @@ Examples
 ========
 
 Short examples about how to achieve certain tasks with sphinx-codeautolink.
+
+Basic use
+---------
+Once sphinx-codeautolink has been enabled, code in all Python code blocks will
+be analysed and linked to known reference documentation entries.
+
+.. code:: python
+
+   import sphinx_codeautolink
+
+   sphinx_codeautolink.setup()
+   names = sphinx_codeautolink.parse.parse_names([
+       sphinx_codeautolink.parse.Name("setup")
+   ])
+
+Different import styles are supported, along with all Python syntax.
+
+.. code:: python
+
+   from sphinx_codeautolink import parse as p
+
+   names = p.parse_names([p.Name("setup")])
+
+A list of all code examples where a particular definition is used is handy
+particularly in the reference documentation itself:
+
+.. code-refs:: sphinx_codeautolink.setup
+
+Such a table is generated with::
+
+   .. code-refs:: sphinx_codeautolink.setup
+
+Implicit imports
+----------------
+When writing lots of small snippets of code, having the same import at the
+beginning of every example becomes quite repetitive.
+The import can be hidden instead.
+
+.. implicit-import:: import sphinx_codeautolink
+.. code:: python
+
+  sphinx_codeautolink.setup()
+
+The previous block is produced with::
+
+   .. implicit-import:: import sphinx_codeautolink
+   .. code:: python
+
+      sphinx_codeautolink.setup()
+
+Multiple implicit imports can be stacked::
+
+   .. implicit-import:: import sphinx_codeautolink
+   .. implicit-import:: from sphinx_codeautolink import parse as p
+   .. code:: python
+
+      sphinx_codeautolink.setup()
+      names = p.parse_names([p.Name("setup")])
+
+.. implicit-import:: import sphinx_codeautolink
+.. implicit-import:: from sphinx_codeautolink import parse as p
+.. code:: python
+
+   sphinx_codeautolink.setup()
+   names = p.parse_names([p.Name("setup")])
+
+Concatenating examples
+----------------------
+Examples interlaced with explanations can make for more comprehensible docs.
+
+.. concat-blocks:: section
+.. code:: python
+
+   import sphinx_codeautolink
+
+After explaining some details, the following block may continue where
+the previous left off.
+
+.. code:: python
+
+   sphinx_codeautolink.setup()
+
+This was achieved with::
+
+   .. concat-blocks:: section
+   .. code:: python
+
+      import sphinx_codeautolink
+
+   .. code:: python
+
+      sphinx_codeautolink.setup()
+
+Now all Python code blocks within the same section will be concatenated.
+See :ref:`reference` for more information on the exact behavior and options.
+
+.. concat-blocks:: reset
+
+Skipping blocks
+---------------
+If needed, Python blocks can be skipped, resulting in no links for that block
+and preventing it from being included in further sources with concatenation.
+
+.. autolink-skip::
+.. code:: python
+
+   import sphinx_codeautolink
+
+   sphinx_codeautolink.setup()
+
+Which is done via::
+
+   .. autolink-skip::
+   .. code:: python
+
+      import sphinx_codeautolink
+
+      sphinx_codeautolink.setup()
+
+Skipping is supported for single blocks, sections and entire files.
+See :ref:`reference` for more information on the exact behavior and options.
+
+Example Python objects
+----------------------
+This section contains parts of the inner API of sphinx-codeautolink.
+Note that they are not a part of the public API.
+Objects are presented here only for demonstration purposes,
+and their use in examples does not represent their correct usage.
+
+sphinx-codeautolink
+*******************
+.. automodule:: sphinx_codeautolink
+
+sphinx-codeautolink.parse
+*************************
+.. automodule:: sphinx_codeautolink.parse

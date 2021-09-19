@@ -12,7 +12,6 @@ extras_require = {
         "twine",
     ],
     "docs": [
-        "sphinx",
         "sphinx-rtd-theme",
     ],
     "tests": [
@@ -57,7 +56,10 @@ setuptools.setup(
     include_package_data=True,
 
     python_requires=">=3.6",
-    install_requires=[],
+    install_requires=[
+        'sphinx>=3.2.0',
+        'beautifulsoup4',
+    ],
     extras_require=extras_require,
 
     classifiers=[

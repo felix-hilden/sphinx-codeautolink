@@ -1,3 +1,5 @@
+/docs/src/*.json
+
 # Python files
 __pycache__/
 *.py[cod]
