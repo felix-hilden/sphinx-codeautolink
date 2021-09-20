@@ -11,6 +11,10 @@ class DeferredCodeReferences(nodes.Element):
         super().__init__()
         self.ref = ref
 
+    def copy(self):
+        """Copy element."""
+        return self.__class__(self.ref)
+
 
 class CodeReferences(Directive):
     """Gather and display references in code examples."""
@@ -46,6 +50,10 @@ class ConcatBlocksMarker(nodes.Element):
         super().__init__()
         self.level = level
 
+    def copy(self):
+        """Copy element."""
+        return self.__class__(self.level)
+
 
 class ConcatBlocks(Directive):
     """Toggle and cut literal block concatenation in a document."""
@@ -65,6 +73,10 @@ class ImplicitImportMarker(nodes.Element):
     def __init__(self, content: str):
         super().__init__()
         self.content = content
+
+    def copy(self):
+        """Copy element."""
+        return self.__class__(self.content)
 
 
 class ImplicitImport(Directive):
@@ -86,6 +98,10 @@ class AutoLinkSkipMarker(nodes.Element):
     def __init__(self, level: str):
         super().__init__()
         self.level = level
+
+    def copy(self):
+        """Copy element."""
+        return self.__class__(self.level)
 
 
 class AutoLinkSkip(Directive):
