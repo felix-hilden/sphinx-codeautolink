@@ -126,3 +126,17 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self.visit(node.value)
         self.visit(node.target)
         self.in_augassign = temp
+
+    def visit_NamedExpr(self, node):
+        """Swap node order."""
+        self.visit(node.value)
+        self.visit(node.target)
+
+    def visit_For(self, node: ast.For):
+        """Swap node order."""
+        self.visit(node.iter)
+        self.visit(node.target)
+        for n in node.body:
+            self.visit(n)
+        for n in node.orelse:
+            self.visit(n)
