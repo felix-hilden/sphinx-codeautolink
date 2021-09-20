@@ -65,7 +65,7 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
         tgroup += thead
         row = nodes.row()
         entry = nodes.entry()
-        entry += node.parent.deepcopy()
+        entry += node.parent.copy()
         row += entry
         thead += row
 
