@@ -48,7 +48,10 @@ class SphinxCodeAutoLink:
             if not full_path.exists():
                 continue
             self.code_refs[file] = {
-                obj: [CodeExample(e['document'], e['headings']) for e in examples]
+                obj: [
+                    CodeExample(e['document'], e['ref_id'], e['headings'])
+                    for e in examples
+                ]
                 for obj, examples in ref.items()
             }
 
@@ -60,7 +63,7 @@ class SphinxCodeAutoLink:
         visitor = CodeBlockAnalyser(
             doctree, concat_default=app.config.codeautolink_concat_blocks
         )
-        doctree.walk(visitor)
+        doctree.walkabout(visitor)
         self.code_refs[visitor.current_document] = visitor.code_refs
         self.block_visitors.append(visitor)
 
@@ -103,7 +106,7 @@ class SphinxCodeAutoLink:
         for file, ref in self.code_refs.items():
             refs[file] = {
                 obj: [
-                    {'document': e.document, 'headings': e.headings}
+                    {'document': e.document, 'ref_id': e.ref_id, 'headings': e.headings}
                     for e in examples
                 ]
                 for obj, examples in ref.items()

@@ -12,6 +12,7 @@ class CodeExample:
     """Code example in the documentation."""
 
     document: str
+    ref_id: str
     headings: List[str]
 
 
@@ -39,13 +40,10 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
 
         items = []
         for ref in self.code_refs.get(node.ref, []):
-            link = ref.document + '.html#' + ref.headings[-1].replace(' ', '-').lower()
-            headings = (
-                [ref.headings[0]]
-                + ([ref.headings[-1]] if len(ref.headings) > 1 else [])
-            )
-            text = ' / '.join(headings)  # TODO: fix stack
-            items.append((link, text))
+            link = ref.document + '.html'
+            if ref.ref_id is not None:
+                link += f'#{ref.ref_id}'
+            items.append((link, ' / '.join(ref.headings)))
 
         items = sorted(set(items))
 

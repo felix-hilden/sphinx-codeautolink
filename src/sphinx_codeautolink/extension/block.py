@@ -28,6 +28,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.code_refs = {}
         self.current_document = Path(self.document['source']).stem
         self.title_stack = []
+        self.current_refid = None
         self.source_transforms: List[SourceTransforms] = []
         self.implicit_imports = []
         assert concat_default in ('none', 'section', 'file')
@@ -66,9 +67,12 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if self.autolink_skip == 'section':
             self.autolink_skip = None
 
-    def depart_title(self, node):
+    def visit_section(self, node):
+        """Record first section ID."""
+        self.current_refid = node['ids'][0]
+
+    def depart_section(self, node):
         """Pop latest title."""
-        # TODO: currently does not get called
         self.title_stack.pop()
 
     def visit_literal_block(self, node: nodes.literal_block):
@@ -104,7 +108,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             self.concat_sources.extend(implicit_imports + [source])
 
         transforms = SourceTransforms(source, [])
-        example = CodeExample(self.current_document, list(self.title_stack))
+        example = CodeExample(
+            self.current_document, self.current_refid, list(self.title_stack)
+        )
         for name in names:
             if name.lineno != name.end_lineno:
                 msg = (
