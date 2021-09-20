@@ -15,8 +15,8 @@ and inserts links to definitions that you use.
    sphinx_codeautolink.setup()
    names = p.parse_names([p.Name("setup")])
 
-A directive to create a reference table of the code examples that use
-a definition is handy for example in reference documentation.
+A directive to create a table of references from code examples
+to a single definition is also provided and integrated to autodoc by default.
 For example, :code:`.. code-refs:: sphinx_codeautolink.setup` produces:
 
 .. code-refs:: sphinx_codeautolink.setup

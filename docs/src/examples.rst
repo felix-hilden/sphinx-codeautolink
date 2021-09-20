@@ -126,6 +126,33 @@ Which is done via::
 Skipping is supported for single blocks, sections and entire files.
 See :ref:`reference` for more information on the exact behavior and options.
 
+Autodoc integration
+-------------------
+A backreference table of the code examples that use a definition is handy
+for example in reference documentation.
+sphinx-codeautolink provides an autodoc integration for that purpose,
+which is also enabled by default.
+
+.. autofunction:: sphinx_codeautolink.setup
+   :noindex:
+
+If you'd like to place the directive manually, disable the integration
+and implement a `Sphinx extension <https://www.sphinx-doc.org/en/master/
+extdev/index.html>`_ with a listener for the ``autodoc-process-docstring``
+`event <https://www.sphinx-doc.org/en/master/usage/
+extensions/autodoc.htm#event-autodoc-process-docstring>`_.
+
+.. code:: python
+
+   codeautolink_autodoc_inject = False
+
+   def process_docstring(app, what, name, obj, options, lines):
+       lines.append(f".. code-refs:: {name}")
+
+   def setup(app):
+       app.connect("autodoc-process-docstring", process_docstring)
+       return {"version": "0.1.0"}
+
 Example Python objects
 ----------------------
 This section contains parts of the inner API of sphinx-codeautolink.

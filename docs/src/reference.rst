@@ -8,19 +8,27 @@ The extension is enabled with the name ``sphinx_codeautolink``.
 
 Configuration
 -------------
-- :code:`codeautolink_concat_blocks`: Default behavior for code example
+Available configuration values in ``conf.py``:
+
+- :code:`codeautolink_concat_blocks: str`: Default behavior for code example
   concatenation. Concatenated code blocks are treated as a continuous source,
   so that imports and statements in previous blocks affect later blocks.
   Value must be one of:
 
-  - "none" - no concatenation
+  - "none" - no concatenation (default)
   - "section" - blocks between titles
   - "file" - all blocks in the current file
 
+- :code:`codeautolink_autodoc_inject: bool`: Inject a :code:`code-refs` table
+  to the end of all autodoc definitions. Defaults to :code:`True`.
+
 Directives
 ----------
+rST directives available in Sphinx documentation:
+
 - :code:`.. code-refs:: object`: Insert a table containing links to sections
-  that reference ``object`` in their code examples.
+  that reference ``object`` in their code examples. The table is removed if
+  it would have no entries or a non-HTML builder is used.
 - :code:`.. concat-blocks:: level`: Toggle literal block concatenation.
   Concatenation is begun at the directive, not applied retroactively.
   The directive also resets concatenation state.

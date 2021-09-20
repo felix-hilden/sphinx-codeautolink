@@ -47,7 +47,7 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
 
         items = sorted(set(items))
 
-        if self.remove_directives:
+        if self.remove_directives or not items:
             # Remove surrounding paragraph too
             node.parent.parent.remove(node.parent)
             return

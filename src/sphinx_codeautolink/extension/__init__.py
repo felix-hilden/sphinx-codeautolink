@@ -112,3 +112,10 @@ class SphinxCodeAutoLink:
                 for obj, examples in ref.items()
             }
         refs_file.write_text(json.dumps(refs, indent=4), 'utf-8')
+
+    def autodoc_process_docstring(self, app, what, name, obj, options, lines):
+        """Inject code-refs tables to docstrings."""
+        if not app.config.codeautolink_autodoc_inject or self.do_nothing:
+            return
+
+        lines.append(f'.. code-refs:: {name}')
