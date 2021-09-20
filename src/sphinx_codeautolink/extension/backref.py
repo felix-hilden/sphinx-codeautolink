@@ -54,6 +54,7 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
             node.parent.parent.remove(node.parent)
             return
 
+        orig_ref = node.children[0]
         node.parent.remove(node)
 
         table = nodes.table()
@@ -64,10 +65,13 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
         thead = nodes.thead()
         tgroup += thead
         row = nodes.row()
-        entry = nodes.entry()
-        entry += node.parent.copy()
-        row += entry
         thead += row
+        entry = nodes.entry()
+        row += entry
+        par = nodes.paragraph()
+        entry += par
+        par += nodes.Text('References to ')
+        par += orig_ref
 
         tbody = nodes.tbody()
         tgroup += tbody

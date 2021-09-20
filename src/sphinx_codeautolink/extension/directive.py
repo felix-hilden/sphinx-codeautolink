@@ -23,7 +23,8 @@ class CodeReferences(Directive):
         """Run directive to insert a :class:`DeferredCodeReferences`."""
         name = self.arguments[0]
         par = nodes.paragraph()
-        par += nodes.Text('References to ')
+        deferred = DeferredCodeReferences(name)
+        par += deferred
         ref = addnodes.pending_xref(
             refdomain='py',
             refexplicit=False,
@@ -34,8 +35,7 @@ class CodeReferences(Directive):
         ref['py:class'] = True
         ref['py:module'] = True
         ref += nodes.literal(classes=['xref', 'py', 'py-class'], text=name)
-        par += ref
-        par += DeferredCodeReferences(name)
+        deferred += ref
         return [par]
 
 
