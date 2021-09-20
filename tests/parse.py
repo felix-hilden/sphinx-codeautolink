@@ -86,15 +86,39 @@ class TestAssign:
         return s, refs
 
     @refs_equal
+    def test_assign_after_import_while_using(self):
+        s = 'import a\na = a\na'
+        refs = [('a', 'a')]
+        return s, refs
+
+    @refs_equal
     def test_augassign_after_import(self):
         s = 'import a\na += 1\na'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
+    def test_augassign_after_import_while_using(self):
+        s = 'import a\na += a\na'
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
     def test_annassign_after_import(self):
         s = 'import a\na: str = 1\na'
         refs = []
+        return s, refs
+
+    @refs_equal
+    def test_annassign_after_import_while_using(self):
+        s = 'import a\na: str = a\na'
+        refs = [('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_annassign_why_would_anyone_do_this(self):
+        s = 'import a\na: a = a\na'
+        refs = [('a', 'a')]
         return s, refs
 
     @refs_equal

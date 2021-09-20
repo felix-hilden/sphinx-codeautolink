@@ -108,8 +108,21 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                     self.accessed.append(name)
                     break
 
+    def visit_Assign(self, node: ast.Assign):
+        """Swap node order."""
+        self.visit(node.value)
+        for n in node.targets:
+            self.visit(n)
+
+    def visit_AnnAssign(self, node: ast.AnnAssign):
+        """Swap node order."""
+        self.visit(node.value)
+        self.visit(node.target)
+        self.visit(node.annotation)
+
     def visit_AugAssign(self, node: ast.AugAssign):
-        """Handle special case of augmented assignment not producing a new name."""
+        """Swap node order and handle augmented assignment not producing a new name."""
         self.in_augassign, temp = (True, self.in_augassign)
-        self.generic_visit(node)
+        self.visit(node.value)
+        self.visit(node.target)
         self.in_augassign = temp
