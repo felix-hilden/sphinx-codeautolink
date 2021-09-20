@@ -59,6 +59,7 @@ setuptools.setup(
     install_requires=[
         'sphinx>=3.2.0',
         'beautifulsoup4',
+        'dataclasses;python_version<"3.7"',
     ],
     extras_require=extras_require,
 

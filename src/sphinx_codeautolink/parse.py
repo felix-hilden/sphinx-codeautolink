@@ -78,7 +78,8 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         if isinstance(node.ctx, ast.Store) and not self.in_augassign:
             self._assign(node.id)
         elif node.id in self.imports:
-            name = Name(self.imports[node.id], node.id, node.lineno, node.end_lineno)
+            end_lineno = getattr(node, 'end_lineno', node.lineno)
+            name = Name(self.imports[node.id], node.id, node.lineno, end_lineno)
             self.accessed.append(name)
 
     def visit_Attribute(self, node):
@@ -102,7 +103,8 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             for im in self.imports:
                 if full.startswith(im):
                     import_name = self.imports[im] + full[len(im):]
-                    name = Name(import_name, full, node.lineno, node.end_lineno)
+                    end_lineno = getattr(node, 'end_lineno', node.lineno)
+                    name = Name(import_name, full, node.lineno, end_lineno)
                     self.accessed.append(name)
                     break
 
