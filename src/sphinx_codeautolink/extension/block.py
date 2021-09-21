@@ -1,4 +1,6 @@
 """Code block processing."""
+import re
+
 from typing import List
 from pathlib import Path
 from warnings import warn
@@ -182,6 +184,11 @@ def link_html(document: Path, transforms: List[SourceTransforms], inventory: dic
 
         lines = str(inner).split('\n')
 
+        # Expression asserts no dots before or after content nor a link after,
+        # i.e. a self-contained name or attribute that hasn't been linked yet
+        # so we are free to replace any occurrences, since the order of
+        # multiple identical replacements doesn't matter.
+        ex = r'(?<!<span class="o">\.</span>){content}(?!(<span class="o">\.)|(</a>))'
         for name in trans.names:
             if name.import_name not in inventory:
                 continue
@@ -190,9 +197,10 @@ def link_html(document: Path, transforms: List[SourceTransforms], inventory: dic
                 name_pattern.format(name=part) for part in name.used_name.split('.')
             )
             line = lines[name.lineno - 1]
-            first = line.find(html)
-            second = line[first + 1:].find(html)
-            if first == -1 or second != -1:
+
+            # Reverse because a.b = a.b should replace from the right
+            matches = list(re.finditer(ex.format(content=html), line))[::-1]
+            if not matches:
                 msg = (
                     f'Could not match transformation of `{name.used_name}` '
                     f'on source line {name.lineno} in document "{document}", '
@@ -206,7 +214,8 @@ def link_html(document: Path, transforms: List[SourceTransforms], inventory: dic
                 title=name.import_name,
                 text=html
             )
-            lines[name.lineno - 1] = line.replace(html, link)
+            start, end = matches[0].span()
+            lines[name.lineno - 1] = line[:start] + link + line[end:]
 
         inner.replace_with(BeautifulSoup('\n'.join(lines), 'html.parser'))
 
