@@ -53,8 +53,9 @@ Caveats
 For a more thorough explanation, see :ref:`about`.
 
 - Only works with HTML documentation
-- Doesn't run code or follow assignments and type hints
 - Only processes literal blocks, not inline code
+- Doesn't run code or follow importable type hints
+- Parsing is incomplete and performed top-down
 
 Thanks
 ------
