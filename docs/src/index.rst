@@ -50,16 +50,11 @@ sphinx-codeautolink elsewhere:
 
 Caveats
 -------
-- Only works with HTML documentation, disabled otherwise. If the extension
-  is off, it silently removes directives that would produce output.
-- Doesn't run code or follow assignments and type hints. Therefore all possible
-  resolvable names are not found, and the runtime correctness of code cannot be
-  validated. For example, assigning :code:`cal = sphinx_codeautolink` and using
-  its attributes like :code:`cal.setup()` does not produce a link. Likewise,
-  nonsensical operations that would result in errors at runtime are possible.
-  Some of this may change when the extension is developed further.
-- Only processes literal blocks, not inline code. Sphinx has great tools for
-  linking definitions inline, and longer code should be in a block anyway.
+For a more thorough explanation, see :ref:`about`.
+
+- Only works with HTML documentation
+- Doesn't run code or follow assignments and type hints
+- Only processes literal blocks, not inline code
 
 Thanks
 ------
@@ -76,6 +71,7 @@ your documentation, you'll not be disappointed in their offer.
 
    release_notes
    reference
+   about
 
 .. toctree::
    :hidden:
