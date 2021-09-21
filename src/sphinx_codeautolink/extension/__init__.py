@@ -80,7 +80,7 @@ class SphinxCodeAutoLink:
 
     def build_finished(self, app, exception):
         """Apply links to HTML output and write refs file."""
-        if self.do_nothing:
+        if self.do_nothing or exception is not None:
             return
 
         uri = app.builder.outdir
