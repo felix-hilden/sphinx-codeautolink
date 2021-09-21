@@ -23,10 +23,11 @@ class SourceTransforms:
 class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     """Transform literal blocks of Python with links to reference documentation."""
 
-    def __init__(self, *args, concat_default: str, **kwargs):
+    def __init__(self, *args, concat_default: str, source_dir: str, **kwargs):
         super().__init__(*args, **kwargs)
         self.code_refs = {}
-        self.current_document = Path(self.document['source']).stem
+        relative_path = Path(self.document['source']).relative_to(source_dir)
+        self.current_document = str(relative_path.with_suffix(''))
         self.title_stack = []
         self.current_refid = None
         self.source_transforms: List[SourceTransforms] = []
