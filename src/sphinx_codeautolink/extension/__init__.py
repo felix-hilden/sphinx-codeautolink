@@ -86,7 +86,11 @@ class SphinxCodeAutoLink:
         uri = app.builder.outdir
         inv_file = posixpath.join(uri, INVENTORY_FILENAME)
         if not Path(inv_file).exists():
-            warn('Cannot locate object inventory!', RuntimeWarning)
+            msg = (
+                'sphinx-codeautolink: cannot locate object inventory '
+                f' in {INVENTORY_FILENAME}, no links applied'
+            )
+            warn(msg, RuntimeWarning)
             return
 
         inv = fetch_inventory(app, uri, inv_file)

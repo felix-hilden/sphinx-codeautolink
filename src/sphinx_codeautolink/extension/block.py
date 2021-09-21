@@ -20,6 +20,14 @@ class SourceTransforms:
     names: List[Name]
 
 
+class ParsingError(Exception):
+    """Error in sphinx-autocodelink parsing."""
+
+
+class UserError(Exception):
+    """Error in sphinx-autocodelink usage."""
+
+
 class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     """Transform literal blocks of Python with links to reference documentation."""
 
@@ -32,7 +40,10 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.current_refid = None
         self.source_transforms: List[SourceTransforms] = []
         self.implicit_imports = []
-        assert concat_default in ('none', 'section', 'file')
+        if concat_default not in ('none', 'section', 'file'):
+            raise UserError(
+                f'Invalid concatenation default value in "conf.py": `{concat_default}`'
+            )
         self.concat_default = concat_default
         self.concat_current = None
         self.concat_sources = []
@@ -41,12 +52,21 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     def unknown_visit(self, node):
         """Handle and delete custom directives, ignore others."""
         if isinstance(node, ConcatBlocksMarker):
-            assert node.level in ('none', 'section', 'file', 'reset')
+            if node.level not in ('none', 'section', 'file', 'reset'):
+                raise UserError(
+                    f'Invalid concatenation argument: `{node.level}` '
+                    f'in document "{self.current_document}"'
+                )
+
             self.concat_sources = []
             self.concat_current = node.level if node.level != 'reset' else None
             node.parent.remove(node)
         elif isinstance(node, ImplicitImportMarker):
-            assert '\n' not in node.content
+            if '\n' in node.content:
+                raise UserError(
+                    'Implicit import may not contain a newline, found newline '
+                    f'in `{node.content}`, document "{self.current_document}"'
+                )
             self.implicit_imports.append(node.content)
             node.parent.remove(node)
         elif isinstance(node, AutoLinkSkipMarker):
@@ -97,7 +117,16 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             return
 
         modified_source = '\n'.join(self.concat_sources + implicit_imports + [source])
-        names = parse_names(modified_source)
+        try:
+            names = parse_names(modified_source)
+        except SyntaxError as e:
+            msg = '\n'.join([
+                str(e) + f' in document "{self.current_document}"',
+                'Parsed source:',
+                source,
+            ])
+            raise ParsingError(msg) from e
+
         if implicit_imports or self.concat_sources:
             concat_lens = [source.count('\n') + 1 for source in self.concat_sources]
             hidden_len = len(implicit_imports) + sum(concat_lens)
@@ -115,8 +144,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         for name in names:
             if name.lineno != name.end_lineno:
                 msg = (
-                    'sphinx-codeautolinks: multiline names are not supported! '
-                    f'Found `{name.used_name}` in {node.document["source"]}'
+                    'sphinx-codeautolinks: multiline names are not supported, '
+                    f'found `{name.used_name}` in document {self.current_document} '
+                    f'on lines {name.lineno} - {name.end_lineno}'
                 )
                 warn(msg, RuntimeWarning)
                 continue
@@ -143,7 +173,11 @@ def link_html(document: Path, transforms: List[SourceTransforms], inventory: dic
                 inner = inners.pop(ix)
                 break
         else:
-            warn('Could not match a code example to HTML!', RuntimeWarning)
+            msg = (
+                f'Could not match a code example to HTML in document "{document}", '
+                f'source:\n{trans.source}'
+            )
+            warn(msg, RuntimeWarning)
             continue
 
         lines = str(inner).split('\n')
@@ -159,7 +193,12 @@ def link_html(document: Path, transforms: List[SourceTransforms], inventory: dic
             first = line.find(html)
             second = line[first + 1:].find(html)
             if first == -1 or second != -1:
-                warn('Could not match transformation to line!', RuntimeWarning)
+                msg = (
+                    f'Could not match transformation of `{name.used_name}` '
+                    f'on source line {name.lineno} in document "{document}", '
+                    f'source:\n{trans.source}'
+                )
+                warn(msg, RuntimeWarning)
                 continue
 
             link = link_pattern.format(
