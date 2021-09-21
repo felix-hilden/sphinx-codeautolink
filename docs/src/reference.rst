@@ -28,9 +28,12 @@ Directives
 ----------
 rST directives available in Sphinx documentation:
 
-- :code:`.. code-refs:: object`: Insert a table containing links to sections
-  that reference ``object`` in their code examples. The table is removed if
-  it would have no entries or a non-HTML builder is used.
+- :code:`.. code-refs:: object [type]`: Insert a table containing links to
+  sections that reference ``object`` in their code examples. ``type`` is the
+  object's type as used in other Sphinx roles like "func" (``:func:`foo```).
+  ``type`` is "class" by default, which seems to work for other types as well.
+  The table is removed if it would have no entries or a non-HTML builder is
+  used.
 - :code:`.. concat-blocks:: level`: Toggle literal block concatenation.
   Concatenation is begun at the directive, not applied retroactively.
   The directive also resets concatenation state.

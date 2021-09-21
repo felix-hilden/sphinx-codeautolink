@@ -15,6 +15,7 @@ release = version
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
     "sphinx_rtd_theme",
     "sphinx_codeautolink",
 ]
@@ -23,9 +24,13 @@ extensions = [
 html_theme = "sphinx_rtd_theme"
 python_use_unqualified_type_names = True
 
-# Autodoc options
+# Extension options
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
 }
 autodoc_typehints = "description"
+intersphinx_mapping = {
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+}

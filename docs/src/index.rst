@@ -17,12 +17,23 @@ and inserts links to definitions that you use.
 
 A directive to create a table of references from code examples
 to a single definition is also provided and integrated to autodoc by default.
-For example, :code:`.. code-refs:: sphinx_codeautolink.setup` produces:
+For example, :code:`.. code-refs:: sphinx_codeautolink.setup func` produces:
 
-.. code-refs:: sphinx_codeautolink.setup
+.. code-refs:: sphinx_codeautolink.setup func
 
-Installation
-------------
+Integration with intersphinx is seemless:
+
+.. code:: python
+
+   import numpy as np
+   from matplotlib import pyplot as plt
+
+   x = np.linspace(0, 2 * np.pi, 100)
+   plt.plot(x, np.sin(x))
+   plt.show()
+
+Quick start
+-----------
 
 .. code:: sh
 

@@ -125,7 +125,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.source_transforms.append(transforms)
 
 
-def link_html(document: Path, transforms: List[SourceTransforms], links: dict):
+def link_html(document: Path, transforms: List[SourceTransforms], inventory: dict):
     """Inject links to code blocks on disk."""
     text = document.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
@@ -148,7 +148,7 @@ def link_html(document: Path, transforms: List[SourceTransforms], links: dict):
         lines = str(inner).split('\n')
 
         for name in trans.names:
-            if name.import_name not in links:
+            if name.import_name not in inventory:
                 continue
 
             html = period.join(
@@ -162,7 +162,7 @@ def link_html(document: Path, transforms: List[SourceTransforms], links: dict):
                 continue
 
             link = link_pattern.format(
-                link=links[name.import_name],
+                link=inventory[name.import_name],
                 title=name.import_name,
                 text=html
             )

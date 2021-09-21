@@ -30,11 +30,11 @@ Different import styles are supported, along with all Python syntax.
 A list of all code examples where a particular definition is used is handy
 particularly in the reference documentation itself:
 
-.. code-refs:: sphinx_codeautolink.setup
+.. code-refs:: sphinx_codeautolink.setup func
 
 Such a table is generated with::
 
-   .. code-refs:: sphinx_codeautolink.setup
+   .. code-refs:: sphinx_codeautolink.setup func
 
 Implicit imports
 ----------------
@@ -141,17 +141,39 @@ and implement a `Sphinx extension <https://www.sphinx-doc.org/en/master/
 extdev/index.html>`_ with a listener for the ``autodoc-process-docstring``
 `event <https://www.sphinx-doc.org/en/master/usage/
 extensions/autodoc.htm#event-autodoc-process-docstring>`_.
+An object type "class" seems to work for other types as well.
 
 .. code:: python
 
    codeautolink_autodoc_inject = False
 
    def process_docstring(app, what, name, obj, options, lines):
-       lines.append(f".. code-refs:: {name}")
+       lines.append(f".. code-refs:: {name} class")
 
    def setup(app):
        app.connect("autodoc-process-docstring", process_docstring)
        return {"version": "0.1.0"}
+
+Intersphinx integration
+-----------------------
+When writing documentation that references other libraries, `intersphinx
+<https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html>`_
+is a great extension to use. It enables links to documentation on other sites.
+sphinx-codeautolink integrates this functionality seemlessly,
+linking objects as long as the correct ``intersphinx_mapping`` is defined.
+
+.. code:: python
+
+   import numpy as np
+   from matplotlib import pyplot as plt
+
+   x = np.linspace(0, 2 * np.pi, 100)
+   plt.plot(x, np.sin(x))
+   plt.show()
+
+Reference tables across intersphinx work too:
+
+.. code-refs:: numpy.linspace func
 
 Example Python objects
 ----------------------

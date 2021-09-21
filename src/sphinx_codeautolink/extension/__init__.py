@@ -6,7 +6,7 @@ from typing import Dict, List
 from pathlib import Path
 from warnings import warn
 
-from sphinx.ext.intersphinx import fetch_inventory, INVENTORY_FILENAME
+from sphinx.ext.intersphinx import fetch_inventory, INVENTORY_FILENAME, InventoryAdapter
 
 from .backref import CodeRefsVisitor, CodeExample
 from .block import CodeBlockAnalyser, link_html
@@ -86,14 +86,11 @@ class SphinxCodeAutoLink:
         if not Path(inv_file).exists():
             warn('Cannot locate object inventory!', RuntimeWarning)
             return
-        inv = fetch_inventory(app, uri, inv_file)
 
-        transposed = {}
-        for type_, items in inv.items():
-            if not type_.startswith('py'):
-                continue
-            for item, info in items.items():
-                transposed[item] = str(Path(info[2]).relative_to(uri))
+        inv = fetch_inventory(app, uri, inv_file)
+        inter_inv = InventoryAdapter(app.env).main_inventory
+        transposed = transpose_inventory(inter_inv, relative_to=uri)
+        transposed.update(transpose_inventory(inv, relative_to=uri))
 
         for visitor in self.block_visitors:
             if not visitor.source_transforms:
@@ -119,3 +116,24 @@ class SphinxCodeAutoLink:
             return
 
         lines.append(f'.. code-refs:: {name}')
+
+
+def transpose_inventory(inv: dict, relative_to: str):
+    """
+    Transpose Sphinx inventory from {type: {name: (..., location)}} to {name: location}.
+
+    Parameters
+    ----------
+    inv
+        Sphinx inventory
+    relative_to
+        if a local file is found, transform it to be relative to this dir
+    """
+    transposed = {}
+    for _, items in inv.items():
+        for item, info in items.items():
+            location = info[2]
+            if not location.startswith('http'):
+                location = str(Path(location).relative_to(relative_to))
+            transposed[item] = location
+    return transposed
