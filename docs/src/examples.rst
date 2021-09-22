@@ -79,12 +79,14 @@ Examples interlaced with explanations can make for more comprehensible docs.
 
    import sphinx_codeautolink
 
+   sphinx_codeautolink.setup()
+
 After explaining some details, the following block may continue where
 the previous left off.
 
 .. code:: python
 
-   sphinx_codeautolink.setup()
+   sphinx_codeautolink.parse.parse_names()
 
 This was achieved with::
 

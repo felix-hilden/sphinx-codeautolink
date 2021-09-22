@@ -130,7 +130,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             raise ParsingError(msg) from e
 
         if implicit_imports or self.concat_sources:
-            concat_lens = [source.count('\n') + 1 for source in self.concat_sources]
+            concat_lens = [s.count('\n') + 1 for s in self.concat_sources]
             hidden_len = len(implicit_imports) + sum(concat_lens)
             for name in names:
                 name.lineno -= hidden_len
@@ -144,6 +144,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             self.current_document, self.current_refid, list(self.title_stack)
         )
         for name in names:
+            if name.lineno < 1:
+                continue  # From concatenated source
+
             if name.lineno != name.end_lineno:
                 msg = (
                     'sphinx-codeautolinks: multiline names are not supported, '

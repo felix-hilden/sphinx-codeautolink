@@ -16,6 +16,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.extlinks",
     "sphinx_rtd_theme",
     "sphinx_codeautolink",
 ]
@@ -33,4 +34,7 @@ autodoc_typehints = "description"
 intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
+}
+extlinks = {
+    'issue': ('https://github.com/felix-hilden/sphinx-codeautolink/issues/%s', '#'),
 }
