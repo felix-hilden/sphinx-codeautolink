@@ -159,7 +159,7 @@ Intersphinx integration
 When writing documentation that references other libraries, `intersphinx
 <https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html>`_
 is a great extension to use. It enables links to documentation on other sites.
-sphinx-codeautolink integrates this functionality seemlessly,
+sphinx-codeautolink integrates this functionality seamlessly,
 linking objects as long as the correct ``intersphinx_mapping`` is defined.
 
 .. code:: python

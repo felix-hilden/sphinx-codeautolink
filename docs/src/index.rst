@@ -21,7 +21,7 @@ For example, :code:`.. code-refs:: sphinx_codeautolink.setup func` produces:
 
 .. code-refs:: sphinx_codeautolink.setup func
 
-Integration with intersphinx is seemless:
+Integration with intersphinx is seamless:
 
 .. code:: python
 
