@@ -11,6 +11,7 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Correctly filter out names from concatenated sources (:issue:`14`)
+- Fix links in documents inside folder (:issue:`15`)
 
 0.1.0 (2021-09-22)
 ------------------

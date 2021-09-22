@@ -83,8 +83,7 @@ class SphinxCodeAutoLink:
         if self.do_nothing or exception is not None:
             return
 
-        uri = app.builder.outdir
-        inv_file = posixpath.join(uri, INVENTORY_FILENAME)
+        inv_file = posixpath.join(app.outdir, INVENTORY_FILENAME)
         if not Path(inv_file).exists():
             msg = (
                 'sphinx-codeautolink: cannot locate object inventory '
@@ -93,16 +92,16 @@ class SphinxCodeAutoLink:
             warn(msg, RuntimeWarning)
             return
 
-        inv = fetch_inventory(app, uri, inv_file)
+        inv = fetch_inventory(app, app.outdir, inv_file)
         inter_inv = InventoryAdapter(app.env).main_inventory
-        transposed = transpose_inventory(inter_inv, relative_to=uri)
-        transposed.update(transpose_inventory(inv, relative_to=uri))
+        transposed = transpose_inventory(inter_inv, relative_to=app.outdir)
+        transposed.update(transpose_inventory(inv, relative_to=app.outdir))
 
         for visitor in self.block_visitors:
             if not visitor.source_transforms:
                 continue
-            file = Path(uri) / (visitor.current_document + '.html')
-            link_html(file, visitor.source_transforms, transposed)
+            file = Path(app.outdir) / (visitor.current_document + '.html')
+            link_html(file, app.outdir, visitor.source_transforms, transposed)
 
         refs_file = Path(app.srcdir) / self.code_refs_file
         refs = {}

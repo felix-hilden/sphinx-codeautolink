@@ -161,14 +161,17 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.source_transforms.append(transforms)
 
 
-def link_html(document: Path, transforms: List[SourceTransforms], inventory: dict):
+def link_html(
+    document: Path, out_dir: str, transforms: List[SourceTransforms], inventory: dict
+):
     """Inject links to code blocks on disk."""
     text = document.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
     blocks = soup.find_all('div', attrs={'class': 'highlight-python notranslate'})
     inners = [block.select('div > pre')[0] for block in blocks]
 
-    link_pattern = '<a href="{link}" title="{title}">{text}</a>'
+    up_lvls = len(document.relative_to(out_dir).parents) - 1
+    link_pattern = '<a href="' + '../' * up_lvls + '{link}" title="{title}">{text}</a>'
     name_pattern = '<span class="n">{name}</span>'
     period = '<span class="o">.</span>'
 
