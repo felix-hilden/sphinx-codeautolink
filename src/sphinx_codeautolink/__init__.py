@@ -23,9 +23,9 @@ def setup(app: Sphinx):
     app.add_directive('implicit-import', ImplicitImport)
     app.add_directive('autolink-skip', AutoLinkSkip)
 
-    app.connect('builder-inited', state.builder_inited)
-    app.connect('doctree-read', state.doctree_read)
-    app.connect('doctree-resolved', state.doctree_resolved)
-    app.connect('build-finished', state.build_finished)
+    app.connect('builder-inited', state.read_references)
+    app.connect('doctree-read', state.parse_blocks)
+    app.connect('doctree-resolved', state.generate_backref_tables)
+    app.connect('build-finished', state.apply_links)
     app.connect('autodoc-process-docstring', state.autodoc_process_docstring)
     return {'version': __version__}

@@ -33,7 +33,7 @@ class SphinxCodeAutoLink:
 
         return self._flat_refs
 
-    def builder_inited(self, app):
+    def read_references(self, app):
         """Nullify extension if not on HTML builder, read ref file."""
         if app.builder.name != 'html':
             self.do_nothing = True
@@ -55,7 +55,7 @@ class SphinxCodeAutoLink:
                 for obj, examples in ref.items()
             }
 
-    def doctree_read(self, app, doctree):
+    def parse_blocks(self, app, doctree):
         """Parse code blocks for later link substitution."""
         if self.do_nothing:
             return
@@ -69,8 +69,8 @@ class SphinxCodeAutoLink:
         self.code_refs[visitor.current_document] = visitor.code_refs
         self.block_visitors.append(visitor)
 
-    def doctree_resolved(self, app, doctree, docname):
-        """Replace deferred code reference directives."""
+    def generate_backref_tables(self, app, doctree, docname):
+        """Generate backreference tables."""
         visitor = CodeRefsVisitor(
             doctree,
             code_refs=self.flat_refs,
@@ -78,7 +78,7 @@ class SphinxCodeAutoLink:
         )
         doctree.walk(visitor)
 
-    def build_finished(self, app, exception):
+    def apply_links(self, app, exception):
         """Apply links to HTML output and write refs file."""
         if self.do_nothing or exception is not None:
             return
