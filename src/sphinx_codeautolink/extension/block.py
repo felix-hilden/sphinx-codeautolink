@@ -33,7 +33,7 @@ class UserError(Exception):
 class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     """Transform literal blocks of Python with links to reference documentation."""
 
-    def __init__(self, *args, concat_default: str, source_dir: str, **kwargs):
+    def __init__(self, *args, source_dir: str, **kwargs):
         super().__init__(*args, **kwargs)
         self.code_refs = {}
         relative_path = Path(self.document['source']).relative_to(source_dir)
@@ -42,26 +42,25 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.current_refid = None
         self.source_transforms: List[SourceTransforms] = []
         self.implicit_imports = []
-        if concat_default not in ('none', 'section', 'file'):
-            raise UserError(
-                f'Invalid concatenation default value in "conf.py": `{concat_default}`'
-            )
-        self.concat_default = concat_default
-        self.concat_current = None
+        self.concat_global = 'off'
+        self.concat_section = False
         self.concat_sources = []
         self.autolink_skip = None
 
     def unknown_visit(self, node):
         """Handle and delete custom directives, ignore others."""
         if isinstance(node, ConcatBlocksMarker):
-            if node.level not in ('none', 'section', 'file', 'reset'):
+            if node.mode not in ('off', 'section', 'on'):
                 raise UserError(
-                    f'Invalid concatenation argument: `{node.level}` '
+                    f'Invalid concatenation argument: `{node.mode}` '
                     f'in document "{self.current_document}"'
                 )
 
             self.concat_sources = []
-            self.concat_current = node.level if node.level != 'reset' else None
+            if node.mode == 'section':
+                self.concat_section = True
+            else:
+                self.concat_global = node.mode
             node.parent.remove(node)
         elif isinstance(node, ImplicitImportMarker):
             if '\n' in node.content:
@@ -72,16 +71,13 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             self.implicit_imports.append(node.content)
             node.parent.remove(node)
         elif isinstance(node, AutoLinkSkipMarker):
-            if node.level not in ('next', 'section', 'file', 'none'):
+            if node.level not in ('next', 'section', 'file', 'off'):
                 raise UserError(
                     f'Invalid skipping argument: `{node.level}` '
                     f'in document "{self.current_document}"'
                 )
-            self.autolink_skip = node.level if node.level != 'none' else None
+            self.autolink_skip = node.level if node.level != 'off' else None
             node.parent.remove(node)
-
-    def _concat_mode(self) -> str:
-        return self.concat_current or self.concat_default
 
     def unknown_departure(self, node):
         """Ignore unknown nodes."""
@@ -89,7 +85,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     def visit_title(self, node):
         """Track section names and break concatenation and skipping."""
         self.title_stack.append(node.astext())
-        if self._concat_mode() == 'section':
+        if self.concat_section:
+            self.concat_section = False
             self.concat_sources = []
         if self.autolink_skip == 'section':
             self.autolink_skip = None
@@ -142,7 +139,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 name.lineno -= hidden_len
                 name.end_lineno -= hidden_len
 
-        if self._concat_mode() != 'none':
+        if self.concat_section or self.concat_global == 'on':
             self.concat_sources.extend(implicit_imports + [source])
 
         transforms = SourceTransforms(source, [])

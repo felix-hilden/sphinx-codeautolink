@@ -66,11 +66,7 @@ class SphinxCodeAutoLink:
         if self.do_nothing:
             return
 
-        visitor = CodeBlockAnalyser(
-            doctree,
-            concat_default=app.config.codeautolink_concat_blocks,
-            source_dir=app.srcdir,
-        )
+        visitor = CodeBlockAnalyser(doctree, source_dir=app.srcdir)
         doctree.walkabout(visitor)
         self.code_refs[visitor.current_document] = visitor.code_refs
         self.block_visitors.append(visitor)

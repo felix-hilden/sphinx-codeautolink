@@ -45,13 +45,13 @@ class CodeReferences(Directive):
 class ConcatBlocksMarker(nodes.Element):
     """Marker for :class:`ConcatBlocks` with attribute :attr:`level`."""
 
-    def __init__(self, level: str = None):
+    def __init__(self, mode: str = None):
         super().__init__()
-        self.level = level
+        self.mode = mode
 
     def copy(self):
         """Copy element."""
-        return self.__class__(self.level)
+        return self.__class__(self.mode)
 
 
 class ConcatBlocks(Directive):

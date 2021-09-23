@@ -12,15 +12,6 @@ Configuration
 -------------
 Available configuration values in ``conf.py``:
 
-- :code:`codeautolink_concat_blocks: str`: Default behavior for code example
-  concatenation. Concatenated code blocks are treated as a continuous source,
-  so that imports and statements in previous blocks affect later blocks.
-  Value must be one of:
-
-  - "none" - no concatenation (default)
-  - "section" - blocks between titles
-  - "file" - all blocks in the current file
-
 - :code:`codeautolink_autodoc_inject: bool`: Inject a :code:`code-refs` table
   to the end of all autodoc definitions. Defaults to :code:`True`.
 
@@ -34,15 +25,17 @@ rST directives available in Sphinx documentation:
   ``type`` is "class" by default, which seems to work for other types as well.
   The table is removed if it would have no entries or a non-HTML builder is
   used.
-- :code:`.. concat-blocks:: level`: Toggle literal block concatenation.
+- :code:`.. concat-blocks:: [mode]`: Toggle literal block concatenation.
+  Concatenated code blocks are treated as a continuous source,
+  so that imports and statements in previous blocks affect later blocks.
   Concatenation is begun at the directive, not applied retroactively.
   The directive also resets concatenation state.
-  ``level`` must be one of:
+  ``mode``, if specified, must be one of:
 
-  - "none" - no concatenation
-  - "section" - blocks between titles
-  - "file" - all blocks in the current file
-  - "reset" - behavior reset to the value set in configuration
+  - "on" - concatenate all blocks in the current file (default value)
+  - "off" - no concatenation (default behavior until a :code:`concat-blocks`
+    directive is encountered)
+  - "section" - concatenate blocks until the next title
 
 - :code:`.. implicit-import:: code`: Include an implicit import in the next
   code block. The next block consumes this directive even if it is not
@@ -55,7 +48,7 @@ rST directives available in Sphinx documentation:
   - "next" - next block (default)
   - "section" - blocks until the next title
   - "file" - all blocks in the current file
-  - "none" - turn skipping off
+  - "off" - turn skipping off
 
   If "next" was specified, the following block consumes this directive even if
   it is not processed (e.g. non-Python blocks) to avoid placement confusion.

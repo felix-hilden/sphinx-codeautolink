@@ -102,8 +102,6 @@ This was achieved with::
 Now all Python code blocks within the same section will be concatenated.
 See :ref:`reference` for more information on the exact behavior and options.
 
-.. concat-blocks:: reset
-
 Skipping blocks
 ---------------
 If needed, Python blocks can be skipped, resulting in no links for that block

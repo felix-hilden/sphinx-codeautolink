@@ -10,6 +10,7 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+- Improve directive arguments and behavior (:issue:`16`)
 - Correctly consume :code:`autolink-skip:: next` (:issue:`17`)
 
 0.1.1 (2021-09-22)
