@@ -171,7 +171,10 @@ def link_html(
     inners = [block.select('div > pre')[0] for block in blocks]
 
     up_lvls = len(document.relative_to(out_dir).parents) - 1
-    link_pattern = '<a href="' + '../' * up_lvls + '{link}" title="{title}">{text}</a>'
+    link_pattern = (
+        '<a href="' + '../' * up_lvls
+        + '{link}" title="{title}" class="sphinx-codeautolink-a">{text}</a>'
+    )
     name_pattern = '<span class="n">{name}</span>'
     period = '<span class="o">.</span>'
 

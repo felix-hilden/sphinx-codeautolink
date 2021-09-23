@@ -33,12 +33,18 @@ class SphinxCodeAutoLink:
 
         return self._flat_refs
 
-    def read_references(self, app):
-        """Nullify extension if not on HTML builder, read ref file."""
+    def build_inited(self, app):
+        """Handle initial setup."""
         if app.builder.name != 'html':
             self.do_nothing = True
             return
 
+        # Append static resources path so references in setup() are valid
+        app.config.html_static_path.append(
+            str(Path(__file__).parent.with_name('static').absolute())
+        )
+
+        # Read serialised references from last build
         refs_file = Path(app.srcdir) / self.code_refs_file
         if not refs_file.exists():
             return

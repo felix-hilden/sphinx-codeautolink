@@ -15,6 +15,7 @@ state = SphinxCodeAutoLink()
 
 def setup(app: Sphinx):
     """Set up extension, directives and events."""
+    app.add_css_file('sphinx-codeautolink.css')
     app.add_config_value('codeautolink_concat_blocks', 'none', 'html', types=[str])
     app.add_config_value('codeautolink_autodoc_inject', True, 'html', types=[bool])
 
@@ -23,7 +24,7 @@ def setup(app: Sphinx):
     app.add_directive('implicit-import', ImplicitImport)
     app.add_directive('autolink-skip', AutoLinkSkip)
 
-    app.connect('builder-inited', state.read_references)
+    app.connect('builder-inited', state.build_inited)
     app.connect('doctree-read', state.parse_blocks)
     app.connect('doctree-resolved', state.generate_backref_tables)
     app.connect('build-finished', state.apply_links)

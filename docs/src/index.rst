@@ -6,6 +6,7 @@ Automatic links from Python code examples to reference documentation
 at the flick of a switch!
 sphinx-codeautolink analyses the code in your documentation
 and inserts links to definitions that you use.
+Click any names in the code example below.
 
 .. code:: python
 
