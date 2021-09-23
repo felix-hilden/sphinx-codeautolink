@@ -72,7 +72,11 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             self.implicit_imports.append(node.content)
             node.parent.remove(node)
         elif isinstance(node, AutoLinkSkipMarker):
-            assert node.level in ('next', 'section', 'file', 'none')
+            if node.level not in ('next', 'section', 'file', 'none'):
+                raise UserError(
+                    f'Invalid skipping argument: `{node.level}` '
+                    f'in document "{self.current_document}"'
+                )
             self.autolink_skip = node.level if node.level != 'none' else None
             node.parent.remove(node)
 
@@ -103,6 +107,10 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         implicit_imports = self.implicit_imports
         self.implicit_imports = []
 
+        skip = self.autolink_skip
+        if skip == 'next':
+            self.autolink_skip = None
+
         if (
             len(node.children) != 1
             or not isinstance(node.children[0], nodes.Text)
@@ -112,10 +120,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 
         source = node.children[0].astext()
 
-        if self.autolink_skip:
+        if skip:
             self.source_transforms.append(SourceTransforms(source, []))
-            if self.autolink_skip == 'next':
-                self.autolink_skip = None
             return
 
         modified_source = '\n'.join(self.concat_sources + implicit_imports + [source])

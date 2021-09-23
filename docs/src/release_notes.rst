@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Correctly consume :code:`autolink-skip:: next` (:issue:`17`)
+
 0.1.1 (2021-09-22)
 ------------------
 - Correctly filter out names from concatenated sources (:issue:`14`)
