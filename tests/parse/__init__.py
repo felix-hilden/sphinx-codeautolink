@@ -1,3 +1,4 @@
+import pytest
 from ._util import refs_equal
 
 
@@ -41,12 +42,6 @@ class TestSimple:
         return s, refs
 
     @refs_equal
-    def test_import_then_call_attrib(self):
-        s = 'import a\na.attr().b'
-        refs = [('a.attr', 'a.attr')]
-        return s, refs
-
-    @refs_equal
     def test_dotted_import(self):
         s = 'import a.b\na.b'
         refs = [('a.b', 'a.b')]
@@ -80,4 +75,11 @@ class TestSimple:
     def test_del_dotted_removes_only_part(self):
         s = 'import a.b\ndel a.b\na'
         refs = [('a.b', 'a.b'), ('a', 'a')]
+        return s, refs
+
+    @pytest.mark.xfail(reason='Assignments to imports are not tracked.')
+    @refs_equal
+    def test_overwrite_dotted_not_tracked(self):
+        s = 'import a.b\na.b = 1\na.b.c'
+        refs = []
         return s, refs

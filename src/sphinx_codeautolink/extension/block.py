@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from bs4 import BeautifulSoup
 from docutils import nodes
 
-from ..parse import parse_names, Name
+from ..parse import parse_names, Name, NameBreak
 from .backref import CodeExample
 from .directive import ConcatBlocksMarker, ImplicitImportMarker, AutoLinkSkipMarker
 
@@ -20,6 +20,7 @@ class SourceTransforms:
 
     source: str
     names: List[Name]
+    example: CodeExample
 
 
 class ParsingError(Exception):
@@ -35,12 +36,11 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 
     def __init__(self, *args, source_dir: str, **kwargs):
         super().__init__(*args, **kwargs)
-        self.code_refs = {}
+        self.source_transforms: List[SourceTransforms] = []
         relative_path = Path(self.document['source']).relative_to(source_dir)
         self.current_document = str(relative_path.with_suffix(''))
         self.title_stack = []
         self.current_refid = None
-        self.source_transforms: List[SourceTransforms] = []
         self.implicit_imports = []
         self.concat_global = 'off'
         self.concat_section = False
@@ -115,10 +115,14 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         ):
             return
 
+        example = CodeExample(
+            self.current_document, self.current_refid, list(self.title_stack)
+        )
         source = node.children[0].astext()
+        transform = SourceTransforms(source, [], example)
+        self.source_transforms.append(transform)
 
         if skip:
-            self.source_transforms.append(SourceTransforms(source, []))
             return
 
         modified_source = '\n'.join(self.concat_sources + implicit_imports + [source])
@@ -142,10 +146,6 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if self.concat_section or self.concat_global == 'on':
             self.concat_sources.extend(implicit_imports + [source])
 
-        transforms = SourceTransforms(source, [])
-        example = CodeExample(
-            self.current_document, self.current_refid, list(self.title_stack)
-        )
         for name in names:
             if name.lineno < 1:
                 continue  # From concatenated source
@@ -153,21 +153,20 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             if name.lineno != name.end_lineno:
                 msg = (
                     'sphinx-codeautolinks: multiline names are not supported, '
-                    f'found `{name.used_name}` in document {self.current_document} '
+                    f'found `{name.code_str}` in document {self.current_document} '
                     f'on lines {name.lineno} - {name.end_lineno}'
                 )
                 warn(msg, RuntimeWarning)
                 continue
 
-            transforms.names.append(name)
-            self.code_refs.setdefault(name.import_name, []).append(example)
-        self.source_transforms.append(transforms)
+            transform.names.append(name)
 
 
 def link_html(
     document: Path, out_dir: str, transforms: List[SourceTransforms], inventory: dict
 ):
     """Inject links to code blocks on disk."""
+    print('linking', document)
     text = document.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
     blocks = soup.find_all('div', attrs={'class': 'highlight-python notranslate'})
@@ -180,6 +179,17 @@ def link_html(
     )
     name_pattern = '<span class="n">{name}</span>'
     period = '<span class="o">.</span>'
+
+    # Expression asserts no dots before or after content nor a link after,
+    # i.e. a self-contained name or attribute that hasn't been linked yet
+    # so we are free to replace any occurrences, since the order of
+    # multiple identical replacements doesn't matter.
+    base_ex = r'(?<!<span class="o">\.</span>){content}(?!(<span class="o">\.)|(</a>))'
+    # Potentially instead assert an initial closing parenthesis followed by a dot
+    call_ex = (
+        r'(?<=\)</span><span class="o">\.</span>)'
+        r'{content}(?!(<span class="o">\.)|(</a>))'
+    )
 
     for trans in transforms:
         for ix in range(len(inners)):
@@ -196,25 +206,18 @@ def link_html(
 
         lines = str(inner).split('\n')
 
-        # Expression asserts no dots before or after content nor a link after,
-        # i.e. a self-contained name or attribute that hasn't been linked yet
-        # so we are free to replace any occurrences, since the order of
-        # multiple identical replacements doesn't matter.
-        ex = r'(?<!<span class="o">\.</span>){content}(?!(<span class="o">\.)|(</a>))'
         for name in trans.names:
-            if name.import_name not in inventory:
-                continue
-
             html = period.join(
-                name_pattern.format(name=part) for part in name.used_name.split('.')
+                name_pattern.format(name=part) for part in name.code_str.split('.')
             )
             line = lines[name.lineno - 1]
 
             # Reverse because a.b = a.b should replace from the right
+            ex = call_ex if name.previous == NameBreak.call else base_ex
             matches = list(re.finditer(ex.format(content=html), line))[::-1]
             if not matches:
                 msg = (
-                    f'Could not match transformation of `{name.used_name}` '
+                    f'Could not match transformation of `{name.code_str}` '
                     f'on source line {name.lineno} in document "{document}", '
                     f'source:\n{trans.source}'
                 )
@@ -222,8 +225,8 @@ def link_html(
                 continue
 
             link = link_pattern.format(
-                link=inventory[name.import_name],
-                title=name.import_name,
+                link=inventory[name.resolved_location],
+                title=name.resolved_location,
                 text=html
             )
             start, end = matches[0].span()
