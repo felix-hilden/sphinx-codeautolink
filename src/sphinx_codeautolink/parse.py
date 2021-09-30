@@ -14,7 +14,7 @@ def parse_names(source: str) -> List['Name']:
     tree = ast.parse(source)
     visitor = ImportTrackerVisitor()
     visitor.visit(tree)
-    return sum([a.make_splits() for a in visitor.accessed], start=[])
+    return sum([a.make_splits() for a in visitor.accessed], [])
 
 
 @dataclass
