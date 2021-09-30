@@ -1,5 +1,6 @@
 """Analyse AST of code blocks to determine used names and their sources."""
 import ast
+import sys
 
 from contextlib import contextmanager
 from enum import Enum
@@ -200,8 +201,9 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         ast.Call,
         ast.Assign,
         ast.AnnAssign,
-        ast.NamedExpr,
     )
+    if sys.version_info >= (3, 8):
+        track_nodes += (ast.NamedExpr,)
 
     def visit(self, node: ast.AST):
         """Override default visit to track name access and assignments."""
