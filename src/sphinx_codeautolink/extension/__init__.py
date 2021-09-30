@@ -65,7 +65,7 @@ class SphinxCodeAutoLink:
 
     def once_on_doctree_resolved(self, app):
         """Clean source transforms and create code references."""
-        if self.code_refs:
+        if self.code_refs or self.do_nothing:
             return
 
         for transforms in self.cache.transforms.values():
