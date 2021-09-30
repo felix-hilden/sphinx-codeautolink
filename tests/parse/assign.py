@@ -20,6 +20,12 @@ class TestAssign:
     @refs_equal
     def test_assign_uses_and_assigns_imported(self):
         s = 'import a\na = a\na'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_assign_uses_and_assigns_modified_imported(self):
+        s = 'import a\na = a + 1\na'
         refs = [('a', 'a')]
         return s, refs
 
@@ -56,13 +62,13 @@ class TestAssign:
     @refs_equal
     def test_annassign_uses_and_assigns_imported(self):
         s = 'import a\na: str = a\na'
-        refs = [('a', 'a')]
+        refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_annassign_why_would_anyone_do_this(self):
         s = 'import a\na: a = a\na'
-        refs = [('a', 'a')]
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
         return s, refs
 
     @pytest.mark.skipif(
@@ -80,6 +86,15 @@ class TestAssign:
     @refs_equal
     def test_walrus_uses_and_assigns_imported(self):
         s = 'import a\n(a := a)\na'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @pytest.mark.skipif(
+        sys.version_info < (3, 8), reason='Walrus introduced in Python 3.8.'
+    )
+    @refs_equal
+    def test_walrus_uses_and_assigns_modified_imported(self):
+        s = 'import a\n(a := a + 1)\na'
         refs = [('a', 'a')]
         return s, refs
 
@@ -94,6 +109,52 @@ class TestAssign:
     def test_partially_overwrite_dotted_import(self):
         s = 'import a.b.c\na.b = 1\na\na.b\na.b.c'
         refs = [('a', 'a')]
+        return s, refs
+
+
+class TestFollowAssignment:
+    @refs_equal
+    def test_follow_simple_assign(self):
+        s = 'import a\nb = a\nb'
+        refs = [('a', 'a'), ('a', 'b')]
+        return s, refs
+
+    @refs_equal
+    def test_follow_simple_assign_attr(self):
+        s = 'import a\nb = a\nb.c'
+        refs = [('a', 'a'), ('a.c', 'b.c')]
+        return s, refs
+
+    @refs_equal
+    def test_follow_attr_assign(self):
+        s = 'import a\nc = a.b\nc'
+        refs = [('a.b', 'a.b'), ('a.b', 'c')]
+        return s, refs
+
+    @refs_equal
+    def test_follow_attr_assign_attr(self):
+        s = 'import a\nc = a.b\nc.d'
+        refs = [('a.b', 'a.b'), ('a.b.d', 'c.d')]
+        return s, refs
+
+    @refs_equal
+    def test_follow_attr_call_assign_attr(self):
+        s = 'import a\nc = a.b()\nc.d'
+        refs = [('a.b', 'a.b'), ('a.b.().d', 'c.d')]
+        return s, refs
+
+    @refs_equal
+    def test_follow_attr_call_assign_attr_call(self):
+        s = 'import a\nc = a.b()\nc.d()'
+        refs = [('a.b', 'a.b'), ('a.b.().d', 'c.d')]
+        return s, refs
+
+    @refs_equal
+    def test_follow_through_two_complex_assignments(self):
+        s = 'import a\nd = a.b().c\ne = d().f'
+        refs = [
+            ('a.b', 'a.b'), ('a.b.().c', 'c'), ('a.b.().c', 'd'), ('a.b.().c.().f', 'f')
+        ]
         return s, refs
 
 

@@ -9,8 +9,10 @@ def refs_equal(func):
         names = parse_names(source)
         names = sorted(names, key=lambda name: name.lineno)
         for n, e in zip(names, expected):
-            assert n.import_name == e[0], f'Wrong import name! Expected\n{e}\ngot\n{n}'
-            assert n.used_name == e[1], f'Wrong used name! Expected\n{e}\ngot\n{n}'
+            s = '.'.join(n.name for n in n.import_components)
+            assert s == e[0], f'Wrong import! Expected\n{e}\ngot\n{n}'
+            assert n.code_str == e[1], f'Wrong code str! Expected\n{e}\ngot\n{n}'
 
-        assert len(names) == len(expected), 'Wrong number of nodes!'
+        msg = f'Wrong number of nodes! Expected {len(expected)}, got {len(names)}'
+        assert len(names) == len(expected), msg
     return wrapper

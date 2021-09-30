@@ -10,6 +10,7 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+- Improve code analysis and follow simple type hints (:issue:`5`)
 - Improve directive arguments and behavior (:issue:`16`)
 - Correctly consume :code:`autolink-skip:: next` (:issue:`17`)
 

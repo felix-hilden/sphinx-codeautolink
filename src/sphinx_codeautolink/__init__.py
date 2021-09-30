@@ -25,8 +25,8 @@ def setup(app: Sphinx):
     app.add_directive('autolink-skip', AutoLinkSkip)
 
     app.connect('builder-inited', state.build_inited)
+    app.connect('autodoc-process-docstring', state.autodoc_process_docstring)
     app.connect('doctree-read', state.parse_blocks)
     app.connect('doctree-resolved', state.generate_backref_tables)
     app.connect('build-finished', state.apply_links)
-    app.connect('autodoc-process-docstring', state.autodoc_process_docstring)
     return {'version': __version__}

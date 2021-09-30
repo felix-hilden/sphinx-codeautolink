@@ -184,8 +184,9 @@ and their use in examples does not represent their correct usage.
 
 sphinx-codeautolink
 *******************
-.. automodule:: sphinx_codeautolink
+.. autofunction:: sphinx_codeautolink.setup
 
 sphinx-codeautolink.parse
 *************************
-.. automodule:: sphinx_codeautolink.parse
+.. autoclass:: sphinx_codeautolink.parse.Name
+.. autofunction:: sphinx_codeautolink.parse.parse_names
