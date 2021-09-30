@@ -16,7 +16,6 @@ state = SphinxCodeAutoLink()
 def setup(app: Sphinx):
     """Set up extension, directives and events."""
     app.add_css_file('sphinx-codeautolink.css')
-    app.add_config_value('codeautolink_concat_blocks', 'none', 'html', types=[str])
     app.add_config_value('codeautolink_autodoc_inject', True, 'html', types=[bool])
 
     app.add_directive('concat-blocks', ConcatBlocks)

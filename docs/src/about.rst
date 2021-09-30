@@ -2,7 +2,15 @@
 
 About
 =====
-Here's some additional information about sphinx-codeautolink!
+sphinx-codeautolink is built with a few major components: code analysis,
+import and type hint resolving, and HTML injection.
+Code analysis is performed with the builtin ``ast`` parsing tool to generate
+a set of reference chains to imported modules.
+That information is fed to the name resolver, which attempts to match a series
+of attributes and calls to the concrete type in question by following
+type hints and other information accessible via imports of the library.
+If a match is found, a link to the correct reference documentation entry
+is injected after the ordinary Sphinx build is finished.
 
 Caveats
 -------
@@ -17,13 +25,15 @@ Caveats
 - **Parsing and type hint resolving is incomplete**. While all Python syntax is
   supported, some ambiguous cases might produce unintuitive results or even
   incorrect results when compared to runtime behavior. We try to err on the
-  side of caution, but here are some examples of compromises and limitations:
+  side of caution, but here are some of the compromises and limitations:
 
   - Only simple assignments of names, attributes and calls to a single name
     are tracked and used to resolve later values.
   - Only simple return type hints that consists of a single resolved type
     (not a string) are tracked through call and attribute access chains.
-  - Type hints of intersphinx-linked definitions are not available.
+  - Type hints of intersphinx-linked definitions are not necessarily available.
+    Resolving names using type hints is only possible if the package is
+    installed, but simple usage can be tracked via documentation entries alone.
   - Deleting or assigning to a global variable from an inner scope is
     not recognised in outer scopes. This is because the value depends on when
     the function is called, which is not tracked. Additionally, variable values

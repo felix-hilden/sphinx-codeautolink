@@ -5,7 +5,7 @@ Reference
 The public API of sphinx-codeautolink consists only of the configuration
 and directives made available to Sphinx.
 The extension is enabled with the name ``sphinx_codeautolink``.
-During the build phase, a JSON file called ``sphinx-codeautolink-refs.json``
+During the build phase, a JSON file called ``codeautolink-cache.json``
 is saved to the source folder to track code references during partial builds.
 
 Configuration

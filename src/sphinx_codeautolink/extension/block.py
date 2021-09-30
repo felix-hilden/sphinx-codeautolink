@@ -15,7 +15,7 @@ from .directive import ConcatBlocksMarker, ImplicitImportMarker, AutoLinkSkipMar
 
 
 @dataclass
-class SourceTransforms:
+class SourceTransform:
     """Transforms on source code."""
 
     source: str
@@ -36,7 +36,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 
     def __init__(self, *args, source_dir: str, **kwargs):
         super().__init__(*args, **kwargs)
-        self.source_transforms: List[SourceTransforms] = []
+        self.source_transforms: List[SourceTransform] = []
         relative_path = Path(self.document['source']).relative_to(source_dir)
         self.current_document = str(relative_path.with_suffix(''))
         self.title_stack = []
@@ -119,7 +119,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             self.current_document, self.current_refid, list(self.title_stack)
         )
         source = node.children[0].astext()
-        transform = SourceTransforms(source, [], example)
+        transform = SourceTransform(source, [], example)
         self.source_transforms.append(transform)
 
         if skip:
@@ -163,10 +163,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 
 
 def link_html(
-    document: Path, out_dir: str, transforms: List[SourceTransforms], inventory: dict
+    document: Path, out_dir: str, transforms: List[SourceTransform], inventory: dict
 ):
     """Inject links to code blocks on disk."""
-    print('linking', document)
     text = document.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
     blocks = soup.find_all('div', attrs={'class': 'highlight-python notranslate'})
