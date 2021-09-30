@@ -61,7 +61,7 @@ class NameBreak(str, Enum):
 class Name:
     """A name accessed in the source traced back to an import."""
 
-    import_components: List[Component]
+    import_components: List[str]
     code_str: str
     lineno: int
     end_lineno: int
@@ -134,7 +134,7 @@ class Access:
             split.pop()
         return [
             Name(
-                s.full_components,
+                [c.name for c in s.full_components],
                 s.code_str,
                 *s.lineno_span,
                 previous=NameBreak.call if s.hidden_components else None,

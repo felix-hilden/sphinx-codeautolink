@@ -13,6 +13,7 @@ Unreleased
 - Improve code analysis and follow simple type hints (:issue:`5`)
 - Improve directive arguments and behavior (:issue:`16`)
 - Correctly consume :code:`autolink-skip:: next` (:issue:`17`)
+- Find type hints via imports, fix links in partial builds (:issue:`18`)
 
 0.1.1 (2021-09-22)
 ------------------

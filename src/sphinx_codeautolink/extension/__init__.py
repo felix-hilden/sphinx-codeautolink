@@ -1,14 +1,15 @@
 """Sphinx extension implementation."""
-import json
-
-from dataclasses import dataclass, asdict
-from typing import Dict, List, Optional
+from dataclasses import dataclass
+from functools import lru_cache
+from importlib import import_module
+from typing import Dict, List, Optional, Tuple, Any, Set
 from pathlib import Path
 
 from sphinx.ext.intersphinx import InventoryAdapter
 
 from .backref import CodeRefsVisitor, CodeExample
-from .block import CodeBlockAnalyser, link_html, Name, NameBreak
+from .block import CodeBlockAnalyser, SourceTransform, link_html, Name, NameBreak
+from .cache import DataCache
 
 
 @dataclass
@@ -23,59 +24,82 @@ class DocumentedObject:
 class SphinxCodeAutoLink:
     """Provide functionality and manage state between events."""
 
-    code_refs_file = 'sphinx-codeautolink-refs.json'
-
     def __init__(self):
-        self.code_refs: Dict[str, Dict[str, List[CodeExample]]] = {}
-        self._flat_refs: Dict[str, List[CodeExample]] = {}
-        self.block_visitors: List[CodeBlockAnalyser] = []
         self.do_nothing = False
-        self.objects: Dict[str, DocumentedObject] = {}
+        self.cache: Optional[DataCache] = None
+        self.code_refs: Dict[str, List[CodeExample]] = {}
         self._inventory = {}
+        self.outdated_docs: Set[str] = set()
 
-    def make_flat_refs(self, app):
-        """Flattened version of :attr:`code_refs`."""
-        if self._flat_refs:
-            return self._flat_refs
+    def build_inited(self, app):
+        """Handle initial setup."""
+        if app.builder.name != 'html':
+            self.do_nothing = True
+            return
 
-        self.parse_transforms(app)
+        self.cache = DataCache(app.srcdir)
+        self.cache.read()
+        self.outdated_docs = {str(Path(d)) for d in app.builder.get_outdated_docs()}
 
-        for refs in self.code_refs.values():
-            for doc, examples in refs.items():
-                self._flat_refs.setdefault(doc, []).extend(examples)
+        # Append static resources path so references in setup() are valid
+        app.config.html_static_path.append(
+            str(Path(__file__).parent.with_name('static').absolute())
+        )
 
-        return self._flat_refs
+    def autodoc_process_docstring(self, app, what, name, obj, options, lines):
+        """Handle autodoc-process-docstring event."""
+        if self.do_nothing:
+            return
 
-    def parse_transforms(self, app):
-        """Construct code_refs and try to link name chains."""
-        inventory = self.make_inventory(app)
-        for visitor in self.block_visitors:
-            refs = {}
-            for transform in visitor.source_transforms:
-                filtered = []
+        if app.config.codeautolink_autodoc_inject:
+            lines.append(f'.. code-refs:: {name}')
+
+    def parse_blocks(self, app, doctree):
+        """Parse code blocks for later link substitution."""
+        if self.do_nothing:
+            return
+
+        visitor = CodeBlockAnalyser(doctree, source_dir=app.srcdir)
+        doctree.walkabout(visitor)
+        self.cache.transforms[visitor.current_document] = visitor.source_transforms
+
+    def once_on_doctree_resolved(self, app):
+        """Clean source transforms and create code references."""
+        if self.code_refs:
+            return
+
+        for transforms in self.cache.transforms.values():
+            self.filter_and_resolve(transforms, app)
+
+        for transforms in self.cache.transforms.values():
+            for transform in transforms:
                 for name in transform.names:
-                    key = self.find_in_objects(name)
-                    if not key or key not in inventory:
-                        continue
-                    name.resolved_location = key
-                    filtered.append(name)
-                    refs.setdefault(key, []).append(transform.example)
-                transform.names = filtered
-            self.code_refs[visitor.current_document] = refs
+                    self.code_refs.setdefault(name.resolved_location, []).append(
+                        transform.example
+                    )
 
-    def find_in_objects(self, chain: Name) -> Optional[str]:
-        """Find the final type that a name refers to."""
-        comps = []
-        for comp in chain.import_components:
-            if comp.name == NameBreak.call:
-                name = '.'.join(comps)
-                if name in self.objects and self.objects[name].return_type:
-                    comps = [self.objects[name].return_type]
+    def generate_backref_tables(self, app, doctree, docname):
+        """Generate backreference tables."""
+        self.once_on_doctree_resolved(app)
+        visitor = CodeRefsVisitor(
+            doctree,
+            code_refs=self.code_refs,
+            remove_directives=self.do_nothing,
+        )
+        doctree.walk(visitor)
+
+    def filter_and_resolve(self, transforms: List[SourceTransform], app):
+        """Try to link name chains to objects."""
+        inventory = self.make_inventory(app)
+        for transform in transforms:
+            filtered = []
+            for name in transform.names:
+                key = resolve_location(name)
+                if not key or key not in inventory:
                     continue
-                else:
-                    return
-            comps.append(comp.name)
-        return '.'.join(comps)
+                name.resolved_location = key
+                filtered.append(name)
+            transform.names = filtered
 
     def make_inventory(self, app):
         """Create object inventory from local info and intersphinx."""
@@ -98,87 +122,18 @@ class SphinxCodeAutoLink:
         self._inventory = transposed
         return self._inventory
 
-    def build_inited(self, app):
-        """Handle initial setup."""
-        if app.builder.name != 'html':
-            self.do_nothing = True
-            return
-
-        # Append static resources path so references in setup() are valid
-        app.config.html_static_path.append(
-            str(Path(__file__).parent.with_name('static').absolute())
-        )
-
-        # Read serialised references from last build
-        refs_file = Path(app.srcdir) / self.code_refs_file
-        if not refs_file.exists():
-            return
-        content = json.loads(refs_file.read_text('utf-8'))
-        for file, ref in content.items():
-            full_path = Path(app.srcdir) / (file + '.rst')
-            if not full_path.exists():
-                continue
-            self.code_refs[file] = {
-                obj: [CodeExample(**e) for e in examples]
-                for obj, examples in ref.items()
-            }
-
-    def autodoc_process_docstring(self, app, what, name, obj, options, lines):
-        """Handle autodoc-process-docstring event."""
-        if self.do_nothing:
-            return
-
-        if app.config.codeautolink_autodoc_inject:
-            lines.append(f'.. code-refs:: {name}')
-
-        d_obj = DocumentedObject(what, obj)
-        if what in ('class', 'exception'):
-            d_obj.annotation = name
-        elif what in ('function', 'method'):
-            ret_annotation = obj.__annotations__.get('return', None)
-            if ret_annotation and not hasattr(ret_annotation, '__origin__'):
-                d_obj.annotation = getattr(ret_annotation, '__name__', None)
-        self.objects[name] = d_obj
-
-    def parse_blocks(self, app, doctree):
-        """Parse code blocks for later link substitution."""
-        if self.do_nothing:
-            return
-
-        visitor = CodeBlockAnalyser(doctree, source_dir=app.srcdir)
-        doctree.walkabout(visitor)
-        self.block_visitors.append(visitor)
-
-    def generate_backref_tables(self, app, doctree, docname):
-        """Generate backreference tables."""
-        visitor = CodeRefsVisitor(
-            doctree,
-            code_refs=self.make_flat_refs(app),
-            remove_directives=self.do_nothing,
-        )
-        doctree.walk(visitor)
-
     def apply_links(self, app, exception):
         """Apply links to HTML output and write refs file."""
         if self.do_nothing or exception is not None:
             return
 
-        for visitor in self.block_visitors:
-            if not visitor.source_transforms:
+        for doc, transforms in self.cache.transforms.items():
+            if not transforms or str(Path(doc)) not in self.outdated_docs:
                 continue
-            file = Path(app.outdir) / (visitor.current_document + '.html')
-            link_html(
-                file, app.outdir, visitor.source_transforms, self.make_inventory(app)
-            )
+            file = (Path(app.outdir) / doc).with_suffix('.html')
+            link_html(file, app.outdir, transforms, self.make_inventory(app))
 
-        refs_file = Path(app.srcdir) / self.code_refs_file
-        refs = {}
-        for file, ref in self.code_refs.items():
-            refs[file] = {
-                obj: [asdict(e) for e in examples]
-                for obj, examples in ref.items()
-            }
-        refs_file.write_text(json.dumps(refs, indent=4), 'utf-8')
+        self.cache.write()
 
 
 def transpose_inventory(inv: dict, relative_to: str):
@@ -204,3 +159,63 @@ def transpose_inventory(inv: dict, relative_to: str):
                 location = str(Path(location).relative_to(relative_to))
             transposed[item] = location
     return transposed
+
+
+def resolve_location(chain: Name) -> Optional[str]:
+    """Find the final type that a name refers to."""
+    comps = []
+    for comp in chain.import_components:
+        if comp == NameBreak.call:
+            new = locate_type(tuple(comps))
+            if new is None:
+                return
+            comps = new.split('.')
+        else:
+            comps.append(comp)
+    return '.'.join(comps)
+
+
+@lru_cache(maxsize=None)
+def locate_type(components: Tuple[str]) -> Optional[str]:
+    """Find type hint and resolve to new location."""
+    value, index = closest_module(components)
+    if index is None or index == len(components) - 1:
+        return
+    remaining = components[index:]
+    real_location = '.'.join(components[:index])
+    for component in remaining:
+        value = getattr(value, component, None)
+        real_location += '.' + component
+        if value is None:
+            return
+
+        if isinstance(value, type):
+            # We don't differentiate between classmethods and ordinary methods,
+            # as we can't guarantee correct runtime behavior anyway.
+            real_location = fully_qualified_name(value)
+
+    # A possible function / method call needs to be last in the chain.
+    # Otherwise we might follow return types on function attribute access.
+    if callable(value):
+        ret_annotation = value.__annotations__.get('return', None)
+        if not ret_annotation or hasattr(ret_annotation, '__origin__'):
+            return
+        real_location = fully_qualified_name(ret_annotation)
+
+    return real_location
+
+
+def fully_qualified_name(type_: type) -> str:
+    """Construct the fully qualified name of a type."""
+    return getattr(type_, '__module__', '') + '.' + getattr(type_, '__qualname__', '')
+
+
+@lru_cache(maxsize=None)
+def closest_module(components: Tuple[str]) -> Tuple[Any, Optional[int]]:
+    """Find closest importable module."""
+    mod = None
+    for i in range(len(components)):
+        try:
+            mod = import_module('.'.join(components[:i + 1]))
+        except ImportError:
+            return mod, i

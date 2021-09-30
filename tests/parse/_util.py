@@ -9,7 +9,7 @@ def refs_equal(func):
         names = parse_names(source)
         names = sorted(names, key=lambda name: name.lineno)
         for n, e in zip(names, expected):
-            s = '.'.join(n.name for n in n.import_components)
+            s = '.'.join(c for c in n.import_components)
             assert s == e[0], f'Wrong import! Expected\n{e}\ngot\n{n}'
             assert n.code_str == e[1], f'Wrong code str! Expected\n{e}\ngot\n{n}'
 
