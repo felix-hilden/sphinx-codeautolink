@@ -1,0 +1,13 @@
+0
+# split
+# split
+Test project
+============
+
+.. code::
+
+   import test_project
+
+   test_project.bar()
+
+.. automodule:: test_project

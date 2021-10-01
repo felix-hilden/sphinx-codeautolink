@@ -1,0 +1,14 @@
+2
+# split
+# split
+Test project
+============
+
+.. implicit-import:: import test_project
+.. implicit-import:: import test_project as tp
+.. code:: python
+
+   test_project.bar()
+   tp.bar()
+
+.. automodule:: test_project

@@ -1,0 +1,20 @@
+1
+# split
+# split
+Test project
+============
+
+.. concat-blocks:: on
+.. code:: python
+
+   import test_project
+
+   test_project.bar()
+
+.. concat-blocks:: on
+
+.. code:: python
+
+   test_project.Foo
+
+.. automodule:: test_project

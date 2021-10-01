@@ -42,7 +42,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.title_stack = []
         self.current_refid = None
         self.implicit_imports = []
-        self.concat_global = 'off'
+        self.concat_global = False
         self.concat_section = False
         self.concat_sources = []
         self.autolink_skip = None
@@ -60,7 +60,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             if node.mode == 'section':
                 self.concat_section = True
             else:
-                self.concat_global = node.mode
+                self.concat_section = False
+                self.concat_global = (node.mode == 'on')
             node.parent.remove(node)
         elif isinstance(node, ImplicitImportMarker):
             if '\n' in node.content:
@@ -143,7 +144,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 name.lineno -= hidden_len
                 name.end_lineno -= hidden_len
 
-        if self.concat_section or self.concat_global == 'on':
+        if self.concat_section or self.concat_global:
             self.concat_sources.extend(implicit_imports + [source])
 
         for name in names:

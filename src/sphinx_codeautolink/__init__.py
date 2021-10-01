@@ -10,11 +10,11 @@ from .extension.directive import (
 
 _version_file = _Path(_os.path.realpath(__file__)).parent / "VERSION"
 __version__ = _version_file.read_text().strip()
-state = SphinxCodeAutoLink()
 
 
 def setup(app: Sphinx):
     """Set up extension, directives and events."""
+    state = SphinxCodeAutoLink()
     app.add_css_file('sphinx-codeautolink.css')
     app.add_config_value('codeautolink_autodoc_inject', True, 'html', types=[bool])
 
