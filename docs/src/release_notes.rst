@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.2.1 (2021-10-01)
+------------------
 - Fix type resolving for class instances (:issue:`24`)
 
 0.2.0 (2021-10-01)
