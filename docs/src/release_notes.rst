@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.2.0 (2021-10-01)
+------------------
 - Improve code analysis and follow simple type hints (:issue:`5`)
 - Improve directive arguments and behavior (:issue:`16`)
 - Correctly consume :code:`autolink-skip:: next` (:issue:`17`)
