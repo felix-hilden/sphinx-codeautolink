@@ -1,0 +1,18 @@
+1
+# split
+# split
+Test project
+============
+
+.. autolink-skip::
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. automodule:: test_project

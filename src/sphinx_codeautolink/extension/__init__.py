@@ -70,8 +70,6 @@ class SphinxCodeAutoLink:
 
         for transforms in self.cache.transforms.values():
             self.filter_and_resolve(transforms, app)
-
-        for transforms in self.cache.transforms.values():
             for transform in transforms:
                 for name in transform.names:
                     self.code_refs.setdefault(name.resolved_location, []).append(
@@ -179,7 +177,7 @@ def resolve_location(chain: Name) -> Optional[str]:
 def locate_type(components: Tuple[str]) -> Optional[str]:
     """Find type hint and resolve to new location."""
     value, index = closest_module(components)
-    if index is None or index == len(components) - 1:
+    if index is None or index == len(components):
         return
     remaining = components[index:]
     real_location = '.'.join(components[:index])
@@ -214,8 +212,12 @@ def fully_qualified_name(type_: type) -> str:
 def closest_module(components: Tuple[str]) -> Tuple[Any, Optional[int]]:
     """Find closest importable module."""
     mod = None
-    for i in range(len(components)):
+    for i in range(1, len(components) + 1):
         try:
-            mod = import_module('.'.join(components[:i + 1]))
+            mod = import_module('.'.join(components[:i]))
         except ImportError:
-            return mod, i
+            break
+    else:
+        return None, None
+
+    return mod, i - 1

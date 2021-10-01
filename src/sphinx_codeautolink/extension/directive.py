@@ -58,12 +58,13 @@ class ConcatBlocks(Directive):
     """Toggle and cut literal block concatenation in a document."""
 
     has_content = False
-    required_arguments = 1
-    optional_arguments = 0
+    required_arguments = 0
+    optional_arguments = 1
 
     def run(self):
         """Insert :class:`ConcatBlocksMarker`."""
-        return [ConcatBlocksMarker(self.arguments[0])]
+        arg = self.arguments[0] if self.arguments else 'on'
+        return [ConcatBlocksMarker(arg)]
 
 
 class ImplicitImportMarker(nodes.Element):
