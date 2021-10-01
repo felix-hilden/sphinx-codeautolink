@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Fix type resolving for class instances (:issue:`24`)
+
 0.2.0 (2021-10-01)
 ------------------
 - Improve code analysis and follow simple type hints (:issue:`5`)

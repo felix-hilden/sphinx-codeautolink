@@ -1,0 +1,16 @@
+6
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+
+   test_project.Foo().attr
+   test_project.Foo.attr
+   test_project.Baz().attr
+   test_project.Baz.attr
+
+.. automodule:: test_project

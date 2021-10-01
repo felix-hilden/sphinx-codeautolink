@@ -4,6 +4,8 @@
 class Baz:
     """Baz test class."""
 
+    attr = 1
+
 
 class Foo:
     """Foo test class."""

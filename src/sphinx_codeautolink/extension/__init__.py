@@ -181,7 +181,7 @@ def locate_type(components: Tuple[str]) -> Optional[str]:
         return
     remaining = components[index:]
     real_location = '.'.join(components[:index])
-    for component in remaining:
+    for i, component in enumerate(remaining):
         value = getattr(value, component, None)
         real_location += '.' + component
         if value is None:
@@ -192,13 +192,13 @@ def locate_type(components: Tuple[str]) -> Optional[str]:
             # as we can't guarantee correct runtime behavior anyway.
             real_location = fully_qualified_name(value)
 
-    # A possible function / method call needs to be last in the chain.
-    # Otherwise we might follow return types on function attribute access.
-    if callable(value):
-        ret_annotation = value.__annotations__.get('return', None)
-        if not ret_annotation or hasattr(ret_annotation, '__origin__'):
-            return
-        real_location = fully_qualified_name(ret_annotation)
+        # A possible function / method call needs to be last in the chain.
+        # Otherwise we might follow return types on function attribute access.
+        elif callable(value) and i == len(remaining) - 1:
+            ret_annotation = value.__annotations__.get('return', None)
+            if not ret_annotation or hasattr(ret_annotation, '__origin__'):
+                return
+            real_location = fully_qualified_name(ret_annotation)
 
     return real_location
 
