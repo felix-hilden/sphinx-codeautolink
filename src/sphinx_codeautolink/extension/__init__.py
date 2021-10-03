@@ -51,7 +51,8 @@ class SphinxCodeAutoLink:
             return
 
         if app.config.codeautolink_autodoc_inject:
-            lines.append(f'.. code-refs:: {name}')
+            lines.append('.. code-refs:: ' + name)
+            lines.append('   :collapse:')
 
     def parse_blocks(self, app, doctree):
         """Parse code blocks for later link substitution."""

@@ -30,11 +30,13 @@ Different import styles are supported, along with all Python syntax.
 A list of all code examples where a particular definition is used is handy
 particularly in the reference documentation itself:
 
-.. code-refs:: sphinx_codeautolink.setup func
+.. code-refs:: sphinx_codeautolink.setup
+   :type: func
 
 Such a table is generated with::
 
-   .. code-refs:: sphinx_codeautolink.setup func
+   .. code-refs:: sphinx_codeautolink.setup
+      :type: func
 
 Implicit imports
 ----------------
@@ -148,7 +150,9 @@ An object type "class" seems to work for other types as well.
    codeautolink_autodoc_inject = False
 
    def process_docstring(app, what, name, obj, options, lines):
-       lines.append(f".. code-refs:: {name} class")
+       lines.append(f".. code-refs:: {name}")
+       lines.append(f"   :type: class")
+       lines.append(f"   :collapse:")
 
    def setup(app):
        app.connect("autodoc-process-docstring", process_docstring)
@@ -173,7 +177,8 @@ linking objects as long as the correct ``intersphinx_mapping`` is defined.
 
 Reference tables across intersphinx work too:
 
-.. code-refs:: numpy.linspace func
+.. code-refs:: numpy.linspace
+   :type: func
 
 Example Python objects
 ----------------------

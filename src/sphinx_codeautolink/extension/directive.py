@@ -1,19 +1,20 @@
 """Directive implementations."""
 from docutils import nodes
-from docutils.parsers.rst import Directive
+from docutils.parsers.rst import Directive, directives
 from sphinx import addnodes
 
 
 class DeferredCodeReferences(nodes.Element):
     """Deferred literal type for substitution later when references are known."""
 
-    def __init__(self, ref: str = None):
+    def __init__(self, ref: str, collapse: bool):
         super().__init__()
         self.ref = ref
+        self.collapse = collapse
 
     def copy(self):
         """Copy element."""
-        return self.__class__(self.ref)
+        return self.__class__(self.ref, self.collapse)
 
 
 class CodeReferences(Directive):
@@ -21,20 +22,24 @@ class CodeReferences(Directive):
 
     has_content = False
     required_arguments = 1
-    optional_arguments = 1
+    optional_arguments = 0
+    option_spec = {
+        'collapse': directives.flag,
+        'type': directives.unchanged,
+    }
 
     def run(self):
         """Run directive to insert a :class:`DeferredCodeReferences`."""
         name = self.arguments[0]
-        type_ = self.arguments[1] if len(self.arguments) > 1 else 'class'
+        collapse = self.options.get('collapse', False) is None
         par = nodes.paragraph()
-        deferred = DeferredCodeReferences(name)
+        deferred = DeferredCodeReferences(name, collapse)
         par += deferred
         ref = addnodes.pending_xref(
             refdomain='py',
             refexplicit=False,
             refwarn=False,
-            reftype=type_,
+            reftype=self.options.get('type', 'class'),
             reftarget=name,
         )
         ref += nodes.literal(classes=['xref', 'py', 'py-class'], text=name)

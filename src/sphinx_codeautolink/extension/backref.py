@@ -16,6 +16,42 @@ class CodeExample:
     headings: List[str]
 
 
+class DetailsNode(nodes.Element):
+    """Collapsible details node for HTML."""
+
+    def copy(self):
+        """Copy element."""
+        return self.__class__()
+
+
+def visit_details(self, node: DetailsNode):
+    """Insert a details tag."""
+    self.body.append('<details>')
+
+
+def depart_details(self, node: DetailsNode):
+    """Close a details tag."""
+    self.body.append('</details>')
+
+
+class SummaryNode(nodes.TextElement):
+    """Summary node inside a DetailsNode for HTML."""
+
+    def copy(self):
+        """Copy element."""
+        return self.__class__()
+
+
+def visit_summary(self, node: SummaryNode):
+    """Insert a summary tag."""
+    self.body.append('<summary>')
+
+
+def depart_summary(self, node: SummaryNode):
+    """Close a summary tag."""
+    self.body.append('</summary>')
+
+
 class CodeRefsVisitor(nodes.SparseNodeVisitor):
     """Replace :class:`DeferredCodeReferences` with table of concrete references."""
 
@@ -55,21 +91,23 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
         orig_ref = node.children[0]
         node.parent.remove(node)
 
+        # Table definition
         table = nodes.table()
         tgroup = nodes.tgroup(cols=1)
         table += tgroup
         tgroup += nodes.colspec(colwidth=1)
 
-        thead = nodes.thead()
-        tgroup += thead
-        row = nodes.row()
-        thead += row
-        entry = nodes.entry()
-        row += entry
-        par = nodes.paragraph()
-        entry += par
-        par += nodes.Text('References to ')
-        par += orig_ref
+        if not node.collapse:
+            thead = nodes.thead()
+            tgroup += thead
+            row = nodes.row()
+            thead += row
+            entry = nodes.entry()
+            row += entry
+            title = nodes.paragraph()
+            title += nodes.Text('References to ')
+            title += orig_ref
+            entry += title
 
         tbody = nodes.tbody()
         tgroup += tbody
@@ -84,5 +122,14 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
             row += entry
 
         parent_par = nodes.paragraph()
-        parent_par += table
+        if node.collapse:
+            details = DetailsNode()
+            summary = SummaryNode()
+            summary += nodes.Text('Expand for references to ')
+            summary += orig_ref
+            details += summary
+            details += table
+            parent_par += details
+        else:
+            parent_par += table
         node.parent.replace_self(parent_par)

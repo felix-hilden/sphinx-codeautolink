@@ -11,6 +11,8 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Treat optional types as their underlying type (:issue:`21`)
+- Improve ``code-refs`` argument structure and
+  provide an option making a collapsible table (:issue:`25`)
 
 0.2.1 (2021-10-01)
 ------------------
