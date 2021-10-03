@@ -1,4 +1,5 @@
 """Docstring."""
+from typing import Optional
 
 
 class Baz:
@@ -18,3 +19,7 @@ class Foo:
 
 def bar() -> Foo:
     """bar test function."""
+
+
+def optional() -> Optional[Foo]:
+    """Return optional type."""

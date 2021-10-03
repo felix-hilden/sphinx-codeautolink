@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Treat optional types as their underlying type (:issue:`21`)
+
 0.2.1 (2021-10-01)
 ------------------
 - Fix type resolving for class instances (:issue:`24`)

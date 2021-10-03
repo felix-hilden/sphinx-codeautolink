@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from functools import lru_cache
 from importlib import import_module
-from typing import Dict, List, Optional, Tuple, Any, Set
+from typing import Dict, List, Optional, Tuple, Any, Set, Union
 from pathlib import Path
 
 from sphinx.ext.intersphinx import InventoryAdapter
@@ -196,6 +196,13 @@ def locate_type(components: Tuple[str]) -> Optional[str]:
         # Otherwise we might follow return types on function attribute access.
         elif callable(value) and i == len(remaining) - 1:
             ret_annotation = value.__annotations__.get('return', None)
+
+            # Inner type from typing.Optional (Union[T, None])
+            origin = getattr(ret_annotation, '__origin__', None)
+            args = getattr(ret_annotation, '__args__', None)
+            if origin is Union and len(args) == 2 and isinstance(None, args[1]):
+                ret_annotation = args[0]
+
             if not ret_annotation or hasattr(ret_annotation, '__origin__'):
                 return
             real_location = fully_qualified_name(ret_annotation)
