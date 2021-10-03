@@ -49,7 +49,8 @@ Caveats
 
 Clean Sphinx build
 ------------------
-A JSON file is used to track code references, which allows access to the
-reference information for pages in partial builds.
-The file shouldn't become outdated, but a clean build can be achieved
-by deleting the reference file and the entire build directory.
+For correct partial builds, code reference information is saved to a file
+which is updated when parsing new or outdated files.
+It shouldn't become outdated, but a clean build can be achieved with
+`sphinx-build -E <https://www.sphinx-doc.org/en/master/man/sphinx-build.html
+#cmdoption-sphinx-build-E>`_ or by deleting the build directory.
