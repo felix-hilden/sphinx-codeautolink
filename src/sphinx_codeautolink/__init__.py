@@ -14,6 +14,7 @@ def setup(app: Sphinx):
     state = SphinxCodeAutoLink()
     app.add_css_file('sphinx-codeautolink.css')
     app.add_config_value('codeautolink_autodoc_inject', True, 'html', types=[bool])
+    app.add_config_value('codeautolink_default_import', '', 'html', types=[str])
 
     app.add_directive('concat-blocks', directive.ConcatBlocks)
     app.add_directive('code-refs', directive.CodeReferences)

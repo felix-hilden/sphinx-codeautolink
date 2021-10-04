@@ -1,0 +1,14 @@
+test_project.bar
+test_project.Foo
+# split
+codeautolink_default_import = "import test_project"
+# split
+Test project
+============
+
+.. code:: python
+
+   test_project.bar()
+   test_project.Foo
+
+.. automodule:: test_project

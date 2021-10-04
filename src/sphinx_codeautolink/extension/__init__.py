@@ -29,6 +29,7 @@ class SphinxCodeAutoLink:
         self.code_refs: Dict[str, List[CodeExample]] = {}
         self._inventory = {}
         self.outdated_docs: Set[str] = set()
+        self.default_imports: List[str] = []
 
     def build_inited(self, app):
         """Handle initial setup."""
@@ -45,6 +46,10 @@ class SphinxCodeAutoLink:
             str(Path(__file__).parent.with_name('static').absolute())
         )
 
+        imports = app.config.codeautolink_default_import
+        if imports:
+            self.default_imports = imports.split('\n')
+
     def autodoc_process_docstring(self, app, what, name, obj, options, lines):
         """Handle autodoc-process-docstring event."""
         if self.do_nothing:
@@ -59,7 +64,9 @@ class SphinxCodeAutoLink:
         if self.do_nothing:
             return
 
-        visitor = CodeBlockAnalyser(doctree, source_dir=app.srcdir)
+        visitor = CodeBlockAnalyser(
+            doctree, source_dir=app.srcdir, default_imports=self.default_imports
+        )
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms
 

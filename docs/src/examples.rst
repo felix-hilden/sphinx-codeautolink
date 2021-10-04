@@ -72,6 +72,9 @@ Multiple implicit imports can be stacked::
    sphinx_codeautolink.setup()
    names = p.parse_names([p.Name("setup")])
 
+Default import statements can be set in :ref:`configuration`
+to avoid writing the same imports repeatedly.
+
 Concatenating examples
 ----------------------
 Examples interlaced with explanations can make for more comprehensible docs.

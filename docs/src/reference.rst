@@ -8,12 +8,18 @@ The extension is enabled with the name ``sphinx_codeautolink``.
 During the build phase, a cache containing code example information is saved
 to the Sphinx doctree directory to track references during partial builds.
 
+.. _configuration:
+
 Configuration
 -------------
 Available configuration values in ``conf.py``:
 
 - :code:`codeautolink_autodoc_inject: bool`: Inject a :code:`code-refs` table
   to the end of all autodoc definitions. Defaults to :code:`True`.
+- :code:`codeautolink_default_import: str`: Implicit import statement
+  to include before every code block. When other sources would precede the
+  block, the imports are included first and only once.
+  The value may contain newlines and multiple import statements.
 
 Directives
 ----------

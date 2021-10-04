@@ -34,13 +34,14 @@ class UserError(Exception):
 class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     """Transform literal blocks of Python with links to reference documentation."""
 
-    def __init__(self, *args, source_dir: str, **kwargs):
+    def __init__(self, *args, source_dir: str, default_imports: List[str], **kwargs):
         super().__init__(*args, **kwargs)
         self.source_transforms: List[SourceTransform] = []
         relative_path = Path(self.document['source']).relative_to(source_dir)
         self.current_document = str(relative_path.with_suffix(''))
         self.title_stack = []
         self.current_refid = None
+        self.default_imports = default_imports
         self.implicit_imports = []
         self.concat_global = False
         self.concat_section = False
@@ -126,7 +127,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if skip:
             return
 
-        modified_source = '\n'.join(self.concat_sources + implicit_imports + [source])
+        modified_source = '\n'.join(
+            self.default_imports + self.concat_sources + implicit_imports + [source]
+        )
         try:
             names = parse_names(modified_source)
         except SyntaxError as e:
@@ -137,9 +140,11 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             ])
             raise ParsingError(msg) from e
 
-        if implicit_imports or self.concat_sources:
+        if implicit_imports or self.concat_sources or self.default_imports:
             concat_lens = [s.count('\n') + 1 for s in self.concat_sources]
-            hidden_len = len(implicit_imports) + sum(concat_lens)
+            hidden_len = (
+                len(implicit_imports) + sum(concat_lens) + len(self.default_imports)
+            )
             for name in names:
                 name.lineno -= hidden_len
                 name.end_lineno -= hidden_len

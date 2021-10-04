@@ -15,6 +15,7 @@ Unreleased
   provide an option making a collapsible table (:issue:`25`)
 - Correctly link decorators (:issue:`28`)
 - Move cache to Sphinx doctree directory (:issue:`29`)
+- Add configuration for default import statements (:issue:`31`)
 
 0.2.1 (2021-10-01)
 ------------------
