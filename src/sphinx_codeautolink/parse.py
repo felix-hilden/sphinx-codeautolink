@@ -5,7 +5,9 @@ import sys
 from contextlib import contextmanager
 from enum import Enum
 from functools import wraps
+from importlib import import_module
 from typing import Dict, Union, List, Optional, Tuple
+from warnings import warn
 from dataclasses import dataclass
 
 
@@ -297,9 +299,19 @@ class ImportTrackerVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node: Union[ast.Import, ast.ImportFrom], prefix: str = ''):
         """Register import source."""
-        for name in node.names:
-            local_name = name.asname or name.name
-            import_name = prefix + name.name
+        if node.names[0].name == '*':
+            try:
+                mod = import_module(node.module)
+            except ImportError:
+                warn(f'Could not import module `{node.module}` for parsing!')
+                return
+            local_names = [name for name in mod.__dict__ if not name.startswith('_')]
+            import_names = [prefix + name for name in local_names]
+        else:
+            local_names = [name.asname or name.name for name in node.names]
+            import_names = [prefix + name.name for name in node.names]
+
+        for local_name, import_name in zip(local_names, import_names):
             if '.' in local_name:
                 # equivalent to only import top level module since we don't
                 # follow assignments and the outer modules also get imported

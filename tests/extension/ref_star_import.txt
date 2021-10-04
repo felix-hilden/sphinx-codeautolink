@@ -1,0 +1,14 @@
+bar
+Foo
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   from test_project import *
+
+   (bar, Foo)
+
+.. automodule:: test_project

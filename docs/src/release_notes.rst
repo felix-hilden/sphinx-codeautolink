@@ -17,6 +17,7 @@ Unreleased
 - Move cache to Sphinx doctree directory (:issue:`29`)
 - Support Python console blocks (:issue:`30`)
 - Add configuration for default import statements (:issue:`31`)
+- Support star imports (:issue:`32`)
 
 0.2.1 (2021-10-01)
 ------------------

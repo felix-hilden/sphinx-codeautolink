@@ -83,3 +83,9 @@ class TestSimple:
         s = 'import a.b\na.b = 1\na.b.c'
         refs = []
         return s, refs
+
+    @refs_equal
+    def test_import_star(self):
+        s = 'from sphinx_codeautolink import *\nsetup'
+        refs = [('sphinx_codeautolink.setup', 'setup')]
+        return s, refs
