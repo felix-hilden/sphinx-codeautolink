@@ -1,4 +1,4 @@
-1
+test_project.Foo
 # split
 # split
 Test project
@@ -13,6 +13,6 @@ Test project
 .. code:: python
 
    import test_project
-   test_project.bar()
+   test_project.Foo()
 
 .. automodule:: test_project

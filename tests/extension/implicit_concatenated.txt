@@ -1,4 +1,5 @@
-2
+test_project.bar
+test_project.Foo
 # split
 # split
 Test project

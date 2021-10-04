@@ -209,7 +209,7 @@ def link_html(
 
         for name in trans.names:
             parts = name.code_str.split('.')
-            html = period.join(
+            pattern = period.join(
                 [maybe_decor_pattern.format(name=parts[0])]
                 + [name_pattern.format(name=p) for p in parts[1:]]
             )
@@ -218,7 +218,7 @@ def link_html(
 
             # Reverse because a.b = a.b should replace from the right
             ex = call_ex if name.previous == NameBreak.call else base_ex
-            matches = list(re.finditer(ex.format(content=html), line))[::-1]
+            matches = list(re.finditer(ex.format(content=pattern), line))[::-1]
             if not matches:
                 msg = (
                     f'Could not match transformation of `{name.code_str}` '
@@ -228,12 +228,12 @@ def link_html(
                 warn(msg, RuntimeWarning)
                 continue
 
+            start, end = matches[0].span()
             link = link_pattern.format(
                 link=inventory[name.resolved_location],
                 title=name.resolved_location,
-                text=html
+                text=line[start:end]
             )
-            start, end = matches[0].span()
             lines[name.lineno - 1] = line[:start] + link + line[end:]
 
         inner.replace_with(BeautifulSoup('\n'.join(lines), 'html.parser'))

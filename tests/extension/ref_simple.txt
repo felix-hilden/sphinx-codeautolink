@@ -1,4 +1,4 @@
-1
+test_project.bar
 # split
 # split
 Test project

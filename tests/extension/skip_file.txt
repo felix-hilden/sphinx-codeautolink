@@ -1,4 +1,3 @@
-0
 # split
 # split
 Test project

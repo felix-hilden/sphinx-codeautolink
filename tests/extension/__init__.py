@@ -37,7 +37,11 @@ txt_tests = list(Path(__file__).parent.glob('*.txt'))
 
 @pytest.mark.parametrize('file', txt_tests)
 def test_extension(file: Path, tmp_path: Path):
-    n_links, conf, index = file.read_text('utf-8').split('# split')
+    links, conf, index = file.read_text('utf-8').split('# split')
+    links = links.strip().split('\n')
+    if len(links) == 1 and not links[0]:
+        links = []
+
     src_dir = tmp_path / 'src'
     src_dir.mkdir()
     (src_dir / 'conf.py').write_text(default_conf + conf, 'utf-8')
@@ -49,5 +53,8 @@ def test_extension(file: Path, tmp_path: Path):
     index_html = build_dir / 'html' / 'index.html'
     text = index_html.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
-    blocks = soup.find_all('a', attrs={'class': 'sphinx-codeautolink-a'})
-    assert len(blocks) == int(n_links.strip())
+    blocks = list(soup.find_all('a', attrs={'class': 'sphinx-codeautolink-a'}))
+
+    for block, link in zip(blocks, links):
+        assert ''.join(block.strings) == link
+    assert len(blocks) == len(links)

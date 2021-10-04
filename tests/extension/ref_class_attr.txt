@@ -1,4 +1,9 @@
-6
+test_project.Foo
+attr
+test_project.Foo.attr
+test_project.Baz
+attr
+test_project.Baz.attr
 # split
 # split
 Test project
