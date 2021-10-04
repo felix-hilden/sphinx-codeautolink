@@ -14,6 +14,7 @@ Unreleased
 - Improve ``code-refs`` argument structure and
   provide an option making a collapsible table (:issue:`25`)
 - Correctly link decorators (:issue:`28`)
+- Move cache to Sphinx doctree directory (:issue:`29`)
 
 0.2.1 (2021-10-01)
 ------------------

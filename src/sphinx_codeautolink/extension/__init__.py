@@ -36,7 +36,7 @@ class SphinxCodeAutoLink:
             self.do_nothing = True
             return
 
-        self.cache = DataCache(app.srcdir)
+        self.cache = DataCache(app.doctreedir)
         self.cache.read()
         self.outdated_docs = {str(Path(d)) for d in app.builder.get_outdated_docs()}
 
