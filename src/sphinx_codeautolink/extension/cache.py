@@ -13,8 +13,9 @@ class DataCache:
 
     cache_filename = 'codeautolink-cache.json'
 
-    def __init__(self, cache_dir: str):
+    def __init__(self, cache_dir: str, src_dir: str):
         self.cache_dir: Path = Path(cache_dir)
+        self.src_dir: Path = Path(src_dir)
         self.transforms: Dict[str, List[SourceTransform]] = {}
 
     def read(self):
@@ -24,7 +25,7 @@ class DataCache:
             return
         content = json.loads(cache.read_text('utf-8'))
         for file, transforms in content.items():
-            full_path = self.cache_dir / (file + '.rst')
+            full_path = self.src_dir / (file + '.rst')
             if not full_path.exists():
                 continue
             for transform in transforms:
