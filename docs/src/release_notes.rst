@@ -13,6 +13,7 @@ Unreleased
 - Treat optional types as their underlying type (:issue:`21`)
 - Improve ``code-refs`` argument structure and
   provide an option making a collapsible table (:issue:`25`)
+- Correctly link decorators (:issue:`28`)
 
 0.2.1 (2021-10-01)
 ------------------

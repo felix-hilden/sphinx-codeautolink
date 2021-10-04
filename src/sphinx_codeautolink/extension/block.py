@@ -178,6 +178,7 @@ def link_html(
         + '{link}" title="{title}" class="sphinx-codeautolink-a">{text}</a>'
     )
     name_pattern = '<span class="n">{name}</span>'
+    maybe_decor_pattern = '<span class="nd?">@?{name}</span>'
     period = '<span class="o">.</span>'
 
     # Expression asserts no dots before or after content nor a link after,
@@ -207,9 +208,12 @@ def link_html(
         lines = str(inner).split('\n')
 
         for name in trans.names:
+            parts = name.code_str.split('.')
             html = period.join(
-                name_pattern.format(name=part) for part in name.code_str.split('.')
+                [maybe_decor_pattern.format(name=parts[0])]
+                + [name_pattern.format(name=p) for p in parts[1:]]
             )
+
             line = lines[name.lineno - 1]
 
             # Reverse because a.b = a.b should replace from the right

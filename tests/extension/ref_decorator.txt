@@ -1,0 +1,16 @@
+2
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+
+   @test_project.bar
+   @test_project.bar()
+   def test():
+       pass
+
+.. automodule:: test_project
