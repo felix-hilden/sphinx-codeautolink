@@ -20,12 +20,15 @@ be analysed and linked to known reference documentation entries.
    ])
 
 Different import styles are supported, along with all Python syntax.
+Python console blocks using :code:`.. code:: pycon` work too.
 
-.. code:: python
+.. code:: pycon
 
-   from sphinx_codeautolink import parse as p
-
-   names = p.parse_names([p.Name("setup")])
+   >>> from sphinx_codeautolink import parse as p
+   >>> def foo() -> p.Name:
+   ...     return p.Name("setup")
+   >>> foo()
+   Name("setup")
 
 A list of all code examples where a particular definition is used is handy
 particularly in the reference documentation itself:

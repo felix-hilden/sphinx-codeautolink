@@ -113,7 +113,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if (
             len(node.children) != 1
             or not isinstance(node.children[0], nodes.Text)
-            or node.get('language', None) not in ('py', 'python')
+            or node.get('language', None) not in ('py', 'python', 'pycon')
         ):
             return
 
@@ -127,15 +127,34 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if skip:
             return
 
+        if node['language'] == 'pycon':
+            in_statement = False
+            clean_lines = []
+            for line in source.split('\n'):
+                if line.startswith('>>> '):
+                    in_statement = True
+                    clean_lines.append(line[4:])
+                elif in_statement and line.startswith('... '):
+                    clean_lines.append(line[4:])
+                else:
+                    in_statement = False
+                    clean_lines.append('')
+            clean_source = '\n'.join(clean_lines)
+        else:
+            clean_source = source
+
         modified_source = '\n'.join(
-            self.default_imports + self.concat_sources + implicit_imports + [source]
+            self.default_imports
+            + self.concat_sources
+            + implicit_imports
+            + [clean_source]
         )
         try:
             names = parse_names(modified_source)
         except SyntaxError as e:
             msg = '\n'.join([
                 str(e) + f' in document "{self.current_document}"',
-                'Parsed source:',
+                f'Parsed source in `{node["language"]}` block:',
                 source,
             ])
             raise ParsingError(msg) from e
@@ -150,7 +169,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 name.end_lineno -= hidden_len
 
         if self.concat_section or self.concat_global:
-            self.concat_sources.extend(implicit_imports + [source])
+            self.concat_sources.extend(implicit_imports + [clean_source])
 
         for name in names:
             if name.lineno < 1:
@@ -174,7 +193,10 @@ def link_html(
     """Inject links to code blocks on disk."""
     text = document.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
-    blocks = soup.find_all('div', attrs={'class': 'highlight-python notranslate'})
+    blocks = (
+        list(soup.find_all('div', attrs={'class': 'highlight-python notranslate'}))
+        + list(soup.find_all('div', attrs={'class': 'highlight-pycon notranslate'}))
+    )
     inners = [block.select('div > pre')[0] for block in blocks]
 
     up_lvls = len(document.relative_to(out_dir).parents) - 1
