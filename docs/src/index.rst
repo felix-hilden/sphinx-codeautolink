@@ -10,18 +10,18 @@ Click any names in the code example below.
 
 .. code:: python
 
-   import sphinx_codeautolink
-   from sphinx_codeautolink import parse as p
+   import lib
 
-   sphinx_codeautolink.setup()
-   names = p.parse_names([p.Name("setup")])
+   knight = lib.Knight()
+   while knight.limbs >= 0:
+       print(knight.taunt())
+       knight.scratch()
 
 A directive to create a table of references from code examples
 to a single definition is also provided and integrated to autodoc by default.
-For example, :code:`.. autolink-examples:: sphinx_codeautolink.setup` produces:
+For example, :code:`.. autolink-examples:: lib.Knight` produces:
 
-.. autolink-examples:: sphinx_codeautolink.setup
-   :type: func
+.. autolink-examples:: lib.Knight
 
 Integration with intersphinx is seamless:
 

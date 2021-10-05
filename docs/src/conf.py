@@ -3,13 +3,15 @@ import sys
 from pathlib import Path
 
 # Insert package root to path
-_root = Path(os.path.realpath(__file__)).parent.parent.parent / "src"
-sys.path.insert(0, str(_root))
+_src_dir = Path(os.path.realpath(__file__)).parent
+_package_root = _src_dir.parent.parent / "src"
+sys.path.insert(0, str(_package_root))
+sys.path.insert(0, str(_src_dir))
 
 project = "sphinx-codeautolink"
 author = "Felix Hildén"
 copyright = "2021, Felix Hildén"
-version = Path(_root, "sphinx_codeautolink", "VERSION").read_text().strip()
+version = Path(_package_root, "sphinx_codeautolink", "VERSION").read_text().strip()
 release = version
 
 extensions = [

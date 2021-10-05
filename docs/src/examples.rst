@@ -12,12 +12,12 @@ be analysed and linked to known reference documentation entries.
 
 .. code:: python
 
-   import sphinx_codeautolink
+   import lib
 
-   sphinx_codeautolink.setup()
-   names = sphinx_codeautolink.parse.parse_names([
-       sphinx_codeautolink.parse.Name("setup")
-   ])
+   knight = lib.Knight()
+   while knight.limbs >= 0:
+       print(knight.taunt())
+       knight.scratch()
 
 Different import styles are supported, along with all Python syntax.
 Star imports might be particularly handy in code examples.
@@ -25,22 +25,20 @@ Python console blocks using :code:`.. code:: pycon` work too.
 
 .. code:: pycon
 
-   >>> from sphinx_codeautolink.parse import *
-   >>> def foo() -> Name:
-   ...     return Name("setup")
-   >>> foo()
-   Name("setup")
+   >>> from lib import *
+   >>> def visit_town(time_spent: int, budget: int) -> Shrubbery:
+   ...     return Shrubbery(time_spent > 20, budget > 300)
+   >>> visit_town(35, 200)
+   Shrubbery(looks_nice=True, too_expensive=False)
 
 A list of all code examples where a particular definition is used is handy
 particularly in the reference documentation itself:
 
-.. autolink-examples:: sphinx_codeautolink.setup
-   :type: func
+.. autolink-examples:: lib.Knight
 
 Such a table is generated with::
 
-   .. autolink-examples:: sphinx_codeautolink.setup
-      :type: func
+   .. autolink-examples:: lib.Knight
 
 Invisible imports
 -----------------
@@ -48,33 +46,33 @@ When writing lots of small snippets of code, having the same import at the
 beginning of every example becomes quite repetitive.
 The import can be hidden instead.
 
-.. autolink-preface:: import sphinx_codeautolink
+.. autolink-preface:: import lib
 .. code:: python
 
-  sphinx_codeautolink.setup()
+  lib.Knight().taunt()
 
 The previous block is produced with::
 
-   .. autolink-preface:: import sphinx_codeautolink
+   .. autolink-preface:: import lib
    .. code:: python
 
-      sphinx_codeautolink.setup()
+        lib.Knight().taunt()
 
 Multiple prefaces can be stacked::
 
-   .. autolink-preface:: import sphinx_codeautolink
-   .. autolink-preface:: from sphinx_codeautolink import parse as p
+   .. autolink-preface:: import lib
+   .. autolink-preface:: from lib import Knight
    .. code:: python
 
-      sphinx_codeautolink.setup()
-      names = p.parse_names([p.Name("setup")])
+      lib.Knight()
+      Knight()
 
-.. autolink-preface:: import sphinx_codeautolink
-.. autolink-preface:: from sphinx_codeautolink import parse as p
+.. autolink-preface:: import lib
+.. autolink-preface:: from lib import Knight
 .. code:: python
 
-   sphinx_codeautolink.setup()
-   names = p.parse_names([p.Name("setup")])
+   lib.Knight()
+   Knight()
 
 A global preface can be set in :ref:`configuration`
 to avoid writing the same imports repeatedly.
@@ -86,27 +84,33 @@ Examples interlaced with explanations can make for more comprehensible docs.
 .. autolink-concat:: section
 .. code:: python
 
-   import sphinx_codeautolink
+   import lib
 
-   sphinx_codeautolink.setup()
+   knight = lib.Knight()
 
 After explaining some details, the following block may continue where
 the previous left off.
 
 .. code:: python
 
-   sphinx_codeautolink.parse.parse_names()
+   while knight.limbs >= 0:
+       print(knight.taunt())
+       knight.scratch()
 
 This was achieved with::
 
    .. autolink-concat:: section
    .. code:: python
 
-      import sphinx_codeautolink
+      import lib
+
+      knight = lib.Knight()
 
    .. code:: python
 
-      sphinx_codeautolink.setup()
+      while knight.limbs >= 0:
+          print(knight.taunt())
+          knight.scratch()
 
 Now all Python code blocks within the same section will be concatenated.
 See :ref:`reference` for more information on the exact behavior and options.
@@ -119,18 +123,18 @@ and preventing it from being included in further sources with concatenation.
 .. autolink-skip::
 .. code:: python
 
-   import sphinx_codeautolink
+   import lib
 
-   sphinx_codeautolink.setup()
+   lib.Knight()
 
 Which is done via::
 
    .. autolink-skip::
    .. code:: python
 
-      import sphinx_codeautolink
+      import lib
 
-      sphinx_codeautolink.setup()
+      lib.Knight()
 
 Skipping is supported for single blocks, sections and entire files.
 See :ref:`reference` for more information on the exact behavior and options.
@@ -142,7 +146,7 @@ for example in reference documentation.
 sphinx-codeautolink provides an autodoc integration for that purpose,
 which is also enabled by default.
 
-.. autofunction:: sphinx_codeautolink.setup
+.. autofunction:: lib.Knight.scratch
    :noindex:
 
 If you'd like to place the directive manually, disable the integration
@@ -187,18 +191,7 @@ Reference tables across intersphinx work too:
 .. autolink-examples:: numpy.linspace
    :type: func
 
-Example Python objects
+Example Python library
 ----------------------
-This section contains parts of the inner API of sphinx-codeautolink.
-Note that they are not a part of the public API.
-Objects are presented here only for demonstration purposes,
-and their use in examples does not represent their correct usage.
 
-sphinx-codeautolink
-*******************
-.. autofunction:: sphinx_codeautolink.setup
-
-sphinx-codeautolink.parse
-*************************
-.. autoclass:: sphinx_codeautolink.parse.Name
-.. autofunction:: sphinx_codeautolink.parse.parse_names
+.. automodule:: lib
