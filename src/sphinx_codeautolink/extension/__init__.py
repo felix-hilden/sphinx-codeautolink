@@ -56,6 +56,7 @@ class SphinxCodeAutoLink:
             return
 
         if app.config.codeautolink_autodoc_inject:
+            lines.append('')
             lines.append('.. autolink-examples:: ' + name)
             lines.append('   :collapse:')
 

@@ -20,6 +20,7 @@ Unreleased
 - Add configuration for default import statements (:issue:`31`)
 - Support star imports (:issue:`32`)
 - Accept multiline prefaces (:issue:`35`)
+- Fix autodoc injection on one-line docstrings (:issue:`36`)
 
 0.2.1 (2021-10-01)
 ------------------
