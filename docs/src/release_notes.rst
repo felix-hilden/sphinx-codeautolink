@@ -44,6 +44,7 @@ Unreleased
 0.7.0 (2021-11-28)
 ------------------
 - Declare CSS class as public API (:issue:`3`)
+- Support Python 3.10 (:issue:`33`)
 - Add ability to link to subclass documentation (:issue:`68`)
 - Append a newline to error messages with source code (:issue:`70`)
 - Fix unpacking starred assignment (:issue:`71`)
