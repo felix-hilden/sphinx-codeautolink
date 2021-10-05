@@ -49,7 +49,7 @@ rST directives available in Sphinx documentation:
 - :code:`.. autolink-preface:: code`: Include a hidden preface in the next
   code block. The next block consumes this directive even if it is not
   processed (e.g. non-Python blocks) to avoid placement confusion.
-  Multiple prefaces before a single block are combined.
+  A multiline preface can be written in the content portion of the directive.
   Prefaces are included in block concatenation.
 - :code:`.. autolink-skip:: [level]`: Skip sphinx-codeautolink functionality.
   ``level``, if specified, must be one of:

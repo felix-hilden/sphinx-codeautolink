@@ -65,12 +65,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 self.concat_global = (node.mode == 'on')
             node.parent.remove(node)
         elif isinstance(node, PrefaceMarker):
-            if '\n' in node.content:
-                raise UserError(
-                    'Implicit import may not contain a newline, found newline '
-                    f'in `{node.content}`, document "{self.current_document}"'
-                )
-            self.prefaces.append(node.content)
+            self.prefaces.extend(node.content.split('\n'))
             node.parent.remove(node)
         elif isinstance(node, SkipMarker):
             if node.level not in ('next', 'section', 'file', 'off'):

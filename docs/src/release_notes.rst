@@ -19,6 +19,7 @@ Unreleased
 - Support Python console blocks (:issue:`30`)
 - Add configuration for default import statements (:issue:`31`)
 - Support star imports (:issue:`32`)
+- Accept multiline prefaces (:issue:`35`)
 
 0.2.1 (2021-10-01)
 ------------------

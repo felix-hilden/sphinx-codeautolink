@@ -1,0 +1,17 @@
+test_project.bar
+tp.bar
+# split
+# split
+Test project
+============
+
+.. autolink-preface:: import test_project
+
+   import test_project as tp
+
+.. code:: python
+
+   test_project.bar()
+   tp.bar()
+
+.. automodule:: test_project

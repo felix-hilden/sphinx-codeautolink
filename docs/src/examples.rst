@@ -58,21 +58,12 @@ The previous block is produced with::
 
         lib.Knight().taunt()
 
-Multiple prefaces can be stacked::
+A multiline preface can be written in the content portion of the directive::
 
-   .. autolink-preface:: import lib
-   .. autolink-preface:: from lib import Knight
-   .. code:: python
+   .. autolink-preface::
 
-      lib.Knight()
-      Knight()
-
-.. autolink-preface:: import lib
-.. autolink-preface:: from lib import Knight
-.. code:: python
-
-   lib.Knight()
-   Knight()
+      import lib
+      from lib import Knight
 
 A global preface can be set in :ref:`configuration`
 to avoid writing the same imports repeatedly.

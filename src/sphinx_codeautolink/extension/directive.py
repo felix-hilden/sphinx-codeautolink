@@ -87,14 +87,15 @@ class PrefaceMarker(nodes.Element):
 class Preface(Directive):
     """Include a preface in the next code block."""
 
-    has_content = False
-    required_arguments = 1
-    optional_arguments = 0
+    has_content = True
+    required_arguments = 0
+    optional_arguments = 1
     final_argument_whitespace = True
 
     def run(self):
         """Insert :class:`PrefaceMarker`."""
-        return [PrefaceMarker(self.arguments[0])]
+        lines = list(self.arguments) + list(self.content)
+        return [PrefaceMarker('\n'.join(lines))]
 
 
 class SkipMarker(nodes.Element):
