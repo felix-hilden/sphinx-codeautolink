@@ -29,7 +29,7 @@ class SphinxCodeAutoLink:
         self.code_refs: Dict[str, List[CodeExample]] = {}
         self._inventory = {}
         self.outdated_docs: Set[str] = set()
-        self.default_imports: List[str] = []
+        self.global_preface: List[str] = []
 
     def build_inited(self, app):
         """Handle initial setup."""
@@ -46,9 +46,9 @@ class SphinxCodeAutoLink:
             str(Path(__file__).parent.with_name('static').absolute())
         )
 
-        imports = app.config.codeautolink_default_import
-        if imports:
-            self.default_imports = imports.split('\n')
+        preface = app.config.codeautolink_global_preface
+        if preface:
+            self.global_preface = preface.split('\n')
 
     def autodoc_process_docstring(self, app, what, name, obj, options, lines):
         """Handle autodoc-process-docstring event."""
@@ -56,7 +56,7 @@ class SphinxCodeAutoLink:
             return
 
         if app.config.codeautolink_autodoc_inject:
-            lines.append('.. code-refs:: ' + name)
+            lines.append('.. autolink-examples:: ' + name)
             lines.append('   :collapse:')
 
     def parse_blocks(self, app, doctree):
@@ -65,7 +65,7 @@ class SphinxCodeAutoLink:
             return
 
         visitor = CodeBlockAnalyser(
-            doctree, source_dir=app.srcdir, default_imports=self.default_imports
+            doctree, source_dir=app.srcdir, global_preface=self.global_preface
         )
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms

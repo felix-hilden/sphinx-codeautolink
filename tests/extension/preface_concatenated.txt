@@ -1,12 +1,18 @@
 test_project.bar
+test_project.Foo
 # split
 # split
 Test project
 ============
 
-.. implicit-import:: import test_project
+.. autolink-concat::
+.. autolink-preface:: import test_project
 .. code:: python
 
    test_project.bar()
+
+.. code:: python
+
+   test_project.Foo
 
 .. automodule:: test_project

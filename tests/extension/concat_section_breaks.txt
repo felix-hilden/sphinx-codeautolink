@@ -5,7 +5,7 @@ test_project.Foo
 Test project
 ============
 
-.. concat-blocks:: section
+.. autolink-concat:: section
 
 .. code:: python
 

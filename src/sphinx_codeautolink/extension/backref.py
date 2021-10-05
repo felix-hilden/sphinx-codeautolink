@@ -4,7 +4,7 @@ from typing import Dict, List
 
 from docutils import nodes
 
-from .directive import DeferredCodeReferences
+from .directive import DeferredExamples
 
 
 @dataclass
@@ -70,8 +70,8 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
         """Ignore unknown nodes."""
 
     def unknown_visit(self, node):
-        """Insert table in :class:`DeferredCodeReferences`."""
-        if not isinstance(node, DeferredCodeReferences):
+        """Insert table in :class:`DeferredExamples`."""
+        if not isinstance(node, DeferredExamples):
             return
 
         items = []

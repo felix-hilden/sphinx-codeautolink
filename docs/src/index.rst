@@ -18,9 +18,9 @@ Click any names in the code example below.
 
 A directive to create a table of references from code examples
 to a single definition is also provided and integrated to autodoc by default.
-For example, :code:`.. code-refs:: sphinx_codeautolink.setup` produces:
+For example, :code:`.. autolink-examples:: sphinx_codeautolink.setup` produces:
 
-.. code-refs:: sphinx_codeautolink.setup
+.. autolink-examples:: sphinx_codeautolink.setup
    :type: func
 
 Integration with intersphinx is seamless:

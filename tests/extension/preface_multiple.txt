@@ -5,8 +5,8 @@ tp.bar
 Test project
 ============
 
-.. implicit-import:: import test_project
-.. implicit-import:: import test_project as tp
+.. autolink-preface:: import test_project
+.. autolink-preface:: import test_project as tp
 .. code:: python
 
    test_project.bar()

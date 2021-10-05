@@ -4,8 +4,8 @@ from docutils.parsers.rst import Directive, directives
 from sphinx import addnodes
 
 
-class DeferredCodeReferences(nodes.Element):
-    """Deferred literal type for substitution later when references are known."""
+class DeferredExamples(nodes.Element):
+    """Deferred node for substitution later when references are known."""
 
     def __init__(self, ref: str, collapse: bool):
         super().__init__()
@@ -17,7 +17,7 @@ class DeferredCodeReferences(nodes.Element):
         return self.__class__(self.ref, self.collapse)
 
 
-class CodeReferences(Directive):
+class Examples(Directive):
     """Gather and display references in code examples."""
 
     has_content = False
@@ -29,11 +29,11 @@ class CodeReferences(Directive):
     }
 
     def run(self):
-        """Run directive to insert a :class:`DeferredCodeReferences`."""
+        """Run directive to insert a :class:`DeferredExamples`."""
         name = self.arguments[0]
         collapse = self.options.get('collapse', False) is None
         par = nodes.paragraph()
-        deferred = DeferredCodeReferences(name, collapse)
+        deferred = DeferredExamples(name, collapse)
         par += deferred
         ref = addnodes.pending_xref(
             refdomain='py',
@@ -47,8 +47,8 @@ class CodeReferences(Directive):
         return [par]
 
 
-class ConcatBlocksMarker(nodes.Element):
-    """Marker for :class:`ConcatBlocks` with attribute :attr:`level`."""
+class ConcatMarker(nodes.Element):
+    """Marker for :class:`Concat`."""
 
     def __init__(self, mode: str = None):
         super().__init__()
@@ -59,7 +59,7 @@ class ConcatBlocksMarker(nodes.Element):
         return self.__class__(self.mode)
 
 
-class ConcatBlocks(Directive):
+class Concat(Directive):
     """Toggle and cut literal block concatenation in a document."""
 
     has_content = False
@@ -67,13 +67,13 @@ class ConcatBlocks(Directive):
     optional_arguments = 1
 
     def run(self):
-        """Insert :class:`ConcatBlocksMarker`."""
+        """Insert :class:`ConcatMarker`."""
         arg = self.arguments[0] if self.arguments else 'on'
-        return [ConcatBlocksMarker(arg)]
+        return [ConcatMarker(arg)]
 
 
-class ImplicitImportMarker(nodes.Element):
-    """Marker for :class:`ImplicitImport` with attribute :attr:`content`."""
+class PrefaceMarker(nodes.Element):
+    """Marker for :class:`Preface`."""
 
     def __init__(self, content: str):
         super().__init__()
@@ -84,8 +84,8 @@ class ImplicitImportMarker(nodes.Element):
         return self.__class__(self.content)
 
 
-class ImplicitImport(Directive):
-    """Include implicit import in the next code block."""
+class Preface(Directive):
+    """Include a preface in the next code block."""
 
     has_content = False
     required_arguments = 1
@@ -93,12 +93,12 @@ class ImplicitImport(Directive):
     final_argument_whitespace = True
 
     def run(self):
-        """Insert :class:`ImplicitImportMarker`."""
-        return [ImplicitImportMarker(self.arguments[0])]
+        """Insert :class:`PrefaceMarker`."""
+        return [PrefaceMarker(self.arguments[0])]
 
 
-class AutoLinkSkipMarker(nodes.Element):
-    """Marker for :class:`AutoLinkSkip` with attribute :attr:`level`."""
+class SkipMarker(nodes.Element):
+    """Marker for :class:`Skip`."""
 
     def __init__(self, level: str):
         super().__init__()
@@ -109,7 +109,7 @@ class AutoLinkSkipMarker(nodes.Element):
         return self.__class__(self.level)
 
 
-class AutoLinkSkip(Directive):
+class Skip(Directive):
     """Skip auto-linking next code block."""
 
     has_content = False
@@ -117,6 +117,6 @@ class AutoLinkSkip(Directive):
     optional_arguments = 1
 
     def run(self):
-        """Insert :class:`AutoLinkSkipMarker`."""
+        """Insert :class:`SkipMarker`."""
         arg = self.arguments[0] if self.arguments else 'next'
-        return [AutoLinkSkipMarker(arg)]
+        return [SkipMarker(arg)]

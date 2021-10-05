@@ -11,7 +11,7 @@ from docutils import nodes
 
 from ..parse import parse_names, Name, NameBreak
 from .backref import CodeExample
-from .directive import ConcatBlocksMarker, ImplicitImportMarker, AutoLinkSkipMarker
+from .directive import ConcatMarker, PrefaceMarker, SkipMarker
 
 
 @dataclass
@@ -34,23 +34,23 @@ class UserError(Exception):
 class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     """Transform literal blocks of Python with links to reference documentation."""
 
-    def __init__(self, *args, source_dir: str, default_imports: List[str], **kwargs):
+    def __init__(self, *args, source_dir: str, global_preface: List[str], **kwargs):
         super().__init__(*args, **kwargs)
         self.source_transforms: List[SourceTransform] = []
         relative_path = Path(self.document['source']).relative_to(source_dir)
         self.current_document = str(relative_path.with_suffix(''))
         self.title_stack = []
         self.current_refid = None
-        self.default_imports = default_imports
-        self.implicit_imports = []
+        self.global_preface = global_preface
+        self.prefaces = []
         self.concat_global = False
         self.concat_section = False
         self.concat_sources = []
-        self.autolink_skip = None
+        self.skip = None
 
     def unknown_visit(self, node):
         """Handle and delete custom directives, ignore others."""
-        if isinstance(node, ConcatBlocksMarker):
+        if isinstance(node, ConcatMarker):
             if node.mode not in ('off', 'section', 'on'):
                 raise UserError(
                     f'Invalid concatenation argument: `{node.mode}` '
@@ -64,21 +64,21 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 self.concat_section = False
                 self.concat_global = (node.mode == 'on')
             node.parent.remove(node)
-        elif isinstance(node, ImplicitImportMarker):
+        elif isinstance(node, PrefaceMarker):
             if '\n' in node.content:
                 raise UserError(
                     'Implicit import may not contain a newline, found newline '
                     f'in `{node.content}`, document "{self.current_document}"'
                 )
-            self.implicit_imports.append(node.content)
+            self.prefaces.append(node.content)
             node.parent.remove(node)
-        elif isinstance(node, AutoLinkSkipMarker):
+        elif isinstance(node, SkipMarker):
             if node.level not in ('next', 'section', 'file', 'off'):
                 raise UserError(
                     f'Invalid skipping argument: `{node.level}` '
                     f'in document "{self.current_document}"'
                 )
-            self.autolink_skip = node.level if node.level != 'off' else None
+            self.skip = node.level if node.level != 'off' else None
             node.parent.remove(node)
 
     def unknown_departure(self, node):
@@ -90,8 +90,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if self.concat_section:
             self.concat_section = False
             self.concat_sources = []
-        if self.autolink_skip == 'section':
-            self.autolink_skip = None
+        if self.skip == 'section':
+            self.skip = None
 
     def visit_section(self, node):
         """Record first section ID."""
@@ -103,12 +103,12 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 
     def visit_literal_block(self, node: nodes.literal_block):
         """Analyse Python code blocks."""
-        implicit_imports = self.implicit_imports
-        self.implicit_imports = []
+        prefaces = self.prefaces
+        self.prefaces = []
 
-        skip = self.autolink_skip
+        skip = self.skip
         if skip == 'next':
-            self.autolink_skip = None
+            self.skip = None
 
         if (
             len(node.children) != 1
@@ -144,9 +144,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             clean_source = source
 
         modified_source = '\n'.join(
-            self.default_imports
+            self.global_preface
             + self.concat_sources
-            + implicit_imports
+            + prefaces
             + [clean_source]
         )
         try:
@@ -159,17 +159,17 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             ])
             raise ParsingError(msg) from e
 
-        if implicit_imports or self.concat_sources or self.default_imports:
+        if prefaces or self.concat_sources or self.global_preface:
             concat_lens = [s.count('\n') + 1 for s in self.concat_sources]
             hidden_len = (
-                len(implicit_imports) + sum(concat_lens) + len(self.default_imports)
+                len(prefaces) + sum(concat_lens) + len(self.global_preface)
             )
             for name in names:
                 name.lineno -= hidden_len
                 name.end_lineno -= hidden_len
 
         if self.concat_section or self.concat_global:
-            self.concat_sources.extend(implicit_imports + [clean_source])
+            self.concat_sources.extend(prefaces + [clean_source])
 
         for name in names:
             if name.lineno < 1:

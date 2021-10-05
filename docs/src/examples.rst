@@ -34,56 +34,56 @@ Python console blocks using :code:`.. code:: pycon` work too.
 A list of all code examples where a particular definition is used is handy
 particularly in the reference documentation itself:
 
-.. code-refs:: sphinx_codeautolink.setup
+.. autolink-examples:: sphinx_codeautolink.setup
    :type: func
 
 Such a table is generated with::
 
-   .. code-refs:: sphinx_codeautolink.setup
+   .. autolink-examples:: sphinx_codeautolink.setup
       :type: func
 
-Implicit imports
-----------------
+Invisible imports
+-----------------
 When writing lots of small snippets of code, having the same import at the
 beginning of every example becomes quite repetitive.
 The import can be hidden instead.
 
-.. implicit-import:: import sphinx_codeautolink
+.. autolink-preface:: import sphinx_codeautolink
 .. code:: python
 
   sphinx_codeautolink.setup()
 
 The previous block is produced with::
 
-   .. implicit-import:: import sphinx_codeautolink
+   .. autolink-preface:: import sphinx_codeautolink
    .. code:: python
 
       sphinx_codeautolink.setup()
 
-Multiple implicit imports can be stacked::
+Multiple prefaces can be stacked::
 
-   .. implicit-import:: import sphinx_codeautolink
-   .. implicit-import:: from sphinx_codeautolink import parse as p
+   .. autolink-preface:: import sphinx_codeautolink
+   .. autolink-preface:: from sphinx_codeautolink import parse as p
    .. code:: python
 
       sphinx_codeautolink.setup()
       names = p.parse_names([p.Name("setup")])
 
-.. implicit-import:: import sphinx_codeautolink
-.. implicit-import:: from sphinx_codeautolink import parse as p
+.. autolink-preface:: import sphinx_codeautolink
+.. autolink-preface:: from sphinx_codeautolink import parse as p
 .. code:: python
 
    sphinx_codeautolink.setup()
    names = p.parse_names([p.Name("setup")])
 
-Default import statements can be set in :ref:`configuration`
+A global preface can be set in :ref:`configuration`
 to avoid writing the same imports repeatedly.
 
 Concatenating examples
 ----------------------
 Examples interlaced with explanations can make for more comprehensible docs.
 
-.. concat-blocks:: section
+.. autolink-concat:: section
 .. code:: python
 
    import sphinx_codeautolink
@@ -99,7 +99,7 @@ the previous left off.
 
 This was achieved with::
 
-   .. concat-blocks:: section
+   .. autolink-concat:: section
    .. code:: python
 
       import sphinx_codeautolink
@@ -184,7 +184,7 @@ linking objects as long as the correct ``intersphinx_mapping`` is defined.
 
 Reference tables across intersphinx work too:
 
-.. code-refs:: numpy.linspace
+.. autolink-examples:: numpy.linspace
    :type: func
 
 Example Python objects

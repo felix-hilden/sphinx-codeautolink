@@ -6,7 +6,7 @@ test_project.Baz
 Test project
 ============
 
-.. concat-blocks:: on
+.. autolink-concat:: on
 .. code:: python
 
    import test_project

@@ -6,8 +6,8 @@ test_project.Baz
 Test project
 ============
 
-.. concat-blocks::
-.. concat-blocks:: section
+.. autolink-concat::
+.. autolink-concat:: section
 
 .. code:: python
 

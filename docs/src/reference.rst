@@ -14,18 +14,17 @@ Configuration
 -------------
 Available configuration values in ``conf.py``:
 
-- :code:`codeautolink_autodoc_inject: bool`: Inject a :code:`code-refs` table
-  to the end of all autodoc definitions. Defaults to :code:`True`.
-- :code:`codeautolink_default_import: str`: Implicit import statement
-  to include before every code block. When other sources would precede the
-  block, the imports are included first and only once.
-  The value may contain newlines and multiple import statements.
+- :code:`codeautolink_autodoc_inject: bool`: Inject a :code:`autolink-examples`
+  table to the end of all autodoc definitions. Defaults to :code:`True`.
+- :code:`codeautolink_global_preface: str`: Preface code to include before
+  all parsed code blocks. When other prefaces or concatenated sources are used
+  in a block, the global preface is included first and only once.
 
 Directives
 ----------
 rST directives available in Sphinx documentation:
 
-- :code:`.. code-refs:: object`: Insert a table containing links to
+- :code:`.. autolink-examples:: object`: Insert a table containing links to
   sections that reference ``object`` in their code examples.
   The table is removed if it would have no entries or a non-HTML builder is
   used. Options:
@@ -35,7 +34,7 @@ rST directives available in Sphinx documentation:
     which seems to work for as a default for other types as well.
   - ``:collapse:``: make the table collapsible (using a "details" HTML tag)
 
-- :code:`.. concat-blocks:: [mode]`: Toggle literal block concatenation.
+- :code:`.. autolink-concat:: [mode]`: Toggle literal block concatenation.
   Concatenated code blocks are treated as a continuous source,
   so that imports and statements in previous blocks affect later blocks.
   Concatenation is begun at the directive, not applied retroactively.
@@ -47,11 +46,11 @@ rST directives available in Sphinx documentation:
     directive is encountered)
   - "section" - concatenate blocks until the next title
 
-- :code:`.. implicit-import:: code`: Include an implicit import in the next
+- :code:`.. autolink-preface:: code`: Include a hidden preface in the next
   code block. The next block consumes this directive even if it is not
   processed (e.g. non-Python blocks) to avoid placement confusion.
-  Multiple directives can be combined for more imports in the following block.
-  Implicit imports are included in block concatenation.
+  Multiple prefaces before a single block are combined.
+  Prefaces are included in block concatenation.
 - :code:`.. autolink-skip:: [level]`: Skip sphinx-codeautolink functionality.
   ``level``, if specified, must be one of:
 

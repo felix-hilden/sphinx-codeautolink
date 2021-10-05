@@ -4,14 +4,14 @@ test_project.bar
 Test project
 ============
 
-.. concat-blocks::
+.. autolink-concat::
 .. code:: python
 
    import test_project
 
    test_project.bar()
 
-.. concat-blocks:: off
+.. autolink-concat:: off
 .. code:: python
 
    test_project.Foo

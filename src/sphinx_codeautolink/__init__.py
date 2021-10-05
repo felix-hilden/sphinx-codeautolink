@@ -14,12 +14,12 @@ def setup(app: Sphinx):
     state = SphinxCodeAutoLink()
     app.add_css_file('sphinx-codeautolink.css')
     app.add_config_value('codeautolink_autodoc_inject', True, 'html', types=[bool])
-    app.add_config_value('codeautolink_default_import', '', 'html', types=[str])
+    app.add_config_value('codeautolink_global_preface', '', 'html', types=[str])
 
-    app.add_directive('concat-blocks', directive.ConcatBlocks)
-    app.add_directive('code-refs', directive.CodeReferences)
-    app.add_directive('implicit-import', directive.ImplicitImport)
-    app.add_directive('autolink-skip', directive.AutoLinkSkip)
+    app.add_directive('autolink-concat', directive.Concat)
+    app.add_directive('autolink-examples', directive.Examples)
+    app.add_directive('autolink-preface', directive.Preface)
+    app.add_directive('autolink-skip', directive.Skip)
 
     app.connect('builder-inited', state.build_inited)
     app.connect('autodoc-process-docstring', state.autodoc_process_docstring)

@@ -1,18 +1,14 @@
 test_project.bar
-test_project.Foo
+Foo
 # split
+codeautolink_global_preface = "import test_project\nfrom test_project import Foo"
 # split
 Test project
 ============
 
-.. concat-blocks::
-.. implicit-import:: import test_project
 .. code:: python
 
    test_project.bar()
-
-.. code:: python
-
-   test_project.Foo
+   Foo
 
 .. automodule:: test_project

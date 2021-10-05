@@ -11,8 +11,9 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Treat optional types as their underlying type (:issue:`21`)
-- Improve ``code-refs`` argument structure and
+- Improve ``autolink-examples`` argument structure and
   provide an option making a collapsible table (:issue:`25`)
+- Rename directives for consistency (:issue:`27`)
 - Correctly link decorators (:issue:`28`)
 - Move cache to Sphinx doctree directory (:issue:`29`)
 - Support Python console blocks (:issue:`30`)

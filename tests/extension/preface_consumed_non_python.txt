@@ -1,17 +1,12 @@
-test_project.bar
 # split
 # split
 Test project
 ============
 
-.. autolink-concat:: on
-.. code:: python
-
-   import test_project
+.. autolink-preface:: import test_project
+.. code::
 
    test_project.bar()
-
-.. autolink-concat:: on
 
 .. code:: python
 
