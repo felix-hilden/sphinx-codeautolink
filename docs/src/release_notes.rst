@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.3.0 (2021-10-05)
+------------------
 - Treat optional types as their underlying type (:issue:`21`)
 - Improve ``autolink-examples`` argument structure and
   provide an option making a collapsible table (:issue:`25`)
