@@ -23,3 +23,7 @@ def bar() -> Foo:
 
 def optional() -> Optional[Foo]:
     """Return optional type."""
+
+
+def compile():
+    """Shadows built in compile function."""

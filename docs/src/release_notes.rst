@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Fix links for names that shadow builtins (:issue:`38`)
+
 0.3.0 (2021-10-05)
 ------------------
 - Treat optional types as their underlying type (:issue:`21`)

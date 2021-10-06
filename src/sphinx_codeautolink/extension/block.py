@@ -200,7 +200,8 @@ def link_html(
         + '{link}" title="{title}" class="sphinx-codeautolink-a">{text}</a>'
     )
     name_pattern = '<span class="n">{name}</span>'
-    maybe_decor_pattern = '<span class="nd?">@?{name}</span>'
+    # Pygments has special classes for decorators (nd) and builtins (nb)
+    first_item_pattern = '<span class="n[bd]?">@?{name}</span>'
     period = '<span class="o">.</span>'
 
     # Expression asserts no dots before or after content nor a link after,
@@ -232,7 +233,7 @@ def link_html(
         for name in trans.names:
             parts = name.code_str.split('.')
             pattern = period.join(
-                [maybe_decor_pattern.format(name=parts[0])]
+                [first_item_pattern.format(name=parts[0])]
                 + [name_pattern.format(name=p) for p in parts[1:]]
             )
 

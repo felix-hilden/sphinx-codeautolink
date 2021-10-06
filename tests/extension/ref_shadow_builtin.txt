@@ -1,0 +1,16 @@
+test_project.compile
+compile
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   from test_project import compile
+
+   test_project.compile
+   compile
+
+.. automodule:: test_project
