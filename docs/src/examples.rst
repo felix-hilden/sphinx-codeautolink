@@ -36,7 +36,7 @@ particularly in the reference documentation itself:
 
 .. autolink-examples:: lib.Knight
 
-Such a table is generated with::
+Such a table is generated with :rst:dir:`autolink-examples`::
 
    .. autolink-examples:: lib.Knight
 
@@ -51,7 +51,7 @@ The import can be hidden instead.
 
   lib.Knight().taunt()
 
-The previous block is produced with::
+The previous block is produced with :rst:dir:`autolink-preface`::
 
    .. autolink-preface:: import lib
    .. code:: python
@@ -65,7 +65,7 @@ A multiline preface can be written in the content portion of the directive::
       import lib
       from lib import Knight
 
-A global preface can be set in :ref:`configuration`
+A global preface can be set in :confval:`codeautolink_global_preface`
 to avoid writing the same imports repeatedly.
 
 Concatenating examples
@@ -88,7 +88,7 @@ the previous left off.
        print(knight.taunt())
        knight.scratch()
 
-This was achieved with::
+This was achieved with :rst:dir:`autolink-concat`::
 
    .. autolink-concat:: section
    .. code:: python
@@ -104,7 +104,7 @@ This was achieved with::
           knight.scratch()
 
 Now all Python code blocks within the same section will be concatenated.
-See :ref:`reference` for more information on the exact behavior and options.
+See :rst:dir:`autolink-concat` for more information and options.
 
 Skipping blocks
 ---------------
@@ -118,7 +118,7 @@ and preventing it from being included in further sources with concatenation.
 
    lib.Knight()
 
-Which is done via::
+Which is done via :rst:dir:`autolink-skip`::
 
    .. autolink-skip::
    .. code:: python
@@ -128,7 +128,7 @@ Which is done via::
       lib.Knight()
 
 Skipping is supported for single blocks, sections and entire files.
-See :ref:`reference` for more information on the exact behavior and options.
+See :rst:dir:`autolink-skip` for more information and options.
 
 Autodoc integration
 -------------------
@@ -152,13 +152,13 @@ An object type "class" seems to work for other types as well.
    codeautolink_autodoc_inject = False
 
    def process_docstring(app, what, name, obj, options, lines):
-       lines.append(f".. code-refs:: {name}")
-       lines.append(f"   :type: class")
-       lines.append(f"   :collapse:")
+       lines.append("")
+       lines.append(".. autolink-examples:: " + name)
+       lines.append("   :type: class")
+       lines.append("   :collapse:")
 
    def setup(app):
        app.connect("autodoc-process-docstring", process_docstring)
-       return {"version": "0.1.0"}
 
 Intersphinx integration
 -----------------------
@@ -181,6 +181,14 @@ Reference tables across intersphinx work too:
 
 .. autolink-examples:: numpy.linspace
    :type: func
+
+It seems that the reference type information is more important
+for Sphinx when dealing with external modules,
+likely because the references cannot be resolved dynamically.
+Please specify a ``type`` in :rst:dir:`autolink-examples`::
+
+   .. autolink-examples:: numpy.linspace
+      :type: func
 
 Example Python library
 ----------------------
