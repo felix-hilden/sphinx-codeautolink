@@ -1,7 +1,7 @@
 """Code block processing."""
 import re
 
-from typing import List
+from typing import List, Union, Optional
 from pathlib import Path
 from warnings import warn
 from dataclasses import dataclass
@@ -96,7 +96,19 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         """Pop latest title."""
         self.title_stack.pop()
 
+    def visit_doctest_block(self, node):
+        """Visit a Python doctest block."""
+        return self.parse_source(node, 'pycon')
+
     def visit_literal_block(self, node: nodes.literal_block):
+        """Visit a generic literal block."""
+        return self.parse_source(node, node.get('language', None))
+
+    def parse_source(
+        self,
+        node: Union[nodes.literal_block, nodes.doctest_block],
+        language: Optional[str]
+    ):
         """Analyse Python code blocks."""
         prefaces = self.prefaces
         self.prefaces = []
@@ -108,7 +120,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if (
             len(node.children) != 1
             or not isinstance(node.children[0], nodes.Text)
-            or node.get('language', None) not in ('py', 'python', 'pycon')
+            or language not in ('py', 'python', 'pycon')
         ):
             return
 
@@ -116,14 +128,13 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             self.current_document, self.current_refid, list(self.title_stack)
         )
         source = node.children[0].astext()
-        transform = SourceTransform(source, [], example)
-        self.source_transforms.append(transform)
 
         if skip:
             return
 
-        if node['language'] == 'pycon':
+        if language == 'pycon':
             in_statement = False
+            source = re.sub(r'^\s*<BLANKLINE>', '', source, flags=re.MULTILINE)
             clean_lines = []
             for line in source.split('\n'):
                 if line.startswith('>>> '):
@@ -137,6 +148,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             clean_source = '\n'.join(clean_lines)
         else:
             clean_source = source
+
+        transform = SourceTransform(source, [], example)
+        self.source_transforms.append(transform)
 
         modified_source = '\n'.join(
             self.global_preface
@@ -191,7 +205,9 @@ def link_html(
     blocks = (
         list(soup.find_all('div', attrs={'class': 'highlight-python notranslate'}))
         + list(soup.find_all('div', attrs={'class': 'highlight-pycon notranslate'}))
+        + list(soup.find_all('div', attrs={'class': 'doctest'}))
     )
+    blocks = sorted(blocks, key=lambda tag: tag.sourceline)
     inners = [block.select('div > pre')[0] for block in blocks]
 
     up_lvls = len(document.relative_to(out_dir).parents) - 1
@@ -217,7 +233,7 @@ def link_html(
 
     for trans in transforms:
         for ix in range(len(inners)):
-            if trans.source == ''.join(inners[ix].strings).rstrip():
+            if trans.source.rstrip() == ''.join(inners[ix].strings).rstrip():
                 inner = inners.pop(ix)
                 break
         else:

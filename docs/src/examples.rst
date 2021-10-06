@@ -21,7 +21,8 @@ be analysed and linked to known reference documentation entries.
 
 Different import styles are supported, along with all Python syntax.
 Star imports might be particularly handy in code examples.
-Python console blocks using :code:`.. code:: pycon` work too.
+`Doctest <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html
+#doctest-blocks>`_ and console blocks using :code:`.. code:: pycon` work too.
 
 .. code:: pycon
 

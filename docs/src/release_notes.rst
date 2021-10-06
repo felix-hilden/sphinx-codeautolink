@@ -11,6 +11,7 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Fix links for names that shadow builtins (:issue:`38`)
+- Support doctest blocks (:issue:`39`)
 
 0.3.0 (2021-10-05)
 ------------------

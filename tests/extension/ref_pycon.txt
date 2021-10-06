@@ -15,7 +15,9 @@ Test project
    ...     test_project.Foo
    this is an output line
    test_project.Baz
+   <BLANKLINE>
    ... test_project.Baz
    >>> test_project.Foo
+   <BLANKLINE>
 
 .. automodule:: test_project
