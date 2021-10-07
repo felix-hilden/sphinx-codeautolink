@@ -190,8 +190,3 @@ Please specify a ``type`` in :rst:dir:`autolink-examples`::
 
    .. autolink-examples:: numpy.linspace
       :type: func
-
-Example Python library
-----------------------
-
-.. automodule:: lib

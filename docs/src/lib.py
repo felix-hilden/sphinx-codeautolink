@@ -1,4 +1,3 @@
-"""A dummy library used in sphinx-codeautolink's documentation."""
 from typing import List
 
 

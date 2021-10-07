@@ -92,13 +92,14 @@ your documentation, you'll not be disappointed in their offer.
    :caption: Guide
 
    examples
+   example_library
 
 .. toctree::
    :hidden:
    :caption: Links
 
-   PyPI ↪ <https://pypi.org/project/sphinx-codeautolink>
-   GitHub ↪ <https://github.com/felix-hilden/sphinx-codeautolink>
+   ↪ PyPI <https://pypi.org/project/sphinx-codeautolink>
+   ↪ GitHub <https://github.com/felix-hilden/sphinx-codeautolink>
 
 
 .. |pypi| image:: https://img.shields.io/pypi/v/sphinx-codeautolink.svg
