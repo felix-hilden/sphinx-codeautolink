@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.4.0 (2021-10-08)
+------------------
 - Support fluent interfaces (:issue:`37`)
 - Fix links for names that shadow builtins (:issue:`38`)
 - Support doctest blocks (:issue:`39`)
