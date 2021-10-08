@@ -44,7 +44,7 @@ Caveats
     when a variable shadows or overwrites an imported module or its part.
 
   These cases are subject to change when the library matures. For more details
-  on the expected failures, see our test suite on `GitHub <https://github.com
+  on the expected failures, see our `test suite on GitHub <https://github.com
   /felix-hilden/sphinx-codeautolink>`_. Please report any unexpected failures!
 
 Clean Sphinx build
@@ -54,3 +54,17 @@ which is updated when parsing new or outdated files.
 It shouldn't become outdated, but a clean build can be achieved with
 `sphinx-build -E <https://www.sphinx-doc.org/en/master/man/sphinx-build.html
 #cmdoption-sphinx-build-E>`_ or by deleting the build directory.
+
+Matching failures
+-----------------
+Matching can fail on two levels.
+Firstly, and less often, matching may fail for an entire code example,
+resulting in no links being generated for the example.
+This is always considered a bug, which you can report on `GitHub
+<https://github.com/felix-hilden/sphinx-codeautolink/issues>`_.
+Secondly, matching can fail on a specific line or range of lines.
+This is often a bug, but the known expected failure cases are presented here:
+
+- Multiline attributes cannot be matched on Python versions before 3.8.
+  This is because the builtin AST parser does not supply the necessary line
+  number information to construct the proper search range.

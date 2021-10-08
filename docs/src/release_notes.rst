@@ -10,6 +10,7 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+- Support fluent interfaces (:issue:`37`)
 - Fix links for names that shadow builtins (:issue:`38`)
 - Support doctest blocks (:issue:`39`)
 

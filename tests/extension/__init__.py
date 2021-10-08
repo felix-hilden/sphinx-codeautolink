@@ -10,6 +10,7 @@ The structure of the file is::
    # split
    index.html content
 """
+import re
 import sys
 import pytest
 
@@ -33,10 +34,18 @@ autodoc_default_options = {
 """
 
 txt_tests = list(Path(__file__).parent.glob('*.txt'))
+any_whitespace = re.compile(r'\s*')
+xfails = {
+    'ref_fluent_attrs.txt': sys.version_info < (3, 8),
+    'ref_fluent_call.txt': sys.version_info < (3, 8),
+}
 
 
 @pytest.mark.parametrize('file', txt_tests)
 def test_extension(file: Path, tmp_path: Path):
+    if xfails.get(file.name, False):
+        pytest.xfail('Expected to fail.')
+
     links, conf, index = file.read_text('utf-8').split('# split')
     links = links.strip().split('\n')
     if len(links) == 1 and not links[0]:
@@ -55,6 +64,6 @@ def test_extension(file: Path, tmp_path: Path):
     soup = BeautifulSoup(text, 'html.parser')
     blocks = list(soup.find_all('a', attrs={'class': 'sphinx-codeautolink-a'}))
 
-    for block, link in zip(blocks, links):
-        assert ''.join(block.strings) == link
     assert len(blocks) == len(links)
+    for block, link in zip(blocks, links):
+        assert any_whitespace.sub('', ''.join(block.strings)) == link

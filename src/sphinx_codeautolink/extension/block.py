@@ -180,20 +180,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if self.concat_section or self.concat_global:
             self.concat_sources.extend(prefaces + [clean_source])
 
-        for name in names:
-            if name.lineno < 1:
-                continue  # From concatenated source
-
-            if name.lineno != name.end_lineno:
-                msg = (
-                    'sphinx-codeautolinks: multiline names are not supported, '
-                    f'found `{name.code_str}` in document {self.current_document} '
-                    f'on lines {name.lineno} - {name.end_lineno}'
-                )
-                warn(msg, RuntimeWarning)
-                continue
-
-            transform.names.append(name)
+        # Remove transforms from concatenated sources
+        transform.names.extend([n for n in names if n.lineno > 0])
 
 
 def link_html(
@@ -218,18 +206,18 @@ def link_html(
     name_pattern = '<span class="n">{name}</span>'
     # Pygments has special classes for decorators (nd) and builtins (nb)
     first_item_pattern = '<span class="n[bd]?">@?{name}</span>'
-    period = '<span class="o">.</span>'
+    period = r'\s*<span class="o">.</span>\s*'
 
     # Expression asserts no dots before or after content nor a link after,
     # i.e. a self-contained name or attribute that hasn't been linked yet
     # so we are free to replace any occurrences, since the order of
     # multiple identical replacements doesn't matter.
-    base_ex = r'(?<!<span class="o">\.</span>){content}(?!(<span class="o">\.)|(</a>))'
-    # Potentially instead assert an initial closing parenthesis followed by a dot
-    call_ex = (
-        r'(?<=\)</span><span class="o">\.</span>)'
-        r'{content}(?!(<span class="o">\.)|(</a>))'
-    )
+    end = r'(?!(<span class="o">\.)|(</a>))'
+    base_ex = r'(?<!<span class="o">\.</span>)(){content}' + end
+    # Potentially instead assert an initial closing parenthesis followed by a dot.
+    # We cannot use a lookbehind here because builtin re doesn't support it,
+    # so instead we use a match group to remove the non-content.
+    call_ex = r'(\)</span>\s*<span class="o">\.</span>\s*){content}' + end
 
     for trans in transforms:
         for ix in range(len(inners)):
@@ -253,27 +241,31 @@ def link_html(
                 + [name_pattern.format(name=p) for p in parts[1:]]
             )
 
-            line = lines[name.lineno - 1]
+            begin_line = name.lineno - 1
+            end_line = name.end_lineno - 1
+            selection = '\n'.join(lines[begin_line:end_line + 1])
 
             # Reverse because a.b = a.b should replace from the right
             ex = call_ex if name.previous == NameBreak.call else base_ex
-            matches = list(re.finditer(ex.format(content=pattern), line))[::-1]
+            matches = list(re.finditer(ex.format(content=pattern), selection))[::-1]
             if not matches:
                 msg = (
                     f'Could not match transformation of `{name.code_str}` '
-                    f'on source line {name.lineno} in document "{document}", '
-                    f'source:\n{trans.source}'
+                    f'on source lines {name.lineno}-{name.end_lineno} '
+                    f'in document "{document}", source:\n{trans.source}'
                 )
                 warn(msg, RuntimeWarning)
                 continue
 
             start, end = matches[0].span()
+            start += len(matches[0].group(1))
             link = link_pattern.format(
                 link=inventory[name.resolved_location],
                 title=name.resolved_location,
-                text=line[start:end]
+                text=selection[start:end]
             )
-            lines[name.lineno - 1] = line[:start] + link + line[end:]
+            transformed = selection[:start] + link + selection[end:]
+            lines[begin_line:end_line + 1] = transformed.split('\n')
 
         inner.replace_with(BeautifulSoup('\n'.join(lines), 'html.parser'))
 
