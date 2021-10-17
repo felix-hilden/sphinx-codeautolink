@@ -25,7 +25,7 @@ For example, :code:`.. autolink-examples:: lib.Knight` produces:
 
 Integration with intersphinx is seamless:
 
-.. code:: python
+.. plot::
 
    import numpy as np
    from matplotlib import pyplot as plt
@@ -33,6 +33,8 @@ Integration with intersphinx is seamless:
    x = np.linspace(0, 2 * np.pi, 100)
    plt.plot(x, np.sin(x))
    plt.show()
+
+And with matplotlib's :mod:`~matplotlib.sphinxext.plot_directive` too!
 
 Quick start
 -----------
@@ -86,6 +88,7 @@ your documentation, you'll not be disappointed in their offer.
    release_notes
    reference
    about
+   prova
 
 .. toctree::
    :hidden:
