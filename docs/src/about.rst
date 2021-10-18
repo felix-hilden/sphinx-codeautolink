@@ -65,6 +65,6 @@ This is always considered a bug, which you can report on `GitHub
 Secondly, matching can fail on a specific line or range of lines.
 This is often a bug, but the known expected failure cases are presented here:
 
-- Multiline attributes cannot be matched on Python versions before 3.8.
+- Multiline statements cannot be matched on Python versions before 3.8.
   This is because the builtin AST parser does not supply the necessary line
   number information to construct the proper search range.
