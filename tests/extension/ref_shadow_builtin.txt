@@ -1,3 +1,6 @@
+test_project
+test_project
+compile
 test_project.compile
 compile
 # split

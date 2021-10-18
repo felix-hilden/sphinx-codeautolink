@@ -1,3 +1,4 @@
+test_project
 @test_project.bar
 @test_project.bar
 # split

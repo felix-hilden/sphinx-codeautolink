@@ -1,5 +1,7 @@
+test_project
 test_project.bar
 test_project.Foo
+test_project
 test_project.Baz
 # split
 # split

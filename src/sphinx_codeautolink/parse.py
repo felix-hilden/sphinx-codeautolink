@@ -8,7 +8,7 @@ from functools import wraps
 from importlib import import_module
 from typing import Dict, Union, List, Optional, Tuple
 from warnings import warn
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 def parse_names(source: str) -> List['Name']:
@@ -16,7 +16,7 @@ def parse_names(source: str) -> List['Name']:
     tree = ast.parse(source)
     visitor = ImportTrackerVisitor()
     visitor.visit(tree)
-    return sum([a.make_splits() for a in visitor.accessed], [])
+    return sum([split_access(a) for a in visitor.accessed], [])
 
 
 @dataclass
@@ -59,6 +59,15 @@ class NameBreak(str, Enum):
     call = '()'
 
 
+class LinkContext(str, Enum):
+    """Context in which a link appears."""
+
+    none = 'none'
+    after_call = 'after_call'
+    import_from = 'import_from'  # from *mod.sub* import foo
+    import_target = 'import_target'  # from mod.sub import *foo*
+
+
 @dataclass
 class Name:
     """A name accessed in the source traced back to an import."""
@@ -67,7 +76,7 @@ class Name:
     code_str: str
     lineno: int
     end_lineno: int
-    previous: NameBreak = None
+    context: LinkContext = None
     resolved_location: str = None
 
 
@@ -86,28 +95,23 @@ class Access:
     access it is automatically removed from the components in :attr:`full_components`.
     """
 
+    context: LinkContext
     prior_components: List[Component]
     components: List[Component]
-    hidden_components: List[Component] = None
+    hidden_components: List[Component] = field(default_factory=list)
 
     @property
     def full_components(self):
         """All components from import base to used components."""
+        if not self.prior_components:
+            # Import statement itself
+            return self.hidden_components + self.components
+
         if self.hidden_components:
             proper_components = self.hidden_components[1:] + self.components
         else:
             proper_components = self.components[1:]
         return self.prior_components + proper_components
-
-    def split(self, index: int) -> 'Access':
-        """Split access into two at index in place, returning the other."""
-        other = Access(
-            self.prior_components,
-            self.components[index:],
-            hidden_components=(self.hidden_components or []) + self.components[:index]
-        )
-        self.components = self.components[:index]
-        return other
 
     @property
     def code_str(self):
@@ -122,27 +126,37 @@ class Access:
         max_ = max(c.end_lineno for c in self.components)
         return min_, max_
 
-    def make_splits(self) -> List[Name]:
-        """Split access into multiple names."""
-        split = [self]
-        while True:
-            for i, comp in enumerate(split[-1].components):
-                if i and comp.name == NameBreak.call:
-                    split.append(split[-1].split(i))
-                    break
-            else:
+
+def split_access(access: Access) -> List[Name]:
+    """Split access into multiple names."""
+    split = [access]
+    while True:
+        current = split[-1]
+        for i, comp in enumerate(current.components):
+            if i and comp.name == NameBreak.call:
+                hidden = current.hidden_components + current.components[:i]
+                next_ = Access(
+                    LinkContext.after_call,
+                    current.prior_components,
+                    current.components[i:],
+                    hidden_components=hidden,
+                )
+                current.components = current.components[:i]
+                split.append(next_)
                 break
-        if split[-1].components[-1].name == NameBreak.call:
-            split.pop()
-        return [
-            Name(
-                [c.name for c in s.full_components],
-                s.code_str,
-                *s.lineno_span,
-                previous=NameBreak.call if s.hidden_components else None,
-            )
-            for s in split
-        ]
+        else:
+            break
+    if split[-1].components[-1].name == NameBreak.call:
+        split.pop()
+    return [
+        Name(
+            [c.name for c in s.full_components],
+            s.code_str,
+            *s.lineno_span,
+            context=s.context,
+        )
+        for s in split
+    ]
 
 
 @dataclass
@@ -242,7 +256,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             self._overwrite(components[0].name)
             return
 
-        access = Access(prior, components)
+        access = Access(LinkContext.none, prior, components)
         self.accessed.append(access)
         if context == 'del':
             self._overwrite(components[0].name)
@@ -263,14 +277,14 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         else:
             self._access(assignment.to)
 
-    def _access_raw(self, name: str, lineno: int) -> Optional[Access]:
+    def _access_simple(self, name: str, lineno: int) -> Optional[Access]:
         component = Component(name, lineno, lineno, 'load')
         prior = self.pseudo_scopes_stack[-1].get(component.name, None)
 
         if prior is None:
             return
 
-        access = Access(prior, [component])
+        access = Access(LinkContext.none, prior, [component])
         self.accessed.append(access)
         return access
 
@@ -284,7 +298,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             self._overwrite(name)
             if name in imports:
                 self._assign(name, imports[name])
-                self._access_raw(name, node.lineno)
+                self._access_simple(name, node.lineno)
 
     def visit_Nonlocal(self, node: ast.Nonlocal):
         """Import from intermediate scopes."""
@@ -294,30 +308,52 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             for imports in imports_stack[::-1]:
                 if name in imports:
                     self.pseudo_scopes_stack[-1][name] = imports[name]
-                    self._access_raw(name, node.lineno)
+                    self._access_simple(name, node.lineno)
                     break
 
     def visit_Import(self, node: Union[ast.Import, ast.ImportFrom], prefix: str = ''):
         """Register import source."""
-        if node.names[0].name == '*':
+        import_star = (node.names[0].name == '*')
+        if import_star:
             try:
                 mod = import_module(node.module)
             except ImportError:
                 warn(f'Could not import module `{node.module}` for parsing!')
                 return
-            local_names = [name for name in mod.__dict__ if not name.startswith('_')]
-            import_names = [prefix + name for name in local_names]
+            import_names = [name for name in mod.__dict__ if not name.startswith('_')]
+            aliases = [None] * len(import_names)
         else:
-            local_names = [name.asname or name.name for name in node.names]
-            import_names = [prefix + name.name for name in node.names]
+            import_names = [name.name for name in node.names]
+            aliases = [name.asname for name in node.names]
 
-        for local_name, import_name in zip(local_names, import_names):
-            if '.' in local_name:
+        end_lineno = getattr(node, 'end_lineno', node.lineno)
+        prefix_parts = prefix.rstrip('.').split('.') if prefix else []
+        prefix_components = [
+            Component(n, node.lineno, end_lineno, 'load') for n in prefix_parts
+        ]
+        if prefix:
+            self.accessed.append(Access(LinkContext.import_from, [], prefix_components))
+
+        for import_name, alias in zip(import_names, aliases):
+            if not import_star:
+                components = [
+                    Component(n, node.lineno, end_lineno, 'load')
+                    for n in import_name.split('.')
+                ]
+                self.accessed.append(
+                    Access(LinkContext.import_target, [], components, prefix_components)
+                )
+
+            if not alias and '.' in import_name:
                 # equivalent to only import top level module since we don't
                 # follow assignments and the outer modules also get imported
-                local_name = local_name.split('.')[0]
-                import_name = local_name  # cannot be aliased if dotted
-            self._assign(local_name, [Component(import_name, -1, -1, 'store')])
+                import_name = import_name.split('.')[0]
+
+            full_components = [
+                Component(n, node.lineno, end_lineno, 'store')
+                for n in (prefix + import_name).split('.')
+            ]
+            self._assign(alias or import_name, full_components)
 
     def visit_ImportFrom(self, node: ast.ImportFrom):
         """Register import source."""
