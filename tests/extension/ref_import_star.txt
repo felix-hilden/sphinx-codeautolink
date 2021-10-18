@@ -1,5 +1,4 @@
-bar
-Foo
+test_project
 # split
 # split
 Test project
@@ -8,7 +7,5 @@ Test project
 .. code:: python
 
    from test_project import *
-
-   (bar, Foo)
 
 .. automodule:: test_project

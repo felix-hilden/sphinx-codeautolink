@@ -1,3 +1,4 @@
+test_project
 test_project.bar
 attr
 test_project.bar

@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from bs4 import BeautifulSoup
 from docutils import nodes
 
-from ..parse import parse_names, Name, NameBreak
+from ..parse import parse_names, Name, LinkContext
 from .backref import CodeExample
 from .directive import ConcatMarker, PrefaceMarker, SkipMarker
 
@@ -203,21 +203,6 @@ def link_html(
         '<a href="' + '../' * up_lvls
         + '{link}" title="{title}" class="sphinx-codeautolink-a">{text}</a>'
     )
-    name_pattern = '<span class="n">{name}</span>'
-    # Pygments has special classes for decorators (nd) and builtins (nb)
-    first_item_pattern = '<span class="n[bd]?">@?{name}</span>'
-    period = r'\s*<span class="o">.</span>\s*'
-
-    # Expression asserts no dots before or after content nor a link after,
-    # i.e. a self-contained name or attribute that hasn't been linked yet
-    # so we are free to replace any occurrences, since the order of
-    # multiple identical replacements doesn't matter.
-    end = r'(?!(<span class="o">\.)|(</a>))'
-    base_ex = r'(?<!<span class="o">\.</span>)(){content}' + end
-    # Potentially instead assert an initial closing parenthesis followed by a dot.
-    # We cannot use a lookbehind here because builtin re doesn't support it,
-    # so instead we use a match group to remove the non-content.
-    call_ex = r'(\)</span>\s*<span class="o">\.</span>\s*){content}' + end
 
     for trans in transforms:
         for ix in range(len(inners)):
@@ -235,19 +220,12 @@ def link_html(
         lines = str(inner).split('\n')
 
         for name in trans.names:
-            parts = name.code_str.split('.')
-            pattern = period.join(
-                [first_item_pattern.format(name=parts[0])]
-                + [name_pattern.format(name=p) for p in parts[1:]]
-            )
-
             begin_line = name.lineno - 1
             end_line = name.end_lineno - 1
             selection = '\n'.join(lines[begin_line:end_line + 1])
 
             # Reverse because a.b = a.b should replace from the right
-            ex = call_ex if name.previous == NameBreak.call else base_ex
-            matches = list(re.finditer(ex.format(content=pattern), selection))[::-1]
+            matches = list(re.finditer(construct_name_pattern(name), selection))[::-1]
             if not matches:
                 msg = (
                     f'Could not match transformation of `{name.code_str}` '
@@ -270,3 +248,54 @@ def link_html(
         inner.replace_with(BeautifulSoup('\n'.join(lines), 'html.parser'))
 
     document.write_text(str(soup), 'utf-8')
+
+
+# ---------------------------------------------------------------
+# Patterns for different types of name access in highlighted HTML
+# ---------------------------------------------------------------
+period = r'\s*<span class="o">.</span>\s*'
+name_pattern = '<span class="n">{name}</span>'
+# Pygments has special classes for decorators (nd) and builtins (nb),
+# which are also highlighted in import statements
+first_name_pattern = '<span class="n[bd]?">@?{name}</span>'
+import_target_pattern = '<span class="n[nb]?">{name}</span>'
+import_from_pattern = '<span class="nn">{name}</span>'
+
+# The builtin re doesn't support variable-width lookbehind,
+# so instead we use a match groups in all pre patterns to remove the non-content.
+no_dot_prere = r'(?<!<span class="o">\.</span>)()'
+# Potentially instead assert an initial closing parenthesis followed by a dot.
+call_dot_prere = r'(\)</span>\s*<span class="o">\.</span>\s*)'
+import_prere = (
+    r'((<span class="kn">import</span>\s+(<span class="p">\(</span>\s*)?)'
+    r'|(<span class="p">,</span>\s*))'
+)
+from_prere = r'(<span class="kn">from</span>\s+)'
+
+no_dot_postre = r'(?!(<span class="o">\.)|(</a>))'
+import_postre = r'(?=($)|(\s+)|(<span class="p">,</span>)|(<span class="p">\)))(?!</a>)'
+from_postre = r'(?=\s*<span class="kn">import</span>)'
+
+
+def construct_name_pattern(name: Name) -> str:
+    """Construct a regex pattern for searching a name in HTML."""
+    if name.context == LinkContext.none:
+        parts = name.code_str.split('.')
+        pattern = period.join(
+            [first_name_pattern.format(name=parts[0])]
+            + [name_pattern.format(name=p) for p in parts[1:]]
+        )
+        return no_dot_prere + pattern + no_dot_postre
+    elif name.context == LinkContext.after_call:
+        parts = name.code_str.split('.')
+        pattern = period.join(
+            [first_name_pattern.format(name=parts[0])]
+            + [name_pattern.format(name=p) for p in parts[1:]]
+        )
+        return call_dot_prere + pattern + no_dot_postre
+    elif name.context == LinkContext.import_from:
+        pattern = import_from_pattern.format(name=name.code_str)
+        return from_prere + pattern + from_postre
+    elif name.context == LinkContext.import_target:
+        pattern = import_target_pattern.format(name=name.code_str)
+        return import_prere + pattern + import_postre

@@ -2,7 +2,7 @@
 from functools import lru_cache
 from importlib import import_module
 from typing import Optional, Tuple, Any, Union
-from .block import Name, NameBreak
+from ..parse import Name, NameBreak
 
 
 def resolve_location(chain: Name) -> Optional[str]:

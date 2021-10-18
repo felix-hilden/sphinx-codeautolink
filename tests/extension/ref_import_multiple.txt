@@ -1,0 +1,17 @@
+test_project
+Foo
+bar
+test_project
+Foo
+bar
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   from test_project import Foo, bar
+   from test_project import Foo as F, bar as b
+
+.. automodule:: test_project

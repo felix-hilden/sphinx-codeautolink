@@ -1,6 +1,6 @@
 test_project
-test_project.bar
-attr
+test_project
+Foo
 # split
 # split
 Test project
@@ -8,8 +8,7 @@ Test project
 
 .. code:: python
 
-   import test_project
-
-   test_project.bar().attr
+   import test_project as tp
+   from test_project import Foo as F
 
 .. automodule:: test_project

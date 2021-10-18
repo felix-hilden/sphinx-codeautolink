@@ -8,6 +8,13 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+This release changes an internal API.
+Please delete the cache file before building documentation.
+
+- Link import statements (:issue:`42`)
+
 0.4.0 (2021-10-08)
 ------------------
 - Support fluent interfaces (:issue:`37`)

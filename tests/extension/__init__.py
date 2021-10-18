@@ -38,6 +38,7 @@ any_whitespace = re.compile(r'\s*')
 xfails = {
     'ref_fluent_attrs.txt': sys.version_info < (3, 8),
     'ref_fluent_call.txt': sys.version_info < (3, 8),
+    'ref_import_from_complex.txt': sys.version_info < (3, 8),
 }
 
 
