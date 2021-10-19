@@ -34,19 +34,6 @@ Integration with intersphinx is seamless:
    plt.plot(x, np.sin(x))
    plt.show()
 
-It also integrates with third-party code blocks.
-The code block below uses matplotlib's
-:mod:`~matplotlib.sphinxext.plot_directive` to automatically
-run the code and include the output plot in the documentation:
-
-.. plot::
-
-   import numpy as np
-   from matplotlib import pyplot as plt
-
-   x = np.linspace(0, 2 * np.pi, 100)
-   plt.plot(x, np.cos(x))
-
 Quick start
 -----------
 
