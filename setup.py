@@ -13,6 +13,7 @@ extras_require = {
     ],
     "docs": [
         "sphinx-rtd-theme",
+        "matplotlib"
     ],
     "tests": [
         "pytest>=6",
