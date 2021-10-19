@@ -31,7 +31,8 @@ Integration with intersphinx is seamless:
    from matplotlib import pyplot as plt
 
    x = np.linspace(0, 2 * np.pi, 100)
-   plt.plot(x, np.sin(x))
+   y = np.random.normal(x)
+   plt.plot(x, y)
    plt.show()
 
 Quick start
