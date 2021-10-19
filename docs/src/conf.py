@@ -21,6 +21,7 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx_rtd_theme",
     "sphinx_codeautolink",
+    "matplotlib.sphinxext.plot_directive"
 ]
 
 # Builtin options
@@ -40,6 +41,12 @@ intersphinx_mapping = {
 extlinks = {
     'issue': ('https://github.com/felix-hilden/sphinx-codeautolink/issues/%s', '#'),
 }
+# Copy plot directive options from Seaborn
+# Include the example source for plots in API docs
+plot_include_source = True
+plot_formats = [("png", 90)]
+plot_html_show_formats = False
+plot_html_show_source_link = False
 
 
 def setup(app):
