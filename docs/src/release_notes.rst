@@ -14,6 +14,7 @@ This release changes an internal API.
 Please delete the cache file before building documentation.
 
 - Link import statements (:issue:`42`)
+- Enable configurations without autodoc (:issue:`48`)
 
 0.4.0 (2021-10-08)
 ------------------

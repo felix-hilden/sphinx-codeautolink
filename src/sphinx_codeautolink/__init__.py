@@ -12,6 +12,7 @@ __version__ = _version_file.read_text().strip()
 def setup(app: Sphinx):
     """Set up extension, directives and events."""
     state = SphinxCodeAutoLink()
+    app.setup_extension('sphinx.ext.autodoc')
     app.add_css_file('sphinx-codeautolink.css')
     app.add_config_value('codeautolink_autodoc_inject', True, 'html', types=[bool])
     app.add_config_value('codeautolink_global_preface', '', 'html', types=[str])
