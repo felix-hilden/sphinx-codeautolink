@@ -71,6 +71,12 @@ class TestAssign:
         refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a', 'a')]
         return s, refs
 
+    @refs_equal
+    def test_annassign_without_value_overrides_annotation_but_not_linked(self):
+        s = 'import a\na: str\na'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
     @pytest.mark.skipif(
         sys.version_info < (3, 8), reason='Walrus introduced in Python 3.8.'
     )

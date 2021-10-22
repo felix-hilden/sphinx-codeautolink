@@ -406,13 +406,15 @@ class ImportTrackerVisitor(ast.NodeVisitor):
     @track_parents
     def visit_AnnAssign(self, node: ast.AnnAssign):
         """Visit an AnnAssign node."""
-        value = self.visit(node.value)
+        if node.value is not None:
+            value = self.visit(node.value)
         target = self.visit(node.target)
 
         with self.reset_parents():
             self.visit(node.annotation)
 
-        return Assignment(target, value)
+        if node.value is not None:
+            return Assignment(target, value)
 
     def visit_AugAssign(self, node: ast.AugAssign):
         """Visit an AugAssign node."""
