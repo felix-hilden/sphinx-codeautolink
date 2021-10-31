@@ -16,6 +16,7 @@ Please delete the cache file before building documentation.
 - Link import statements (:issue:`42`)
 - Enable configurations without autodoc (:issue:`48`)
 - Fix crash on annotation-only assignment (:issue:`50`)
+- Fix issue with filenames that have dots (:issue:`52`)
 
 0.4.0 (2021-10-08)
 ------------------
