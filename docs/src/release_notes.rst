@@ -14,6 +14,7 @@ This release changes an internal API.
 Please delete the cache file before building documentation.
 
 - Link import statements (:issue:`42`)
+- Gracefully handle functions that don't have an annotations dict (:issue:`47`)
 - Enable configurations without autodoc (:issue:`48`)
 - Support custom code block syntax (:issue:`49`)
 - Fix crash on annotation-only assignment (:issue:`50`)

@@ -41,7 +41,8 @@ def locate_type(components: Tuple[str]) -> Optional[str]:
         # A possible function / method call needs to be last in the chain.
         # Otherwise we might follow return types on function attribute access.
         elif callable(value) and i == len(remaining) - 1:
-            ret_annotation = value.__annotations__.get('return', None)
+            annotations = getattr(value, '__annotations__', {})
+            ret_annotation = annotations.get('return', None)
 
             # Inner type from typing.Optional (Union[T, None])
             origin = getattr(ret_annotation, '__origin__', None)
