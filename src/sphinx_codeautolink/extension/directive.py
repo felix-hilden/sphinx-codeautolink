@@ -121,3 +121,19 @@ class Skip(Directive):
         """Insert :class:`SkipMarker`."""
         arg = self.arguments[0] if self.arguments else 'next'
         return [SkipMarker(arg)]
+
+
+class RemoveExtensionVisitor(nodes.SparseNodeVisitor):
+    """Silently remove all codeautolink directives."""
+
+    def unknown_departure(self, node):
+        """Ignore unknown nodes."""
+
+    def unknown_visit(self, node):
+        """Remove nodes."""
+        if isinstance(node, DeferredExamples):
+            # Remove surrounding paragraph too
+            node.parent.parent.remove(node.parent)
+            return
+        elif isinstance(node, (ConcatMarker, PrefaceMarker, SkipMarker)):
+            node.parent.remove(node)

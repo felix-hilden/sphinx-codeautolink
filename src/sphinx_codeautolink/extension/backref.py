@@ -55,16 +55,9 @@ def depart_summary(self, node: SummaryNode):
 class CodeRefsVisitor(nodes.SparseNodeVisitor):
     """Replace :class:`DeferredCodeReferences` with table of concrete references."""
 
-    def __init__(
-        self,
-        *args,
-        code_refs: Dict[str, List[CodeExample]],
-        remove_directives: bool,
-        **kwargs,
-    ):
+    def __init__(self, *args, code_refs: Dict[str, List[CodeExample]], **kwargs):
         super().__init__(*args, **kwargs)
         self.code_refs = code_refs
-        self.remove_directives = remove_directives
 
     def unknown_departure(self, node):
         """Ignore unknown nodes."""
@@ -83,7 +76,7 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
 
         items = sorted(set(items))
 
-        if self.remove_directives or not items:
+        if not items:
             # Remove surrounding paragraph too
             node.parent.parent.remove(node.parent)
             return

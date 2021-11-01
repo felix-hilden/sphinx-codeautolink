@@ -7,6 +7,7 @@ from sphinx.ext.intersphinx import InventoryAdapter
 
 from .backref import CodeRefsVisitor, CodeExample
 from .block import CodeBlockAnalyser, SourceTransform, link_html
+from .directive import RemoveExtensionVisitor
 from .cache import DataCache
 from .resolve import resolve_location
 
@@ -87,11 +88,11 @@ class SphinxCodeAutoLink:
     def generate_backref_tables(self, app, doctree, docname):
         """Generate backreference tables."""
         self.once_on_doctree_resolved(app)
-        visitor = CodeRefsVisitor(
-            doctree,
-            code_refs=self.code_refs,
-            remove_directives=self.do_nothing,
-        )
+        if self.do_nothing:
+            rm_vis = RemoveExtensionVisitor(doctree)
+            return doctree.walkabout(rm_vis)
+
+        visitor = CodeRefsVisitor(doctree, code_refs=self.code_refs)
         doctree.walk(visitor)
 
     def filter_and_resolve(self, transforms: List[SourceTransform], app):
