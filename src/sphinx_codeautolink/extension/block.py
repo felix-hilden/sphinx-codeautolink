@@ -1,7 +1,7 @@
 """Code block processing."""
 import re
 
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Dict, Callable
 from pathlib import Path
 from warnings import warn
 from dataclasses import dataclass
@@ -31,17 +31,44 @@ class UserError(Exception):
     """Error in sphinx-autocodelink usage."""
 
 
+def clean_pycon(source):
+    """Clean up Python console syntax to pure Python."""
+    in_statement = False
+    source = re.sub(r'^\s*<BLANKLINE>', '', source, flags=re.MULTILINE)
+    clean_lines = []
+    for line in source.split('\n'):
+        if line.startswith('>>> '):
+            in_statement = True
+            clean_lines.append(line[4:])
+        elif in_statement and line.startswith('... '):
+            clean_lines.append(line[4:])
+        else:
+            in_statement = False
+            clean_lines.append('')
+    return source, '\n'.join(clean_lines)
+
+
 class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     """Transform literal blocks of Python with links to reference documentation."""
 
-    def __init__(self, *args, source_dir: str, global_preface: List[str], **kwargs):
+    def __init__(
+        self,
+        *args,
+        source_dir: str,
+        global_preface: List[str],
+        custom_blocks: Dict[str, Callable[[str], str]],
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.source_transforms: List[SourceTransform] = []
         relative_path = Path(self.document['source']).relative_to(source_dir)
         self.current_document = str(relative_path.with_suffix(''))
+        self.global_preface = global_preface
+        self.custom_blocks = {'pycon': clean_pycon}
+        self.custom_blocks.update(custom_blocks)
+        self.valid_blocks = ('py', 'python') + tuple(self.custom_blocks.keys())
         self.title_stack = []
         self.current_refid = None
-        self.global_preface = global_preface
         self.prefaces = []
         self.concat_global = False
         self.concat_section = False
@@ -118,37 +145,19 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             self.skip = None
 
         if (
-            len(node.children) != 1
+            skip
+            or len(node.children) != 1
             or not isinstance(node.children[0], nodes.Text)
-            or language not in ('py', 'python', 'pycon')
+            or language not in self.valid_blocks
         ):
             return
 
+        source = node.children[0].astext()
+        transformer = self.custom_blocks.get(language, lambda s: (s, s))
+        source, clean_source = transformer(source)
         example = CodeExample(
             self.current_document, self.current_refid, list(self.title_stack)
         )
-        source = node.children[0].astext()
-
-        if skip:
-            return
-
-        if language == 'pycon':
-            in_statement = False
-            source = re.sub(r'^\s*<BLANKLINE>', '', source, flags=re.MULTILINE)
-            clean_lines = []
-            for line in source.split('\n'):
-                if line.startswith('>>> '):
-                    in_statement = True
-                    clean_lines.append(line[4:])
-                elif in_statement and line.startswith('... '):
-                    clean_lines.append(line[4:])
-                else:
-                    in_statement = False
-                    clean_lines.append('')
-            clean_source = '\n'.join(clean_lines)
-        else:
-            clean_source = source
-
         transform = SourceTransform(source, [], example)
         self.source_transforms.append(transform)
 
@@ -185,16 +194,21 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 
 
 def link_html(
-    document: Path, out_dir: str, transforms: List[SourceTransform], inventory: dict
+    document: Path,
+    out_dir: str,
+    transforms: List[SourceTransform],
+    inventory: dict,
+    custom_blocks: dict,
 ):
     """Inject links to code blocks on disk."""
     text = document.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
-    blocks = (
-        list(soup.find_all('div', attrs={'class': 'highlight-python notranslate'}))
-        + list(soup.find_all('div', attrs={'class': 'highlight-pycon notranslate'}))
-        + list(soup.find_all('div', attrs={'class': 'doctest'}))
-    )
+
+    block_types = {'python', 'pycon'} | set(custom_blocks.keys())
+    classes = [f'highlight-{t} notranslate' for t in block_types] + ['doctest']
+    blocks = []
+    for c in classes:
+        blocks.extend(list(soup.find_all('div', attrs={'class': c})))
     blocks = sorted(blocks, key=lambda tag: tag.sourceline)
     inners = [block.select('div > pre')[0] for block in blocks]
 

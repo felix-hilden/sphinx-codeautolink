@@ -193,10 +193,10 @@ Please specify a ``type`` in :rst:dir:`autolink-examples`::
 
 Third-party code blocks
 -----------------------
-It also integrates with third-party code blocks.
-The code block below uses matplotlib's
-:mod:`~matplotlib.sphinxext.plot_directive` to automatically
-run the code and include the output plot in the documentation:
+Third-party code blocks that use the basic Pygments lexers for Python
+are supported out of the box.
+The example below uses matplotlib's :mod:`~matplotlib.sphinxext.plot_directive`
+to automatically run the code and include a plot in the documentation:
 
 .. plot::
 
@@ -205,3 +205,20 @@ run the code and include the output plot in the documentation:
 
    x = np.linspace(0, 2 * np.pi, 100)
    plt.plot(x, np.cos(x))
+
+Code blocks with special highlighting or syntax are supported
+with custom transformer functions in :confval:`codeautolink_custom_blocks`.
+For example, a transformer could be implemented as follows:
+
+.. code:: python
+
+   def transform(source):
+       """Ignore lines starting with `!--`."""
+       lines = []
+       for line in source.split("\n"):
+           if line.strip().startswith("!--"):
+               line = ""
+           lines.append(line)
+       return source, "\n".join(lines)
+
+   codeautolink_custom_blocks = {"python": transform}

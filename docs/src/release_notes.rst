@@ -15,6 +15,7 @@ Please delete the cache file before building documentation.
 
 - Link import statements (:issue:`42`)
 - Enable configurations without autodoc (:issue:`48`)
+- Support custom code block syntax (:issue:`49`)
 - Fix crash on annotation-only assignment (:issue:`50`)
 - Fix issue with filenames that have dots (:issue:`52`)
 - Correctly remove extension when building non-HTML documentation (:issue:`53`)

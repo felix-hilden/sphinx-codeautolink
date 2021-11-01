@@ -31,6 +31,7 @@ class SphinxCodeAutoLink:
         self._inventory = {}
         self.outdated_docs: Set[str] = set()
         self.global_preface: List[str] = []
+        self.custom_blocks = None
 
     def build_inited(self, app):
         """Handle initial setup."""
@@ -41,6 +42,7 @@ class SphinxCodeAutoLink:
         self.cache = DataCache(app.doctreedir, app.srcdir)
         self.cache.read()
         self.outdated_docs = {str(Path(d)) for d in app.builder.get_outdated_docs()}
+        self.custom_blocks = app.config.codeautolink_custom_blocks
 
         # Append static resources path so references in setup() are valid
         app.config.html_static_path.append(
@@ -67,7 +69,10 @@ class SphinxCodeAutoLink:
             return
 
         visitor = CodeBlockAnalyser(
-            doctree, source_dir=app.srcdir, global_preface=self.global_preface
+            doctree,
+            source_dir=app.srcdir,
+            global_preface=self.global_preface,
+            custom_blocks=self.custom_blocks,
         )
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms
@@ -138,7 +143,13 @@ class SphinxCodeAutoLink:
             if not transforms or str(Path(doc)) not in self.outdated_docs:
                 continue
             file = Path(app.outdir) / (doc + '.html')
-            link_html(file, app.outdir, transforms, self.make_inventory(app))
+            link_html(
+                file,
+                app.outdir,
+                transforms,
+                self.make_inventory(app),
+                self.custom_blocks,
+            )
 
         self.cache.write()
 

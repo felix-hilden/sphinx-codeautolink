@@ -1,0 +1,18 @@
+test_project
+test_project.bar
+# split
+def clean(s):
+    return s, s.replace("-*-", "")
+
+codeautolink_custom_blocks = {"python": clean}
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   -*-
+   test_project.bar() -*-
+
+.. automodule:: test_project
