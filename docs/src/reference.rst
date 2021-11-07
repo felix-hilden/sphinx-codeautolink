@@ -23,6 +23,12 @@ Configuration
    When other prefaces or concatenated sources are used in a block,
    the global preface is included first and only once.
 
+.. confval:: codeautolink_concat_default
+
+   Type: ``bool``. Default behavior for code block concatenation (see
+   :rst:dir:`autolink-concat`). Value corresponds to the "on" and "off"
+   settings in the directive. Defaults to :code:`False`.
+
 .. confval:: codeautolink_custom_blocks
 
    Type: ``Dict[str, None | Callable[[str], Tuple[str, str]]]``.
@@ -62,13 +68,14 @@ Directives
    Concatenated code blocks are treated as a continuous source,
    so that imports and statements in previous blocks affect later blocks.
    Concatenation is begun at the directive, not applied retroactively.
-   The directive also resets concatenation state.
-   ``mode``, if specified, must be one of:
+   The directive also resets concatenation state. Until this directive is
+   encountered, :confval:`codeautolink_concat_default` is used as the default
+   behavior. ``mode``, if specified, must be one of:
 
    - "on" - concatenate all blocks in the current file (default value)
-   - "off" - no concatenation (default behavior until a :code:`concat-blocks`
-     directive is encountered)
-   - "section" - concatenate blocks until the next title
+   - "off" - stop concatenation
+   - "section" - concatenate until the next title, then reset to the previous
+     value ("on" or "off") also resetting concatenation state
 
 .. rst:directive:: .. autolink-preface:: [code]
 

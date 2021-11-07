@@ -17,6 +17,7 @@ def setup(app: Sphinx):
     app.add_config_value('codeautolink_autodoc_inject', True, 'html', types=[bool])
     app.add_config_value('codeautolink_global_preface', '', 'html', types=[str])
     app.add_config_value('codeautolink_custom_blocks', {}, 'html', types=[dict])
+    app.add_config_value('codeautolink_concat_default', False, 'html', types=[bool])
 
     app.add_directive('autolink-concat', directive.Concat)
     app.add_directive('autolink-examples', directive.Examples)

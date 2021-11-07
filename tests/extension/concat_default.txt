@@ -1,0 +1,28 @@
+test_project
+test_project.bar
+test_project.Foo
+test_project.Baz
+# split
+codeautolink_concat_default = True
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+
+   test_project.bar()
+
+.. code:: python
+
+   test_project.Foo
+
+Subsection
+----------
+
+.. code:: python
+
+   test_project.Baz
+
+.. automodule:: test_project

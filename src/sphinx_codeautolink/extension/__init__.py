@@ -32,6 +32,7 @@ class SphinxCodeAutoLink:
         self.outdated_docs: Set[str] = set()
         self.global_preface: List[str] = []
         self.custom_blocks = None
+        self.concat_default = None
 
     def build_inited(self, app):
         """Handle initial setup."""
@@ -43,6 +44,7 @@ class SphinxCodeAutoLink:
         self.cache.read()
         self.outdated_docs = {str(Path(d)) for d in app.builder.get_outdated_docs()}
         self.custom_blocks = app.config.codeautolink_custom_blocks
+        self.concat_default = app.config.codeautolink_concat_default
 
         # Append static resources path so references in setup() are valid
         app.config.html_static_path.append(
@@ -73,6 +75,7 @@ class SphinxCodeAutoLink:
             source_dir=app.srcdir,
             global_preface=self.global_preface,
             custom_blocks=self.custom_blocks,
+            concat_default=self.concat_default,
         )
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms

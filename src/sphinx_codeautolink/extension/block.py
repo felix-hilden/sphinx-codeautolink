@@ -57,6 +57,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         source_dir: str,
         global_preface: List[str],
         custom_blocks: Dict[str, Callable[[str], str]],
+        concat_default: bool,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
@@ -70,7 +71,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.title_stack = []
         self.current_refid = None
         self.prefaces = []
-        self.concat_global = False
+        self.concat_global = concat_default
         self.concat_section = False
         self.concat_sources = []
         self.skip = None
