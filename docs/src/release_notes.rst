@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.5.0 (2021-11-07)
+------------------
 This release changes an internal API.
 Please delete the cache file before building documentation.
 
