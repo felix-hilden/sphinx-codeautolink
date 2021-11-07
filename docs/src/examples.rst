@@ -222,3 +222,6 @@ For example, a transformer could be implemented as follows:
        return source, "\n".join(lines)
 
    codeautolink_custom_blocks = {"python": transform}
+
+Sometimes links with third-party code blocks are broken.
+See :ref:`about` for a potential solution.

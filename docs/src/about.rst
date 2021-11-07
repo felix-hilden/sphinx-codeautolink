@@ -57,11 +57,23 @@ It shouldn't become outdated, but a clean build can be achieved with
 
 Matching failures
 -----------------
-Matching can fail on two levels.
-Firstly, and less often, matching may fail for an entire code example,
-resulting in no links being generated for the example.
-This is always considered a bug, which you can report on `GitHub
+Matching can fail on two levels, for a whole code example or a specific line.
+Firstly, failing to match an entire code example is almost always considered
+a bug, which you can report on `GitHub
 <https://github.com/felix-hilden/sphinx-codeautolink/issues>`_.
+If third-party code blocks are in use, matching may fail because of
+inconsistent or unrecognised CSS classes. The class related to the block lexer
+name is automatically added to the list of CSS classes that are searched when
+matching code examples as ``highlight-{lexer} notranslate``.
+If the class has another value, :confval:`codeautolink_search_css_classes`
+can be used to extend the search. To find out which classes should be added,
+build your documentation, locate the code example and use the class of the
+outermost ``div`` tag. For example:
+
+.. code:: python
+
+   codeautolink_search_css_classes = ["highlight-default notranslate"]
+
 Secondly, matching can fail on a specific line or range of lines.
 This is often a bug, but the known expected failure cases are presented here:
 

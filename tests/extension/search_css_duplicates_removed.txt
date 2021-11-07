@@ -1,0 +1,14 @@
+test_project
+test_project.bar
+# split
+codeautolink_search_css_classes = ["highlight-python", "notranslate"]
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. automodule:: test_project

@@ -200,6 +200,7 @@ def link_html(
     transforms: List[SourceTransform],
     inventory: dict,
     custom_blocks: dict,
+    search_css_classes: list,
 ):
     """Inject links to code blocks on disk."""
     text = document.read_text('utf-8')
@@ -207,10 +208,13 @@ def link_html(
 
     block_types = {'python', 'pycon'} | set(custom_blocks.keys())
     classes = [f'highlight-{t} notranslate' for t in block_types] + ['doctest']
+    classes += search_css_classes
+
     blocks = []
     for c in classes:
         blocks.extend(list(soup.find_all('div', attrs={'class': c})))
-    blocks = sorted(blocks, key=lambda tag: tag.sourceline)
+    unique_blocks = {b.sourceline: b for b in blocks}.values()
+    blocks = sorted(unique_blocks, key=lambda b: b.sourceline)
     inners = [block.select('div > pre')[0] for block in blocks]
 
     up_lvls = len(document.relative_to(out_dir).parents) - 1

@@ -40,6 +40,12 @@ Configuration
    (often just the original source) and the cleaned Python source code.
    The transformer must preserve line numbers for correct matching.
 
+.. confval:: codeautolink_search_css_classes
+
+   Type: ``List[str]``. Extra CSS classes used to search for code examples
+   when matching the final HTML. May contain multiple values separated by
+   spaces as they would be passed to :code:`bs4.BeautifulSoup.find_all`.
+
 Directives
 ----------
 .. rst:directive:: .. autolink-examples:: object
