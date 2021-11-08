@@ -218,9 +218,9 @@ def link_html(
     inners = [block.select('div > pre')[0] for block in blocks]
 
     up_lvls = len(document.relative_to(out_dir).parents) - 1
+    local_prefix = '../' * up_lvls
     link_pattern = (
-        '<a href="' + '../' * up_lvls
-        + '{link}" title="{title}" class="sphinx-codeautolink-a">{text}</a>'
+        '<a href="{link}" title="{title}" class="sphinx-codeautolink-a">{text}</a>'
     )
 
     for trans in transforms:
@@ -256,8 +256,11 @@ def link_html(
 
             start, end = matches[0].span()
             start += len(matches[0].group(1))
+            location = inventory[name.resolved_location]
+            if not any(location.startswith(s) for s in ('http://', 'https://')):
+                location = local_prefix + location
             link = link_pattern.format(
-                link=inventory[name.resolved_location],
+                link=location,
                 title=name.resolved_location,
                 text=selection[start:end]
             )
