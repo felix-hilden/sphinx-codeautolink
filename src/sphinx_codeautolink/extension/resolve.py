@@ -50,6 +50,11 @@ def locate_type(components: Tuple[str]) -> Optional[str]:
             if origin is Union and len(args) == 2 and isinstance(None, args[1]):
                 ret_annotation = args[0]
 
+            # Try to resolve a string annotation in the module scope
+            if isinstance(ret_annotation, str):
+                mod, _ = closest_module(tuple(real_location.split('.')))
+                ret_annotation = getattr(mod, ret_annotation, ret_annotation)
+
             if (
                 not ret_annotation
                 or not isinstance(ret_annotation, type)

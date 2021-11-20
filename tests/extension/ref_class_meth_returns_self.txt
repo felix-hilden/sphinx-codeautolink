@@ -1,6 +1,7 @@
 test_project
 test_project.Foo
 selfref
+selfref
 # split
 # split
 Test project
