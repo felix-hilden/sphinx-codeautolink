@@ -1,0 +1,14 @@
+test_project
+test_project.subfoo
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   test_project.subfoo
+
+.. automodule:: test_project
+.. automodule:: test_project.sub

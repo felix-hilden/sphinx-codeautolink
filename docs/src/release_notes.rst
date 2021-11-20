@@ -16,6 +16,7 @@ Unreleased
   (:issue:`61`)
 - Resolve string annotations in the module scope (:issue:`62`)
 - Correctly ensure that return annotations are valid types (:issue:`63`)
+- Resolve imported members to their original location (:issue:`64`)
 
 0.5.1 (2021-11-20)
 ------------------

@@ -1,7 +1,7 @@
 """Resolve import locations and type hints."""
 from functools import lru_cache
 from importlib import import_module
-from typing import Optional, Tuple, Any, Union
+from typing import Optional, Tuple, Any, Union, Callable
 from ..parse import Name, NameBreak
 
 
@@ -10,65 +10,84 @@ def resolve_location(chain: Name) -> Optional[str]:
     comps = []
     for comp in chain.import_components:
         if comp == NameBreak.call:
-            new = locate_type(tuple(comps))
+            new = locate_type(tuple(comps), ends_with_call=True)
             if new is None:
                 return
             comps = new.split('.')
         else:
             comps.append(comp)
-    return '.'.join(comps)
+
+    imported_loc = locate_type(tuple(comps), ends_with_call=False)
+    return imported_loc or '.'.join(comps)
 
 
 @lru_cache(maxsize=None)
-def locate_type(components: Tuple[str]) -> Optional[str]:
+def locate_type(components: Tuple[str], ends_with_call: bool) -> Optional[str]:
     """Find type hint and resolve to new location."""
     value, index = closest_module(components)
     if index is None or index == len(components):
         return
     remaining = components[index:]
-    real_location = '.'.join(components[:index])
-    for i, component in enumerate(remaining):
+    location = '.'.join(components[:index])
+
+    for component in remaining:
         value = getattr(value, component, None)
-        real_location += '.' + component
+        location += '.' + component
         if value is None:
             return
 
-        if isinstance(value, type):
+        if isinstance(value, type) or callable(value):
             # We don't differentiate between classmethods and ordinary methods,
             # as we can't guarantee correct runtime behavior anyway.
-            real_location = fully_qualified_name(value)
+            try:
+                location = fully_qualified_name(value)
+            except AttributeError:
+                # Odd construct encountered: don't try to be clever but continue
+                pass
 
-        # A possible function / method call needs to be last in the chain.
-        # Otherwise we might follow return types on function attribute access.
-        elif callable(value) and i == len(remaining) - 1:
-            annotations = getattr(value, '__annotations__', {})
-            ret_annotation = annotations.get('return', None)
+    # A possible function / method call needs to be last in the chain.
+    # Otherwise we might follow return types on function attribute access.
+    if (
+        ends_with_call
+        and remaining
+        and callable(value)
+        and not isinstance(value, type)
+    ):
+        location = follow_return_annotation(value)
 
-            # Inner type from typing.Optional (Union[T, None])
-            origin = getattr(ret_annotation, '__origin__', None)
-            args = getattr(ret_annotation, '__args__', None)
-            if origin is Union and len(args) == 2 and isinstance(None, args[1]):
-                ret_annotation = args[0]
-
-            # Try to resolve a string annotation in the module scope
-            if isinstance(ret_annotation, str):
-                mod, _ = closest_module(tuple(real_location.split('.')))
-                ret_annotation = getattr(mod, ret_annotation, ret_annotation)
-
-            if (
-                not ret_annotation
-                or not isinstance(ret_annotation, type)
-                or hasattr(ret_annotation, '__origin__')
-            ):
-                return
-            real_location = fully_qualified_name(ret_annotation)
-
-    return real_location
+    return location
 
 
-def fully_qualified_name(type_: type) -> str:
+def follow_return_annotation(func: Callable) -> Optional[str]:
+    """Determine the target of a function return type hint."""
+    annotations = getattr(func, '__annotations__', {})
+    ret_annotation = annotations.get('return', None)
+
+    # Inner type from typing.Optional (Union[T, None])
+    origin = getattr(ret_annotation, '__origin__', None)
+    args = getattr(ret_annotation, '__args__', None)
+    if origin is Union and len(args) == 2 and isinstance(None, args[1]):
+        ret_annotation = args[0]
+
+    # Try to resolve a string annotation in the module scope
+    if isinstance(ret_annotation, str):
+        location = fully_qualified_name(func)
+        mod, _ = closest_module(tuple(location.split('.')))
+        ret_annotation = getattr(mod, ret_annotation, ret_annotation)
+
+    if (
+        not ret_annotation
+        or not isinstance(ret_annotation, type)
+        or hasattr(ret_annotation, '__origin__')
+    ):
+        return
+
+    return fully_qualified_name(ret_annotation)
+
+
+def fully_qualified_name(thing: Union[type, Callable]) -> str:
     """Construct the fully qualified name of a type."""
-    return type_.__module__ + '.' + type_.__qualname__
+    return thing.__module__ + '.' + thing.__qualname__
 
 
 @lru_cache(maxsize=None)

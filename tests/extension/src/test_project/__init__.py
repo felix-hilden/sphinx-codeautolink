@@ -1,6 +1,8 @@
 """Docstring."""
 from typing import Optional
 
+from .sub import subfoo  # NOQA
+
 
 class Baz:
     """Baz test class."""
