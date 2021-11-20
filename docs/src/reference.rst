@@ -15,7 +15,7 @@ Configuration
 .. confval:: codeautolink_autodoc_inject
 
    Type: ``bool``. Inject a :rst:dir:`autolink-examples` table
-   to the end of all autodoc definitions. Defaults to :code:`True`.
+   to the end of all autodoc definitions. Defaults to :code:`False`.
 
 .. confval:: codeautolink_global_preface
 

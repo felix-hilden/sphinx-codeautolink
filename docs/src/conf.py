@@ -29,6 +29,7 @@ html_theme = "sphinx_rtd_theme"
 python_use_unqualified_type_names = True
 
 # Extension options
+codeautolink_autodoc_inject = True
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,

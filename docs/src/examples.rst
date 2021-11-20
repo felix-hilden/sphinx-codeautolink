@@ -136,21 +136,20 @@ Autodoc integration
 A backreference table of the code examples that use a definition is handy
 for example in reference documentation.
 sphinx-codeautolink provides an autodoc integration for that purpose,
-which is also enabled by default.
+which injects the appropriate table to each autodoc entry.
 
 .. autofunction:: lib.Knight.scratch
    :noindex:
 
-If you'd like to place the directive manually, disable the integration
-and implement a `Sphinx extension <https://www.sphinx-doc.org/en/master/
-extdev/index.html>`_ with a listener for the ``autodoc-process-docstring``
+To enable the integration, set :confval:`codeautolink_autodoc_inject`.
+If you'd like to place the directive manually, implement a small
+`Sphinx extension <https://www.sphinx-doc.org/en/master/extdev/index.html>`_
+with a listener for the ``autodoc-process-docstring``
 `event <https://www.sphinx-doc.org/en/master/usage/
 extensions/autodoc.htm#event-autodoc-process-docstring>`_.
 An object type "class" seems to work for other types as well.
 
 .. code:: python
-
-   codeautolink_autodoc_inject = False
 
    def process_docstring(app, what, name, obj, options, lines):
        lines.append("")

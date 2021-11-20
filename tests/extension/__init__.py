@@ -4,7 +4,9 @@ Basic extension tests.
 The tests are structured as .txt files, parsed and executed here.
 The structure of the file is::
 
-   number of expected autolinks
+   expected
+   autolink
+   link.targets
    # split
    lines to add to the default conf.py
    # split

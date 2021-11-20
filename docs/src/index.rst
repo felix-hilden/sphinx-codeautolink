@@ -17,8 +17,8 @@ Click any names in the code example below.
        print(knight.taunt())
        knight.scratch()
 
-A directive to create a table of references from code examples
-to a single definition is also provided and integrated to autodoc by default.
+A directive to create a table of references from code examples to a single
+definition is also provided, which can also be integrated with autodoc entries.
 For example, :code:`.. autolink-examples:: lib.Knight` produces:
 
 .. autolink-examples:: lib.Knight

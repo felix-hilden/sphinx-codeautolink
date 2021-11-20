@@ -10,6 +10,7 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+- Turn autodoc integration off by default (:issue:`58`)
 - Avoid index error when handling syntax errors (:issue:`60`)
 - Construct fully-qualified names more strictly to avoid hiding other issues
   (:issue:`61`)
