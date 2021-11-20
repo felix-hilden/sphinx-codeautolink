@@ -59,7 +59,7 @@ def locate_type(components: Tuple[str]) -> Optional[str]:
 
 def fully_qualified_name(type_: type) -> str:
     """Construct the fully qualified name of a type."""
-    return getattr(type_, '__module__', '') + '.' + getattr(type_, '__qualname__', '')
+    return type_.__module__ + '.' + type_.__qualname__
 
 
 @lru_cache(maxsize=None)

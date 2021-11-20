@@ -11,6 +11,8 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Avoid index error when handling syntax errors (:issue:`60`)
+- Construct fully-qualified names more strictly to avoid hiding other issues
+  (:issue:`61`)
 
 0.5.1 (2021-11-20)
 ------------------
