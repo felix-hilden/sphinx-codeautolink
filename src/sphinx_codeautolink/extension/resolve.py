@@ -50,7 +50,11 @@ def locate_type(components: Tuple[str]) -> Optional[str]:
             if origin is Union and len(args) == 2 and isinstance(None, args[1]):
                 ret_annotation = args[0]
 
-            if not ret_annotation or hasattr(ret_annotation, '__origin__'):
+            if (
+                not ret_annotation
+                or not isinstance(ret_annotation, type)
+                or hasattr(ret_annotation, '__origin__')
+            ):
                 return
             real_location = fully_qualified_name(ret_annotation)
 

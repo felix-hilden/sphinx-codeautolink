@@ -16,6 +16,10 @@ class Foo:
     def meth(self) -> Baz:
         """Test method."""
 
+    def selfref(self) -> "Foo":
+        """Return self."""
+        return self
+
 
 def bar() -> Foo:
     """bar test function."""
