@@ -173,7 +173,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         except SyntaxError as e:
             msg = '\n'.join([
                 str(e) + f' in document "{self.current_document}"',
-                f'Parsed source in `{node["language"]}` block:',
+                f'Parsed source in `{language}` block:',
                 source,
             ])
             raise ParsingError(msg) from e

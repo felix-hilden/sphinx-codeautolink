@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Avoid index error when handling syntax errors (:issue:`60`)
+
 0.5.1 (2021-11-20)
 ------------------
 - Fix intersphinx links in documents inside folders (:issue:`56`)
