@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.5.1 (2021-11-20)
+------------------
 - Fix intersphinx links in documents inside folders (:issue:`56`)
 
 0.5.0 (2021-11-07)
