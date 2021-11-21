@@ -1,12 +1,16 @@
 """Sphinx extension implementation."""
 from dataclasses import dataclass
+from functools import wraps
 from typing import Dict, List, Optional, Set
+from traceback import print_exc
 from pathlib import Path
 
 from sphinx.ext.intersphinx import InventoryAdapter
 
 from .backref import CodeRefsVisitor, CodeExample
-from .block import CodeBlockAnalyser, SourceTransform, link_html
+from .block import (
+    CodeBlockAnalyser, SourceTransform, link_html, UserError, ParsingError
+)
 from .directive import RemoveExtensionVisitor
 from .cache import DataCache
 from .resolve import resolve_location
@@ -19,6 +23,25 @@ class DocumentedObject:
     what: str
     obj: object
     return_type: str = None
+
+
+def print_exceptions(func):
+    """
+    Print the traceback of uncaught and unexpected exceptions.
+
+    This is done because the Sphinx process masks the traceback
+    and only displays the main error message making debugging difficult.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except (UserError, ParsingError):
+            raise
+        except Exception:
+            print_exc()
+            raise
+    return wrapper
 
 
 class SphinxCodeAutoLink:
@@ -35,6 +58,7 @@ class SphinxCodeAutoLink:
         self.concat_default = None
         self.search_css_classes = None
 
+    @print_exceptions
     def build_inited(self, app):
         """Handle initial setup."""
         if app.builder.name != 'html':
@@ -57,6 +81,7 @@ class SphinxCodeAutoLink:
         if preface:
             self.global_preface = preface.split('\n')
 
+    @print_exceptions
     def autodoc_process_docstring(self, app, what, name, obj, options, lines):
         """Handle autodoc-process-docstring event."""
         if self.do_nothing:
@@ -67,6 +92,7 @@ class SphinxCodeAutoLink:
             lines.append('.. autolink-examples:: ' + name)
             lines.append('   :collapse:')
 
+    @print_exceptions
     def parse_blocks(self, app, doctree):
         """Parse code blocks for later link substitution."""
         if self.do_nothing:
@@ -82,6 +108,17 @@ class SphinxCodeAutoLink:
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms
 
+    @print_exceptions
+    def generate_backref_tables(self, app, doctree, docname):
+        """Generate backreference tables."""
+        self.once_on_doctree_resolved(app)
+        if self.do_nothing:
+            rm_vis = RemoveExtensionVisitor(doctree)
+            return doctree.walkabout(rm_vis)
+
+        visitor = CodeRefsVisitor(doctree, code_refs=self.code_refs)
+        doctree.walk(visitor)
+
     def once_on_doctree_resolved(self, app):
         """Clean source transforms and create code references."""
         if self.code_refs or self.do_nothing:
@@ -94,16 +131,6 @@ class SphinxCodeAutoLink:
                     self.code_refs.setdefault(name.resolved_location, []).append(
                         transform.example
                     )
-
-    def generate_backref_tables(self, app, doctree, docname):
-        """Generate backreference tables."""
-        self.once_on_doctree_resolved(app)
-        if self.do_nothing:
-            rm_vis = RemoveExtensionVisitor(doctree)
-            return doctree.walkabout(rm_vis)
-
-        visitor = CodeRefsVisitor(doctree, code_refs=self.code_refs)
-        doctree.walk(visitor)
 
     def filter_and_resolve(self, transforms: List[SourceTransform], app):
         """Try to link name chains to objects."""
@@ -139,6 +166,7 @@ class SphinxCodeAutoLink:
         self._inventory = transposed
         return self._inventory
 
+    @print_exceptions
     def apply_links(self, app, exception):
         """Apply links to HTML output and write refs file."""
         if self.do_nothing or exception is not None:
