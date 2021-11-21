@@ -2,6 +2,7 @@ import re
 import sys
 import pytest
 
+from typing import Dict
 from pathlib import Path
 from bs4 import BeautifulSoup
 from sphinx.cmd.build import main as sphinx_main
@@ -54,15 +55,10 @@ def test_references(file: Path, tmp_path: Path):
     if len(links) == 1 and not links[0]:
         links = []
 
-    src_dir = tmp_path / 'src'
-    src_dir.mkdir()
-    (src_dir / 'conf.py').write_text(default_conf + conf, 'utf-8')
-    (src_dir / 'index.rst').write_text(index, 'utf-8')
+    files = {'conf.py': default_conf + conf, 'index.rst': index}
+    result_dir = _sphinx_build(tmp_path, 'html', files)
 
-    build_dir = tmp_path / 'build'
-    sphinx_main(['-M', 'html', str(src_dir), str(build_dir)])
-
-    index_html = build_dir / 'html' / 'index.html'
+    index_html = result_dir / 'index.html'
     text = index_html.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
     blocks = list(soup.find_all('a', attrs={'class': 'sphinx-codeautolink-a'}))
@@ -101,15 +97,10 @@ def test_tables(file: Path, tmp_path: Path):
     if len(links) == 1 and not links[0]:
         links = []
 
-    src_dir = tmp_path / 'src'
-    src_dir.mkdir()
-    (src_dir / 'conf.py').write_text(default_conf + conf, 'utf-8')
-    (src_dir / 'index.rst').write_text(index, 'utf-8')
+    files = {'conf.py': default_conf + conf, 'index.rst': index}
+    result_dir = _sphinx_build(tmp_path, 'html', files)
 
-    build_dir = tmp_path / 'build'
-    sphinx_main(['-M', 'html', str(src_dir), str(build_dir)])
-
-    index_html = build_dir / 'html' / 'index.html'
+    index_html = result_dir / 'index.html'
     text = index_html.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
     blocks = list(soup.select('table a'))
@@ -117,3 +108,119 @@ def test_tables(file: Path, tmp_path: Path):
     assert len(blocks) == len(links)
     for block, link in zip(blocks, links):
         assert any_whitespace.sub('', ''.join(block.strings)) == link
+
+
+fail_tests = list(Path(__file__).with_name('fail').glob('*.txt'))
+
+
+@pytest.mark.parametrize('file', fail_tests)
+def test_fails(file: Path, tmp_path: Path):
+    """
+    Tests for failing builds.
+
+    The tests are structured as .txt files, parsed and executed here.
+    The structure of the file is::
+
+        lines to add to the default conf.py
+        # split
+        index.html content
+    """
+    conf, index = file.read_text('utf-8').split('# split')
+    files = {'conf.py': default_conf + conf, 'index.rst': index}
+    with pytest.raises(RuntimeError):
+        _sphinx_build(tmp_path, 'html', files)
+
+
+def test_non_html_build(tmp_path: Path):
+    index = """
+Test package
+------------
+
+.. autolink-concat::
+.. code:: python
+
+   import test_package
+   test_package.bar()
+
+.. automodule:: test_project
+.. autolink-examples:: test_package.bar
+"""
+    files = {'conf.py': default_conf, 'index.rst': index}
+    _sphinx_build(tmp_path, 'man', files)
+
+
+def test_build_twice_and_modify_one_file(tmp_path: Path):
+    index = """
+Test package
+------------
+
+.. autolink-concat::
+.. code:: python
+
+   import test_package
+   test_package.bar()
+
+.. automodule:: test_project
+
+.. toctree::
+
+   another
+"""
+    another = """
+Another
+-------
+.. autolink-examples:: test_package.bar
+"""
+    another2 = """
+Another
+-------
+But edited.
+
+.. autolink-examples:: test_package.bar
+"""
+    files = {'conf.py': default_conf, 'index.rst': index, 'another.rst': another}
+    _sphinx_build(tmp_path, 'html', files)
+    _sphinx_build(tmp_path, 'html', {'another.rst': another2})
+
+
+def test_build_twice_and_delete_one_file(tmp_path: Path):
+    index = """
+Test package
+------------
+
+.. autolink-concat::
+.. code:: python
+
+   import test_package
+   test_package.bar()
+
+.. automodule:: test_project
+
+.. toctree::
+
+   another
+"""
+    another = """
+Another
+-------
+.. autolink-examples:: test_package.bar
+"""
+
+    files = {'conf.py': default_conf, 'index.rst': index, 'another.rst': another}
+    _sphinx_build(tmp_path, 'html', files)
+    (tmp_path / 'src' / 'another.rst').unlink()
+    _sphinx_build(tmp_path, 'html', {})
+
+
+def _sphinx_build(folder: Path, builder: str, files: Dict[str, str]) -> Path:
+    """Build Sphinx documentation and return result folder."""
+    src_dir = folder / 'src'
+    src_dir.mkdir(exist_ok=True)
+    for name, content in files.items():
+        (src_dir / name).write_text(content, 'utf-8')
+
+    build_dir = folder / 'build'
+    ret_val = sphinx_main(['-M', builder, str(src_dir), str(build_dir)])
+    if ret_val:
+        raise RuntimeError('Sphinx build failed!')
+    return build_dir / builder
