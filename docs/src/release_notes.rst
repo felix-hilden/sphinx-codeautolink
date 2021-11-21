@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.6.0 (2021-11-21)
+------------------
 - Remove text decoration from produced links (:issue:`3`)
 - Turn autodoc integration off by default (:issue:`58`)
 - Avoid index error when handling syntax errors (:issue:`60`)
