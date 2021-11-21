@@ -2,6 +2,8 @@ import os
 import sys
 from pathlib import Path
 
+from sphinx_codeautolink import clean_pycon
+
 # Insert package root to path
 _src_dir = Path(os.path.realpath(__file__)).parent
 _package_root = _src_dir.parent.parent / "src"
@@ -21,7 +23,8 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx_rtd_theme",
     "sphinx_codeautolink",
-    "matplotlib.sphinxext.plot_directive"
+    "matplotlib.sphinxext.plot_directive",
+    "sphinx.ext.doctest",
 ]
 
 # Builtin options
@@ -30,6 +33,8 @@ python_use_unqualified_type_names = True
 
 # Extension options
 codeautolink_autodoc_inject = True
+codeautolink_custom_blocks = {"python3": None, "pycon3": clean_pycon}
+
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,

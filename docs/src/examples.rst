@@ -77,7 +77,6 @@ Examples interlaced with explanations can make for more comprehensible docs.
 .. code:: python
 
    import lib
-
    knight = lib.Knight()
 
 After explaining some details, the following block may continue where
@@ -95,7 +94,6 @@ This was achieved with :rst:dir:`autolink-concat`::
    .. code:: python
 
       import lib
-
       knight = lib.Knight()
 
    .. code:: python
@@ -116,7 +114,6 @@ and preventing it from being included in further sources with concatenation.
 .. code:: python
 
    import lib
-
    lib.Knight()
 
 Which is done via :rst:dir:`autolink-skip`::
@@ -125,7 +122,6 @@ Which is done via :rst:dir:`autolink-skip`::
    .. code:: python
 
       import lib
-
       lib.Knight()
 
 Skipping is supported for single blocks, sections and entire files.
@@ -189,6 +185,31 @@ Please specify a ``type`` in :rst:dir:`autolink-examples`::
 
    .. autolink-examples:: numpy.linspace
       :type: func
+
+Doctest code blocks
+-------------------
+Using the ``sphinx.ext.doctest`` extension for code examples requires
+setting up :confval:`codeautolink_custom_blocks`.
+To help in that, :func:`clean_pycon <sphinx_codeautolink.clean_pycon>`
+is provided as a ready-made transformer.
+
+.. code:: python
+
+   from sphinx_codeautolink import clean_pycon
+
+   extensions = [
+       ...,
+       "sphinx.ext.doctest",
+   ]
+   codeautolink_custom_blocks = {"python3": None, "pycon3": clean_pycon}
+
+``doctest`` and ``testcode`` blocks now work as expected.
+However, any test setup and teardown code is not taken into account.
+
+.. doctest::
+
+   >>> import lib
+   >>> lib.Knight()
 
 Third-party code blocks
 -----------------------

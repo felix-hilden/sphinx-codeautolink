@@ -105,3 +105,11 @@ Directives
    it is not processed (e.g. non-Python blocks) to avoid placement confusion.
    Skipped blocks are ignored in block concatenation as well, and concatenation
    is resumed without breaks after skipping is over.
+
+Cleanup function
+----------------
+An exception to the public API policy is made for a single function usable
+for cleaning ``pycon`` blocks.
+It is intended to be used with :confval:`codeautolink_custom_blocks`.
+
+.. autofunction:: sphinx_codeautolink.clean_pycon

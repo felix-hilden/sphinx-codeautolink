@@ -1,0 +1,21 @@
+test_project
+test_project.bar
+attr
+test_project.Foo
+test_project.Foo
+# split
+extensions.append("sphinx.ext.doctest")
+codeautolink_custom_blocks = {"python3": None}
+# split
+Test project
+============
+
+.. testcode::
+
+    import test_project
+    test_project.bar().attr
+    def foo():
+        test_project.Foo
+    test_project.Foo
+
+.. automodule:: test_project

@@ -1,7 +1,7 @@
 """Code block processing."""
 import re
 
-from typing import List, Union, Optional, Dict, Callable
+from typing import List, Union, Optional, Dict, Callable, Tuple
 from pathlib import Path
 from warnings import warn
 from dataclasses import dataclass
@@ -31,7 +31,12 @@ class UserError(Exception):
     """Error in sphinx-autocodelink usage."""
 
 
-def clean_pycon(source):
+def default_transform(source):
+    """Transform Python code with a no-op."""
+    return source, source
+
+
+def clean_pycon(source: str) -> Tuple[str, str]:
     """Clean up Python console syntax to pure Python."""
     in_statement = False
     source = re.sub(r'^\s*<BLANKLINE>', '', source, flags=re.MULTILINE)
@@ -154,7 +159,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             return
 
         source = node.children[0].astext()
-        transformer = self.custom_blocks.get(language, lambda s: (s, s))
+        transformer = (
+            self.custom_blocks.get(language, default_transform) or default_transform
+        )
         source, clean_source = transformer(source)
         example = CodeExample(
             self.current_document, self.current_refid, list(self.title_stack)

@@ -19,6 +19,8 @@ Unreleased
 - Correctly ensure that return annotations are valid types (:issue:`63`)
 - Resolve imported members to their original location (:issue:`64`)
 - Fix multi-target assignment and unpacked assignment (:issue:`66`)
+- Correctly accept ``None`` as a custom block transformer (:issue:`67`)
+- Document support for ``sphinx.ext.doctest`` blocks (:issue:`67`)
 
 0.5.1 (2021-11-20)
 ------------------

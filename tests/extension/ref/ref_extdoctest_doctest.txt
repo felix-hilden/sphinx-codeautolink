@@ -1,0 +1,27 @@
+test_project
+test_project.bar
+attr
+test_project.Foo
+test_project.Foo
+# split
+from sphinx_codeautolink.extension.block import clean_pycon
+extensions.append("sphinx.ext.doctest")
+codeautolink_custom_blocks = {"pycon3": clean_pycon}
+# split
+Test project
+============
+
+.. doctest::
+
+    >>> import test_project
+    >>> test_project.bar().attr
+    >>> def foo():
+    ...     test_project.Foo
+    this is an output line
+    test_project.Baz
+    <BLANKLINE>
+    ... test_project.Baz
+    >>> test_project.Foo
+    <BLANKLINE>
+
+.. automodule:: test_project
