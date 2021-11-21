@@ -1,0 +1,10 @@
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   this is not python though
+
+.. automodule:: test_project

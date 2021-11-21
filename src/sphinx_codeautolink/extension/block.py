@@ -171,10 +171,27 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         try:
             names = parse_names(modified_source)
         except SyntaxError as e:
+            guides = [''] * len(modified_source)
+            ix = 0
+            if self.global_preface:
+                guides[0] = 'global preface:'
+                ix += len(self.global_preface)
+            if self.concat_sources:
+                guides[ix] = 'concatenations:'
+                ix += len(self.concat_sources)
+            if prefaces:
+                guides[ix] = 'local preface:'
+                ix += len(prefaces)
+            guides[ix] = 'block source:'
+            pad = max(len(i) + 1 for i in guides)
+            guides = [g.ljust(pad) for g in guides]
+            split_source = modified_source.split('\n')
+            show_source = '\n'.join([g + s for g, s in zip(guides, split_source)])
+
             msg = '\n'.join([
                 str(e) + f' in document "{self.current_document}"',
                 f'Parsed source in `{language}` block:',
-                source,
+                show_source,
             ])
             raise ParsingError(msg) from e
 

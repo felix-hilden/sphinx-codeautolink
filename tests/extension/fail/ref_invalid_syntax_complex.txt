@@ -1,0 +1,16 @@
+codeautolink_global_preface = "import test_project"
+# split
+Test project
+============
+
+.. autolink-concat::
+.. code:: python
+
+   test_project.bar()
+
+.. autolink-preface:: test_project.Foo()
+.. code:: python
+
+   this is not python though
+
+.. automodule:: test_project
