@@ -41,7 +41,7 @@ def locate_type(components: Tuple[str], ends_with_call: bool) -> Optional[str]:
             # as we can't guarantee correct runtime behavior anyway.
             try:
                 location = fully_qualified_name(value)
-            except AttributeError:
+            except (AttributeError, TypeError):
                 # Odd construct encountered: don't try to be clever but continue
                 pass
 

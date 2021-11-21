@@ -1,0 +1,9 @@
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   from datetime import datetime
+   datetime.fromisoformat()
