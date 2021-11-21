@@ -111,7 +111,7 @@ class SphinxCodeAutoLink:
         for transform in transforms:
             filtered = []
             for name in transform.names:
-                key = resolve_location(name)
+                key = resolve_location(name, inventory)
                 if not key or key not in inventory:
                     continue
                 name.resolved_location = key

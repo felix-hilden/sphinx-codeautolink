@@ -17,7 +17,8 @@ Unreleased
   (:issue:`61`)
 - Resolve string annotations in the module scope (:issue:`62`)
 - Correctly ensure that return annotations are valid types (:issue:`63`)
-- Resolve imported members to their original location (:issue:`64`)
+- Resolve imported functions to their original location if a documentation
+  entry is not found in the used location (:issue:`64`)
 - Fix multi-target assignment and unpacked assignment (:issue:`66`)
 - Correctly accept ``None`` as a custom block transformer (:issue:`67`)
 - Document support for ``sphinx.ext.doctest`` blocks (:issue:`67`)

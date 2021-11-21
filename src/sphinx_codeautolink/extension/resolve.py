@@ -5,24 +5,25 @@ from typing import Optional, Tuple, Any, Union, Callable
 from ..parse import Name, NameBreak
 
 
-def resolve_location(chain: Name) -> Optional[str]:
+def resolve_location(chain: Name, inventory) -> Optional[str]:
     """Find the final type that a name refers to."""
     comps = []
     for comp in chain.import_components:
         if comp == NameBreak.call:
-            new = locate_type(tuple(comps), ends_with_call=True)
+            new = locate_type(tuple(comps), inventory, ends_with_call=True)
             if new is None:
                 return
             comps = new.split('.')
         else:
             comps.append(comp)
 
-    imported_loc = locate_type(tuple(comps), ends_with_call=False)
+    imported_loc = locate_type(tuple(comps), inventory, ends_with_call=False)
     return imported_loc or '.'.join(comps)
 
 
-@lru_cache(maxsize=None)
-def locate_type(components: Tuple[str], ends_with_call: bool) -> Optional[str]:
+def locate_type(
+    components: Tuple[str], inventory, ends_with_call: bool
+) -> Optional[str]:
     """Find type hint and resolve to new location."""
     value, index = closest_module(components)
     if index is None or index == len(components):
@@ -36,9 +37,7 @@ def locate_type(components: Tuple[str], ends_with_call: bool) -> Optional[str]:
         if value is None:
             return
 
-        if isinstance(value, type) or callable(value):
-            # We don't differentiate between classmethods and ordinary methods,
-            # as we can't guarantee correct runtime behavior anyway.
+        if isinstance(value, type) or (callable(value) and location not in inventory):
             try:
                 location = fully_qualified_name(value)
             except (AttributeError, TypeError):

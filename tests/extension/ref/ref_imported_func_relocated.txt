@@ -11,4 +11,4 @@ Test project
    test_project.subfoo
 
 .. automodule:: test_project
-.. automodule:: test_project.sub
+   :imported-members:
