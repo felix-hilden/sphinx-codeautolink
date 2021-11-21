@@ -24,6 +24,24 @@ class TestAssign:
         return s, refs
 
     @refs_equal
+    def test_unpack_assign_uses_and_overwrites(self):
+        s = 'import a\na, b = a\na'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_multilevel_unpack_assign_uses_and_overwrites(self):
+        s = 'import a\n(a, b), c = a\na'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_multitarget_assign_uses_and_overwrites(self):
+        s = 'import a\na = b = a\na, b'
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a', 'b')]
+        return s, refs
+
+    @refs_equal
     def test_assign_uses_and_assigns_modified_imported(self):
         s = 'import a\na = a + 1\na'
         refs = [('a', 'a'), ('a', 'a')]
@@ -202,5 +220,17 @@ class TestAssignLike:
     @refs_equal
     def test_for_uses_and_overwrites_imported(self):
         s = 'import a\nfor a in a:\n  a'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_async_for_uses(self):
+        s = 'import a\nasync def f():\n  async for b in a:\n    a'
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_for_else_uses(self):
+        s = 'import a\nfor b in c:\n  pass\nelse:\n  a'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs

@@ -1,5 +1,12 @@
 import pytest
+from sphinx_codeautolink.parse import Component
 from ._util import refs_equal
+
+
+class TestUnit:
+    def test_component_from_unrecognised_ast(self):
+        with pytest.raises(ValueError):
+            Component.from_ast('not ast')
 
 
 class TestSimple:
@@ -115,4 +122,10 @@ class TestSimple:
             ('sphinx_codeautolink', 'sphinx_codeautolink'),
             ('sphinx_codeautolink.setup', 'setup')
         ]
+        return s, refs
+
+    @refs_equal
+    def test_import_star_invalid(self):
+        s = 'from not_a_module import *'
+        refs = [('not_a_module', 'not_a_module')]
         return s, refs

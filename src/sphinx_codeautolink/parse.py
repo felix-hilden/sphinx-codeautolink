@@ -27,6 +27,20 @@ class PendingAccess:
 
 
 @dataclass
+class PendingAssign:
+    """
+    Pending assign target.
+
+    `targets` represent the assignment targets.
+    If a single PendingAccess is found, it should be used to store the value
+    on the right hand side of the assignment. If multiple values are found,
+    they should overwrite any names in the current scope and not assign values.
+    """
+
+    targets: Union[Optional[PendingAccess], List[Optional[PendingAccess]]]
+
+
+@dataclass
 class Component:
     """Name access component."""
 
@@ -163,7 +177,7 @@ def split_access(access: Access) -> List[Name]:
 class Assignment:
     """Assignment of value to name."""
 
-    to: Optional[PendingAccess]
+    to: List[PendingAssign]
     value: Optional[PendingAccess]
 
 
@@ -266,16 +280,25 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         value = assignment.value
         access = self._access(value) if value is not None else None
 
-        if assignment.to is None:
-            return
+        for assign in assignment.to:
+            if assign is None or assign.targets is None:
+                continue
+            elif isinstance(assign.targets, PendingAccess):
+                # Single target, we're good to proceed normally
+                targets = [assign.targets]
+            else:
+                # Multiple nested targets, only overwrite assigned names
+                access = None
+                targets = assign.targets
 
-        if len(assignment.to.components) == 1:
-            comp = Component.from_ast(assignment.to.components[0])
-            self._overwrite(comp.name)
-            if access is not None:
-                self._assign(comp.name, access.full_components)
-        else:
-            self._access(assignment.to)
+            for target in targets:
+                if len(target.components) == 1:
+                    comp = Component.from_ast(target.components[0])
+                    self._overwrite(comp.name)
+                    if access is not None:
+                        self._assign(comp.name, access.full_components)
+                else:
+                    self._access(target)
 
     def _access_simple(self, name: str, lineno: int) -> Optional[Access]:
         component = Component(name, lineno, lineno, 'load')
@@ -317,11 +340,14 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         if import_star:
             try:
                 mod = import_module(node.module)
+                import_names = [
+                    name for name in mod.__dict__ if not name.startswith('_')
+                ]
+                aliases = [None] * len(import_names)
             except ImportError:
                 warn(f'Could not import module `{node.module}` for parsing!')
-                return
-            import_names = [name for name in mod.__dict__ if not name.startswith('_')]
-            aliases = [None] * len(import_names)
+                import_names = []
+                aliases = []
         else:
             import_names = [name.name for name in node.names]
             aliases = [name.asname for name in node.names]
@@ -371,7 +397,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
     @track_parents
     def visit_Attribute(self, node):
         """Visit an Attribute node."""
-        inner: PendingAccess = self.visit(node.value)
+        inner: Optional[PendingAccess] = self.visit(node.value)
         if inner is not None:
             inner.components.append(node)
         return inner
@@ -379,7 +405,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
     @track_parents
     def visit_Call(self, node: ast.Call):
         """Visit a Call node."""
-        inner: PendingAccess = self.visit(node.func)
+        inner: Optional[PendingAccess] = self.visit(node.func)
         if inner is not None:
             inner.components.append(node)
         with self.reset_parents():
@@ -392,16 +418,28 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         return inner
 
     @track_parents
+    def visit_Tuple(self, node: ast.Tuple):
+        """Visit a Tuple node."""
+        if isinstance(node.ctx, ast.Store):
+            accesses = []
+            for element in node.elts:
+                ret = self.visit(element)
+                if isinstance(ret, PendingAccess) or ret is None:
+                    accesses.append(ret)
+                else:
+                    accesses.extend(ret)
+            return accesses
+        else:
+            with self.reset_parents():
+                for element in node.elts:
+                    self.visit(element)
+
+    @track_parents
     def visit_Assign(self, node: ast.Assign):
         """Visit an Assign node."""
         value = self.visit(node.value)
-        target_returns = []
-        for n in node.targets:
-            target_returns.append(self.visit(n))
-        if len(target_returns) == 1:
-            return Assignment(target_returns[0], value)
-        else:
-            return value
+        targets = [PendingAssign(self.visit(n)) for n in node.targets[::-1]]
+        return Assignment(targets, value)
 
     @track_parents
     def visit_AnnAssign(self, node: ast.AnnAssign):
@@ -414,7 +452,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             self.visit(node.annotation)
 
         if node.value is not None:
-            return Assignment(target, value)
+            return Assignment([PendingAssign(target)], value)
 
     def visit_AugAssign(self, node: ast.AugAssign):
         """Visit an AugAssign node."""
@@ -428,11 +466,11 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         """Visit a NamedExpr node."""
         value = self.visit(node.value)
         target = self.visit(node.target)
-        return Assignment(target, value)
+        return Assignment([PendingAssign(target)], value)
 
     def visit_AsyncFor(self, node: ast.AsyncFor):
         """Delegate to sync for."""
-        self.visit_AsyncFor(node)
+        self.visit_For(node)
 
     def visit_For(self, node: Union[ast.For, ast.AsyncFor]):
         """Swap node order."""

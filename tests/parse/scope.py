@@ -12,6 +12,12 @@ class TestFunction:
         return s, refs
 
     @refs_equal
+    def test_async_func_uses(self):
+        s = 'import a\nasync def f():\n  a'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
     def test_func_name_shadows(self):
         s = 'import a\ndef a():\n  pass\n  a'
         refs = [('a', 'a')]
@@ -39,6 +45,12 @@ class TestFunction:
     def test_func_annotations_then_assigns(self):
         s = 'import a\ndef f(arg: a) -> a:\n  a = 1'
         refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_func_kw_default_uses(self):
+        s = 'import a\ndef f(*_, c, b=a):\n  pass'
+        refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
@@ -87,6 +99,19 @@ class TestFunction:
     @refs_equal
     def test_lambda_arg_shadows_used_outside(self):
         s = 'import a\nlambda a: a\na'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_lambda_kw_default_uses(self):
+        s = 'import a\nlambda *b, c, d=a: 1'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @pytest.mark.xfail(reason='No reason to do this in the real world.')
+    @refs_equal
+    def test_global_in_outermost_scope(self):
+        s = 'import a\nglobal a'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
@@ -151,6 +176,24 @@ class TestComprehension:
     @refs_equal
     def test_comp_uses_in_value(self):
         s = 'import a\n[a for _ in range(2)]'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_setcomp_uses_in_value(self):
+        s = 'import a\n{a for _ in range(2)}'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_dictcomp_uses_in_value(self):
+        s = 'import a\n{a: a for _ in range(2)}'
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_generator_uses_in_value(self):
+        s = 'import a\n(a for _ in range(2))'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
