@@ -1,0 +1,12 @@
+test_project.subfoo
+# split
+# split
+Test project
+============
+
+.. autolink-preface:: import test_project
+.. code:: python
+
+   test_project.subfoo
+
+.. automodule:: test_project.sub
