@@ -1,0 +1,11 @@
+# split
+codeautolink_autodoc_inject = True
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+
+.. autofunction:: test_project.bar

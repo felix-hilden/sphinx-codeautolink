@@ -1,0 +1,18 @@
+test_project.bar
+Testproject/Subsection
+# split
+# split
+Test project
+============
+
+Subsection
+----------
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+Reference
+---------
+.. automodule:: test_project
+.. autolink-examples:: test_project.bar

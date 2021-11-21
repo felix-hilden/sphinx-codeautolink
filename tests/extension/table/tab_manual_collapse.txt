@@ -1,0 +1,14 @@
+Testproject
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. automodule:: test_project
+.. autolink-examples:: test_project.bar
+   :collapse:
