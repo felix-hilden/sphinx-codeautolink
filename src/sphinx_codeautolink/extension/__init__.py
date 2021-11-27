@@ -25,23 +25,35 @@ class DocumentedObject:
     return_type: str = None
 
 
-def print_exceptions(func):
+def print_exceptions(append_source: bool = False):
     """
     Print the traceback of uncaught and unexpected exceptions.
 
     This is done because the Sphinx process masks the traceback
     and only displays the main error message making debugging difficult.
+    If append_source is set, information about the currently processed document
+    is pulled from the second argument named "doctree" and added to the message.
     """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except (UserError, ParsingError):
-            raise
-        except Exception:
-            print_exc()
-            raise
-    return wrapper
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except (UserError, ParsingError):
+                raise
+            except Exception as e:
+                print_exc()
+                if append_source:
+                    doctree = args[2] if len(args) > 1 else kwargs['doctree']
+                    source = doctree['source']
+                    msg = f'in document `{source}`'
+                    if e.args:
+                        e.args = (e.args[0] + f' ({msg})',) + e.args[1:]
+                    else:
+                        e.args = (f'Unexpected error {msg}',)
+                raise
+        return wrapper
+    return decorator
 
 
 class SphinxCodeAutoLink:
@@ -58,7 +70,7 @@ class SphinxCodeAutoLink:
         self.concat_default = None
         self.search_css_classes = None
 
-    @print_exceptions
+    @print_exceptions()
     def build_inited(self, app):
         """Handle initial setup."""
         if app.builder.name != 'html':
@@ -81,7 +93,7 @@ class SphinxCodeAutoLink:
         if preface:
             self.global_preface = preface.split('\n')
 
-    @print_exceptions
+    @print_exceptions()
     def autodoc_process_docstring(self, app, what, name, obj, options, lines):
         """Handle autodoc-process-docstring event."""
         if self.do_nothing:
@@ -92,7 +104,7 @@ class SphinxCodeAutoLink:
             lines.append('.. autolink-examples:: ' + name)
             lines.append('   :collapse:')
 
-    @print_exceptions
+    @print_exceptions(append_source=True)
     def parse_blocks(self, app, doctree):
         """Parse code blocks for later link substitution."""
         if self.do_nothing:
@@ -108,7 +120,7 @@ class SphinxCodeAutoLink:
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms
 
-    @print_exceptions
+    @print_exceptions(append_source=True)
     def generate_backref_tables(self, app, doctree, docname):
         """Generate backreference tables."""
         self.once_on_doctree_resolved(app)
@@ -166,7 +178,7 @@ class SphinxCodeAutoLink:
         self._inventory = transposed
         return self._inventory
 
-    @print_exceptions
+    @print_exceptions()
     def apply_links(self, app, exception):
         """Apply links to HTML output and write refs file."""
         if self.do_nothing or exception is not None:

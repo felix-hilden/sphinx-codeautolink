@@ -13,6 +13,7 @@ Unreleased
 - Declare CSS class as public API (:issue:`3`)
 - Add ability to link to subclass documentation (:issue:`68`)
 - Append a newline to error messages with source code (:issue:`70`)
+- Improve errors with information about the current document (:issue:`71`)
 
 0.6.0 (2021-11-21)
 ------------------
