@@ -33,3 +33,7 @@ def optional() -> Optional[Foo]:
 
 def compile():
     """Shadows built in compile function."""
+
+
+class Child(Foo):
+    """Foo child class."""

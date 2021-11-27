@@ -1,0 +1,22 @@
+test_project
+test_project.Child.meth
+test_project.Child
+meth
+test_project.Child.attr
+test_project.Child
+attr
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   test_project.Child.meth()
+   test_project.Child().meth()
+   test_project.Child.attr
+   test_project.Child().attr
+
+.. automodule:: test_project
+   :no-inherited-members:

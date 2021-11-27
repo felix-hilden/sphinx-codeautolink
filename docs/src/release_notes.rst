@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Add ability to link to subclass documentation (:issue:`68`)
+
 0.6.0 (2021-11-21)
 ------------------
 - Remove text decoration from produced links (:issue:`3`)

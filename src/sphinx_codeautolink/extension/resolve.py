@@ -31,6 +31,7 @@ def locate_type(
     remaining = components[index:]
     location = '.'.join(components[:index])
 
+    prev_val = None
     for component in remaining:
         value = getattr(value, component, None)
         location += '.' + component
@@ -43,6 +44,14 @@ def locate_type(
             except (AttributeError, TypeError):
                 # Odd construct encountered: don't try to be clever but continue
                 pass
+
+        if isinstance(prev_val, type) and location not in inventory:
+            for val in prev_val.mro():
+                loc = fully_qualified_name(val) + '.' + component
+                if loc in inventory:
+                    return locate_type(tuple(loc.split('.')), inventory, ends_with_call)
+
+        prev_val = value
 
     # A possible function / method call needs to be last in the chain.
     # Otherwise we might follow return types on function attribute access.
