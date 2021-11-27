@@ -29,8 +29,8 @@ Caveats
 
   - Only simple assignments of names, attributes and calls to a single name
     are tracked and used to resolve later values.
-  - Only simple return type hints that consists of a single resolved type
-    (not a string) are tracked through call and attribute access chains.
+  - Only simple return type hints that consist of a single, possibly optional
+    type are tracked through call and attribute access chains.
   - Type hints of intersphinx-linked definitions are not necessarily available.
     Resolving names using type hints is only possible if the package is
     installed, but simple usage can be tracked via documentation entries alone.
@@ -54,6 +54,14 @@ which is updated when parsing new or outdated files.
 It shouldn't become outdated, but a clean build can be achieved with
 `sphinx-build -E <https://www.sphinx-doc.org/en/master/man/sphinx-build.html
 #cmdoption-sphinx-build-E>`_ or by deleting the build directory.
+
+Copying code blocks
+-------------------
+If you feel like code links make copying code a bit more difficult,
+`sphinx-copybutton <https://sphinx-copybutton.readthedocs.io>`_
+is a fantastic extension to use.
+It adds a button to copy an entire code block to the clipboard.
+So give it a go, perhaps even if you don't think links make copying harder!
 
 Matching failures
 -----------------
