@@ -2,7 +2,7 @@
 
 Reference
 =========
-The public API of sphinx-codeautolink consists only of the configuration
+The public API of sphinx-codeautolink consists mostly of the configuration
 and directives made available to Sphinx.
 The extension is enabled with the name ``sphinx_codeautolink``.
 During the build phase, a cache containing code example information is saved
@@ -106,10 +106,13 @@ Directives
    Skipped blocks are ignored in block concatenation as well, and concatenation
    is resumed without breaks after skipping is over.
 
+CSS class
+---------
+The CSS class used in all code block links is ``sphinx-codeautolink-a``.
+
 Cleanup function
 ----------------
-An exception to the public API policy is made for a single function usable
-for cleaning ``pycon`` blocks.
+The function below is usable for cleaning ``pycon`` code blocks.
 It is intended to be used with :confval:`codeautolink_custom_blocks`.
 
 .. autofunction:: sphinx_codeautolink.clean_pycon

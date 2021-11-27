@@ -10,6 +10,7 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+- Declare CSS class as public API (:issue:`3`)
 - Add ability to link to subclass documentation (:issue:`68`)
 
 0.6.0 (2021-11-21)
