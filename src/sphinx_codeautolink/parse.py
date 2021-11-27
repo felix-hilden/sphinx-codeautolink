@@ -292,6 +292,9 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                 targets = assign.targets
 
             for target in targets:
+                if target is None:
+                    continue
+
                 if len(target.components) == 1:
                     comp = Component.from_ast(target.components[0])
                     self._overwrite(comp.name)

@@ -24,6 +24,12 @@ class TestAssign:
         return s, refs
 
     @refs_equal
+    def test_unpack_assign_starred(self):
+        s = '*a, b = c'
+        refs = []
+        return s, refs
+
+    @refs_equal
     def test_unpack_assign_uses_and_overwrites(self):
         s = 'import a\na, b = a\na'
         refs = [('a', 'a'), ('a', 'a')]
