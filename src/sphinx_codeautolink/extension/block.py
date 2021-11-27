@@ -200,7 +200,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 f'Parsed source in `{language}` block:',
                 show_source,
             ])
-            raise ParsingError(msg) from e
+            raise ParsingError(msg + '\n') from e
 
         if prefaces or self.concat_sources or self.global_preface:
             concat_lens = [s.count('\n') + 1 for s in self.concat_sources]
