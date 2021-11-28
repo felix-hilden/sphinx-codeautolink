@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.7.0 (2021-11-28)
+------------------
 - Declare CSS class as public API (:issue:`3`)
 - Add ability to link to subclass documentation (:issue:`68`)
 - Append a newline to error messages with source code (:issue:`70`)
