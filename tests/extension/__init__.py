@@ -2,6 +2,7 @@ import re
 import sys
 import pytest
 
+from unittest.mock import patch
 from typing import Dict
 from pathlib import Path
 from bs4 import BeautifulSoup
@@ -210,6 +211,35 @@ Another
     _sphinx_build(tmp_path, 'html', files)
     (tmp_path / 'src' / 'another.rst').unlink()
     _sphinx_build(tmp_path, 'html', {})
+
+
+def test_raise_unexpected(tmp_path: Path):
+    index = """
+Test package
+------------
+
+.. autolink-concat::
+.. code:: python
+
+   import test_package
+   test_package.bar()
+
+.. automodule:: test_project
+"""
+    files = {'conf.py': default_conf, 'index.rst': index}
+
+    def raise_msg(*args, **kwargs):
+        raise ValueError('ValueError')
+
+    def raise_nomsg(*args, **kwargs):
+        raise ValueError()
+
+    target = 'sphinx_codeautolink.extension.CodeBlockAnalyser'
+    with pytest.raises(RuntimeError), patch(target, raise_msg):
+        _sphinx_build(tmp_path, 'html', files)
+
+    with pytest.raises(RuntimeError), patch(target, raise_nomsg):
+        _sphinx_build(tmp_path, 'html', files)
 
 
 def _sphinx_build(folder: Path, builder: str, files: Dict[str, str]) -> Path:
