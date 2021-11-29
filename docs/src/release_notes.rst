@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Correctly test for optional types in annotations (:issue:`72`)
+
 0.7.0 (2021-11-28)
 ------------------
 - Declare CSS class as public API (:issue:`3`)

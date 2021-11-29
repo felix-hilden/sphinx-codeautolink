@@ -71,11 +71,15 @@ def follow_return_annotation(func: Callable) -> Optional[str]:
     annotations = getattr(func, '__annotations__', {})
     ret_annotation = annotations.get('return', None)
 
-    # Inner type from typing.Optional (Union[T, None])
+    # Inner type from typing.Optional or Union[None, T]
     origin = getattr(ret_annotation, '__origin__', None)
     args = getattr(ret_annotation, '__args__', None)
-    if origin is Union and len(args) == 2 and isinstance(None, args[1]):
-        ret_annotation = args[0]
+    if origin is Union and len(args) == 2:
+        nonetype = type(None)
+        if args[0] is nonetype:
+            ret_annotation = args[1]
+        elif args[1] is nonetype:
+            ret_annotation = args[0]
 
     # Try to resolve a string annotation in the module scope
     if isinstance(ret_annotation, str):

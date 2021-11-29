@@ -1,5 +1,5 @@
 """Docstring."""
-from typing import Optional
+from typing import Optional, Union
 
 from .sub import subfoo  # NOQA
 
@@ -29,6 +29,14 @@ def bar() -> Foo:
 
 def optional() -> Optional[Foo]:
     """Return optional type."""
+
+
+def optional_manual() -> Union[None, Foo]:
+    """Return manually constructed optional type."""
+
+
+def optional_counter() -> Union[Foo, Baz]:
+    """Failing case for incorrect optional type handling."""
 
 
 def compile():
