@@ -8,6 +8,8 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from sphinx.cmd.build import main as sphinx_main
 
+from ._check import check_links
+
 # Insert test package root to path for all tests
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
@@ -67,6 +69,7 @@ def test_references(file: Path, tmp_path: Path):
     assert len(blocks) == len(links)
     for block, link in zip(blocks, links):
         assert any_whitespace.sub('', ''.join(block.strings)) == link
+    assert check_links(result_dir) == len(links)
 
 
 table_tests = list(Path(__file__).with_name('table').glob('*.txt'))
