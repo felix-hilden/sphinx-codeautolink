@@ -10,6 +10,7 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+- Support Python 3.10 (:issue:`33`)
 - Include the expected location of a type in
   :confval:`codeautolink_warn_on_failed_resolve` for debugging (:issue:`106`)
 - Define extension environment version for Sphinx (:issue:`107`)
@@ -44,7 +45,6 @@ Unreleased
 0.7.0 (2021-11-28)
 ------------------
 - Declare CSS class as public API (:issue:`3`)
-- Support Python 3.10 (:issue:`33`)
 - Add ability to link to subclass documentation (:issue:`68`)
 - Append a newline to error messages with source code (:issue:`70`)
 - Fix unpacking starred assignment (:issue:`71`)
