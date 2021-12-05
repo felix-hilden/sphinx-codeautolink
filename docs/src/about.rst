@@ -72,7 +72,7 @@ a bug, which you can report on `GitHub
 If third-party code blocks are in use, matching may fail because of
 inconsistent or unrecognised CSS classes. The class related to the block lexer
 name is automatically added to the list of CSS classes that are searched when
-matching code examples as ``highlight-{lexer} notranslate``.
+matching code examples as ``highlight-{lexer}``.
 If the class has another value, :confval:`codeautolink_search_css_classes`
 can be used to extend the search. To find out which classes should be added,
 build your documentation, locate the code example and use the class of the
@@ -80,7 +80,7 @@ outermost ``div`` tag. For example:
 
 .. code:: python
 
-   codeautolink_search_css_classes = ["highlight-default notranslate"]
+   codeautolink_search_css_classes = ["highlight-default"]
 
 Secondly, matching can fail on a specific line or range of lines.
 This is often a bug, but the known expected failure cases are presented here:
