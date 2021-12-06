@@ -11,7 +11,8 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Correctly test for optional types in annotations (:issue:`72`)
-- Don't check for ``notranslate`` CSS class, allow additional classes (:issue:`75`)
+- Don't check for ``notranslate`` CSS class, allowing for additional classes
+  (:issue:`75`)
 
 0.7.0 (2021-11-28)
 ------------------
