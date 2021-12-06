@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 from bs4 import BeautifulSoup
 from docutils import nodes
+import sphinx
 
 from ..parse import parse_names, Name, LinkContext
 from .backref import CodeExample
@@ -162,6 +163,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         transformer = (
             self.custom_blocks.get(language, default_transform) or default_transform
         )
+        if isinstance(transformer, str):
+            transformer = sphinx.util.import_object(transformer)
         source, clean_source = transformer(source)
         example = CodeExample(
             self.current_document, self.current_refid, list(self.title_stack)
