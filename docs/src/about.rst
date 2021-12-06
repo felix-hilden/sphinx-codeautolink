@@ -55,6 +55,12 @@ It shouldn't become outdated, but a clean build can be achieved with
 `sphinx-build -E <https://www.sphinx-doc.org/en/master/man/sphinx-build.html
 #cmdoption-sphinx-build-E>`_ or by deleting the build directory.
 
+Sphinx cache
+------------
+A function specified in :confval:`codeautolink_custom_blocks` prevents Sphinx
+from caching documentation results. Consider using an importable instead.
+For more information, see the discussion in :issue:`76`.
+
 Copying code blocks
 -------------------
 If you feel like code links make copying code a bit more difficult,

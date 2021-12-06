@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Set
 from traceback import print_exc
 from pathlib import Path
 
+from sphinx.util import import_object
 from sphinx.ext.intersphinx import InventoryAdapter
 
 from .backref import CodeRefsVisitor, CodeExample
@@ -81,6 +82,9 @@ class SphinxCodeAutoLink:
         self.cache.read()
         self.outdated_docs = {str(Path(d)) for d in app.builder.get_outdated_docs()}
         self.custom_blocks = app.config.codeautolink_custom_blocks
+        for k, v in self.custom_blocks.items():
+            if isinstance(v, str):
+                self.custom_blocks[k] = import_object(v)
         self.concat_default = app.config.codeautolink_concat_default
         self.search_css_classes = app.config.codeautolink_search_css_classes
 

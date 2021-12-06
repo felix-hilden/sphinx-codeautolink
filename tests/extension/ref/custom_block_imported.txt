@@ -1,0 +1,15 @@
+test_project
+test_project.bar
+# split
+codeautolink_custom_blocks = {"python": "parser_func.clean"}
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   -*-
+   test_project.bar() -*-
+
+.. automodule:: test_project

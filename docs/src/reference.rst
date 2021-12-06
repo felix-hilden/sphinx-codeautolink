@@ -31,11 +31,12 @@ Configuration
 
 .. confval:: codeautolink_custom_blocks
 
-   Type: ``Dict[str, None | Callable[[str], Tuple[str, str]]]``.
+   Type: ``Dict[str, None | str | Callable[[str], Tuple[str, str]]]``.
    Register custom parsers for lexers of unknown types of code blocks.
    They are registered as a dict mapping a block lexer name to a function
    possibly cleaning up the block content to valid Python syntax.
    If none is specified, no transformations are applied.
+   A string is interpreted as an importable transformer function.
    The transformer must return two strings: the code appearing in documentation
    (often just the original source) and the cleaned Python source code.
    The transformer must preserve line numbers for correct matching.
