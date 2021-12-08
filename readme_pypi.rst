@@ -2,10 +2,9 @@ sphinx-codeautolink
 ===================
 |pyversions| |downloads| |license| |readthedocs|
 
-Automatic links from Python code examples to reference documentation
-at the flick of a switch!
-sphinx-codeautolink analyses the code in your documentation
-and inserts links to definitions that you use.
+sphinx-codeautolink makes code examples clickable by inserting links
+from individual code elements to the corresponding reference documentation.
+We aim for a minimal setup assuming your examples are already valid Python.
 
 For a live demo, see our online documentation on
 `Read The Docs <https://sphinx-codeautolink.rtfd.org>`_.

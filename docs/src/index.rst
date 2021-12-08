@@ -2,11 +2,10 @@ sphinx-codeautolink
 ===================
 |pypi| |license|
 
-Automatic links from Python code examples to reference documentation
-at the flick of a switch!
-sphinx-codeautolink analyses the code in your documentation
-and inserts links to definitions that you use.
-Click any names in the code example below.
+sphinx-codeautolink makes code examples clickable by inserting links
+from individual code elements to the corresponding reference documentation.
+We aim for a minimal setup assuming your examples are already valid Python.
+Click any names in the example below for a demonstration:
 
 .. code:: python
 
