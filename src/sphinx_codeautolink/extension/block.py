@@ -40,6 +40,7 @@ def default_transform(source):
 
 
 BUILTIN_BLOCKS['python'] = default_transform
+BUILTIN_BLOCKS['py'] = default_transform
 
 
 def clean_pycon(source: str) -> Tuple[str, str]:
@@ -96,7 +97,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.global_preface = global_preface
         self.custom_blocks = BUILTIN_BLOCKS
         self.custom_blocks.update(custom_blocks)
-        self.valid_blocks = ('py',) + tuple(self.custom_blocks.keys())
+        self.valid_blocks = self.custom_blocks.keys()
         self.title_stack = []
         self.current_refid = None
         self.prefaces = []
