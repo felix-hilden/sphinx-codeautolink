@@ -195,13 +195,14 @@ is provided as a ready-made transformer.
 
 .. code:: python
 
-   from sphinx_codeautolink import clean_pycon
-
    extensions = [
        ...,
        "sphinx.ext.doctest",
    ]
-   codeautolink_custom_blocks = {"python3": None, "pycon3": clean_pycon}
+   codeautolink_custom_blocks = {
+       "python3": None,
+       "pycon3": "sphinx_codeautolink.clean_pycon",
+   }
 
 ``doctest`` and ``testcode`` blocks now work as expected.
 However, any test setup and teardown code is not taken into account.
