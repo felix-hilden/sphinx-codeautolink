@@ -14,6 +14,7 @@ Unreleased
 - Don't check for ``notranslate`` CSS class, allowing for additional classes
   (:issue:`75`)
 - Allow to specify block parsers as importable references (:issue:`76`)
+- Correctly produce links for ``py`` code blocks (:issue:`81`)
 
 0.7.0 (2021-11-28)
 ------------------

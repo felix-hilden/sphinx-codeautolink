@@ -230,7 +230,7 @@ def link_html(
     text = document.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
 
-    block_types = {'python', 'pycon'} | set(custom_blocks.keys())
+    block_types = {'python', 'py', 'pycon'} | set(custom_blocks.keys())
     classes = [f'highlight-{t}' for t in block_types] + ['doctest']
     classes += search_css_classes
 
