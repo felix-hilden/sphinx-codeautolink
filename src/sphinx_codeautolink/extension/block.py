@@ -14,7 +14,10 @@ from .backref import CodeExample
 from .directive import ConcatMarker, PrefaceMarker, SkipMarker
 
 
-BUILTIN_BLOCKS = {}
+BUILTIN_BLOCKS = {
+    'python': None,
+    'py': None,
+}
 
 
 @dataclass
@@ -32,15 +35,6 @@ class ParsingError(Exception):
 
 class UserError(Exception):
     """Error in sphinx-autocodelink usage."""
-
-
-def default_transform(source):
-    """Transform Python code with a no-op."""
-    return source, source
-
-
-BUILTIN_BLOCKS['python'] = default_transform
-BUILTIN_BLOCKS['py'] = default_transform
 
 
 def clean_pycon(source: str) -> Tuple[str, str]:
@@ -184,8 +178,11 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             return
 
         source = node.children[0].astext()
-        transformer = self.custom_blocks.get(language) or default_transform
-        source, clean_source = transformer(source)
+        transformer = self.custom_blocks.get(language)
+        if transformer:
+            source, clean_source = transformer(source)
+        else:
+            clean_source = source
         example = CodeExample(
             self.current_document, self.current_refid, list(self.title_stack)
         )
