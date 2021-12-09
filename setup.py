@@ -18,6 +18,7 @@ extras_require = {
     "tests": [
         "pytest>=6",
         "coverage[toml]>=5",
+        "ipython",
     ],
     "checks": [
         "tox",

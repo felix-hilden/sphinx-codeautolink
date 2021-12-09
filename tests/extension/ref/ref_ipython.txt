@@ -1,0 +1,14 @@
+test_project
+test_project.bar
+# split
+# split
+Test project
+============
+
+.. code:: ipython3
+
+   %cd subdir
+   import test_project
+   test_project.bar()
+
+.. automodule:: test_project
