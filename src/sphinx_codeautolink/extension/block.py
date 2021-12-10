@@ -91,7 +91,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.global_preface = global_preface
         self.transformers = BUILTIN_BLOCKS.copy()
         self.transformers.update(custom_blocks)
-        self.valid_blocks = self.custom_blocks.keys()
+        self.valid_blocks = self.transformers.keys()
         self.title_stack = []
         self.current_refid = None
         self.prefaces = []
@@ -178,7 +178,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             return
 
         source = node.children[0].astext()
-        transformer = self.custom_blocks[language]
+        transformer = self.transformers[language]
         if transformer:
             source, clean_source = transformer(source)
         else:
