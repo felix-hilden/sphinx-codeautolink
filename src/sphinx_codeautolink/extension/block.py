@@ -178,7 +178,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             return
 
         source = node.children[0].astext()
-        transformer = self.custom_blocks.get(language)
+        transformer = self.custom_blocks[language]
         if transformer:
             source, clean_source = transformer(source)
         else:
