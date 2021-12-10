@@ -28,6 +28,9 @@ extras_require = {
         "pydocstyle[toml]>=6.1",
         "pygments",
     ],
+    "ipython": [
+        "ipython",
+    ],
 }
 extras_require["dev"] = sum(extras_require.values(), [])
 
