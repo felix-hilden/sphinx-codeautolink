@@ -89,8 +89,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         relative_path = Path(self.document['source']).relative_to(source_dir)
         self.current_document = str(relative_path.with_suffix(''))
         self.global_preface = global_preface
-        self.custom_blocks = BUILTIN_BLOCKS
-        self.custom_blocks.update(custom_blocks)
+        self.transformers = BUILTIN_BLOCKS.copy()
+        self.transformers.update(custom_blocks)
         self.valid_blocks = self.custom_blocks.keys()
         self.title_stack = []
         self.current_refid = None
