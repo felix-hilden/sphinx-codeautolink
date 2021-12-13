@@ -26,6 +26,7 @@ extras_require = {
         "doc8>=0.9",
         "flake8",
         "flake8-bugbear",
+        "ipython",
         "pydocstyle[toml]>=6.1",
         "pygments",
     ],
