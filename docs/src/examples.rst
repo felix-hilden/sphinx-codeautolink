@@ -211,6 +211,27 @@ However, any test setup and teardown code is not taken into account.
    >>> import lib
    >>> lib.Knight()
 
+IPython code blocks
+-------------------
+Code blocks using the language setting ``ipython3`` are supported by default.
+The function :func:`~sphinx_codeautolink.clean_ipython` is used to handle
+IPython-specific syntax like so-called `magic functions`_.
+
+.. _magic functions: https://ipython.readthedocs.io/en/stable/
+   interactive/tutorial.html#magic-functions
+
+.. code-block:: ipython3
+
+   %reset
+   import lib
+   lib.Knight().taunt()
+
+This is useful for integrating Jupyter notebooks, which is possible with
+separate Sphinx extensions like nbsphinx_ or MyST-NB_.
+
+.. _nbsphinx: https://nbsphinx.readthedocs.io/
+.. _MyST-NB: https://myst-nb.readthedocs.io/
+
 Third-party code blocks
 -----------------------
 Third-party code blocks that use the basic Pygments lexers for Python
