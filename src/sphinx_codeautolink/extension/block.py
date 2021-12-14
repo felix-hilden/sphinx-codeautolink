@@ -14,6 +14,12 @@ from .backref import CodeExample
 from .directive import ConcatMarker, PrefaceMarker, SkipMarker
 
 
+BUILTIN_BLOCKS = {
+    'python': None,
+    'py': None,
+}
+
+
 @dataclass
 class SourceTransform:
     """Transforms on source code."""
@@ -29,11 +35,6 @@ class ParsingError(Exception):
 
 class UserError(Exception):
     """Error in sphinx-autocodelink usage."""
-
-
-def default_transform(source):
-    """Transform Python code with a no-op."""
-    return source, source
 
 
 def clean_pycon(source: str) -> Tuple[str, str]:
@@ -53,6 +54,24 @@ def clean_pycon(source: str) -> Tuple[str, str]:
     return source, '\n'.join(clean_lines)
 
 
+BUILTIN_BLOCKS['pycon'] = clean_pycon
+
+
+def clean_ipython(source: str) -> Tuple[str, str]:
+    """Clean up IPython syntax to pure Python."""
+    from IPython.core.inputtransformer2 import TransformerManager
+    return source, TransformerManager().transform_cell(source)
+
+
+try:
+    import IPython
+except ImportError:
+    pass
+else:
+    del IPython
+    BUILTIN_BLOCKS['ipython3'] = clean_ipython
+
+
 class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     """Transform literal blocks of Python with links to reference documentation."""
 
@@ -70,9 +89,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         relative_path = Path(self.document['source']).relative_to(source_dir)
         self.current_document = str(relative_path.with_suffix(''))
         self.global_preface = global_preface
-        self.custom_blocks = {'pycon': clean_pycon}
-        self.custom_blocks.update(custom_blocks)
-        self.valid_blocks = ('py', 'python') + tuple(self.custom_blocks.keys())
+        self.transformers = BUILTIN_BLOCKS.copy()
+        self.transformers.update(custom_blocks)
+        self.valid_blocks = self.transformers.keys()
         self.title_stack = []
         self.current_refid = None
         self.prefaces = []
@@ -159,10 +178,11 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             return
 
         source = node.children[0].astext()
-        transformer = (
-            self.custom_blocks.get(language, default_transform) or default_transform
-        )
-        source, clean_source = transformer(source)
+        transformer = self.transformers[language]
+        if transformer:
+            source, clean_source = transformer(source)
+        else:
+            clean_source = source
         example = CodeExample(
             self.current_document, self.current_refid, list(self.title_stack)
         )
@@ -230,7 +250,7 @@ def link_html(
     text = document.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
 
-    block_types = {'python', 'py', 'pycon'} | set(custom_blocks.keys())
+    block_types = BUILTIN_BLOCKS.keys() | custom_blocks.keys()
     classes = [f'highlight-{t}' for t in block_types] + ['doctest']
     classes += search_css_classes
 

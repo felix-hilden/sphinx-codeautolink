@@ -13,19 +13,25 @@ extras_require = {
     ],
     "docs": [
         "sphinx-rtd-theme",
-        "matplotlib"
+        "matplotlib",
+        "ipython",
     ],
     "tests": [
         "pytest>=6",
         "coverage[toml]>=5",
+        "ipython",
     ],
     "checks": [
         "tox",
         "doc8>=0.9",
         "flake8",
         "flake8-bugbear",
+        "ipython",
         "pydocstyle[toml]>=6.1",
         "pygments",
+    ],
+    "ipython": [
+        "ipython",
     ],
 }
 extras_require["dev"] = sum(extras_require.values(), [])

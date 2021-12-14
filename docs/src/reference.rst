@@ -111,9 +111,12 @@ CSS class
 ---------
 The CSS class used in all code block links is ``sphinx-codeautolink-a``.
 
-Cleanup function
-----------------
-The function below is usable for cleaning ``pycon`` code blocks.
-It is intended to be used with :confval:`codeautolink_custom_blocks`.
+Cleanup functions
+-----------------
+The functions below are usable for cleaning
+``pycon`` and ``ipython`` code blocks.
+They are intended to be used with :confval:`codeautolink_custom_blocks`.
 
 .. autofunction:: sphinx_codeautolink.clean_pycon
+
+.. autofunction:: sphinx_codeautolink.clean_ipython
