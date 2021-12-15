@@ -1,0 +1,4 @@
+-r extras
+
+pytest>=6
+coverage[toml]>=5

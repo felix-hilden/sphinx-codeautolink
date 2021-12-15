@@ -6,36 +6,6 @@ root = Path(os.path.realpath(__file__)).parent
 version_file = root / "src" / "sphinx_codeautolink" / "VERSION"
 readme_file = root / "readme_pypi.rst"
 
-extras_require = {
-    "build": [
-        "build",
-        "twine",
-    ],
-    "docs": [
-        "sphinx-rtd-theme",
-        "matplotlib",
-        "ipython",
-    ],
-    "tests": [
-        "pytest>=6",
-        "coverage[toml]>=5",
-        "ipython",
-    ],
-    "checks": [
-        "tox",
-        "doc8>=0.9",
-        "flake8",
-        "flake8-bugbear",
-        "ipython",
-        "pydocstyle[toml]>=6.1",
-        "pygments",
-    ],
-    "ipython": [
-        "ipython",
-    ],
-}
-extras_require["dev"] = sum(extras_require.values(), [])
-
 setuptools.setup(
     name="sphinx-codeautolink",
     version=version_file.read_text().strip(),
@@ -68,7 +38,10 @@ setuptools.setup(
         'beautifulsoup4',
         'dataclasses;python_version<"3.7"',
     ],
-    extras_require=extras_require,
+    # Keep extras in sync with requirements manually
+    extras_require={
+        "ipython": ["ipython"],
+    },
 
     classifiers=[
         'Development Status :: 4 - Beta',
