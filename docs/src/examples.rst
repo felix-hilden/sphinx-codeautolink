@@ -221,7 +221,7 @@ IPython-specific syntax like so-called `magic functions`_.
 .. _magic functions: https://ipython.readthedocs.io/en/stable/
    interactive/tutorial.html#magic-functions
 
-.. code-block:: ipython3
+.. code:: ipython3
 
    %reset
    import lib
@@ -229,6 +229,12 @@ IPython-specific syntax like so-called `magic functions`_.
 
 This is useful for integrating Jupyter notebooks, which is possible with
 separate Sphinx extensions like nbsphinx_ or MyST-NB_.
+IPython processing is enabled if the ``ipython`` library is installed.
+It is also included in the ``ipython`` extra of sphinx-codeautolink.
+
+.. code:: sh
+
+   pip install sphinx-codeautolink[ipython]
 
 .. _nbsphinx: https://nbsphinx.readthedocs.io/
 .. _MyST-NB: https://myst-nb.readthedocs.io/

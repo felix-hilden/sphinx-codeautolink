@@ -24,9 +24,11 @@ Using a virtual environment of your choice for the installation is recommended.
 
     $ git clone https://github.com/felix-hilden/sphinx-codeautolink.git
     $ cd sphinx-codeautolink
-    $ pip install -e .[dev]
+    $ pip install -e .
+    $ pip install -r requirements/dev
 
-The last command installs all the necessary extra dependencies for development.
+The last command installs all the necessary tools for development
+as well as all optional dependencies.
 
 If you forked, consider adding the upstream repository as a remote to easily
 update your main branch with the latest upstream changes.
