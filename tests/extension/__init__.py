@@ -8,7 +8,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from sphinx.cmd.build import main as sphinx_main
 
-from ._check import check_links
+from ._check import check_link_targets
 
 # Insert test package root to path for all tests
 sys.path.insert(0, str(Path(__file__).parent / "src"))
@@ -32,6 +32,16 @@ ref_xfails = {
     'ref_fluent_call.txt': sys.version_info < (3, 8),
     'ref_import_from_complex.txt': sys.version_info < (3, 8),
 }
+
+
+def assert_links(file: Path, links: list):
+    text = file.read_text('utf-8')
+    soup = BeautifulSoup(text, 'html.parser')
+    blocks = list(soup.find_all('a', attrs={'class': 'sphinx-codeautolink-a'}))
+
+    assert len(blocks) == len(links)
+    for block, link in zip(blocks, links):
+        assert any_whitespace.sub('', ''.join(block.strings)) == link
 
 
 @pytest.mark.parametrize('file', ref_tests)
@@ -61,15 +71,8 @@ def test_references(file: Path, tmp_path: Path):
     files = {'conf.py': default_conf + conf, 'index.rst': index}
     result_dir = _sphinx_build(tmp_path, 'html', files)
 
-    index_html = result_dir / 'index.html'
-    text = index_html.read_text('utf-8')
-    soup = BeautifulSoup(text, 'html.parser')
-    blocks = list(soup.find_all('a', attrs={'class': 'sphinx-codeautolink-a'}))
-
-    assert len(blocks) == len(links)
-    for block, link in zip(blocks, links):
-        assert any_whitespace.sub('', ''.join(block.strings)) == link
-    assert check_links(result_dir) == len(links)
+    assert_links(result_dir / 'index.html', links)
+    assert check_link_targets(result_dir) == len(links)
 
 
 table_tests = list(Path(__file__).with_name('table').glob('*.txt'))
@@ -137,17 +140,16 @@ def test_fails(file: Path, tmp_path: Path):
 
 def test_non_html_build(tmp_path: Path):
     index = """
-Test package
+Test project
 ------------
 
-.. autolink-concat::
 .. code:: python
 
-   import test_package
-   test_package.bar()
+   import test_project
+   test_project.bar()
 
 .. automodule:: test_project
-.. autolink-examples:: test_package.bar
+.. autolink-examples:: test_project.bar
 """
     files = {'conf.py': default_conf, 'index.rst': index}
     _sphinx_build(tmp_path, 'man', files)
@@ -155,14 +157,13 @@ Test package
 
 def test_build_twice_and_modify_one_file(tmp_path: Path):
     index = """
-Test package
+Test project
 ------------
 
-.. autolink-concat::
 .. code:: python
 
-   import test_package
-   test_package.bar()
+   import test_project
+   test_project.bar()
 
 .. automodule:: test_project
 
@@ -189,14 +190,13 @@ But edited.
 
 def test_build_twice_and_delete_one_file(tmp_path: Path):
     index = """
-Test package
+Test project
 ------------
 
-.. autolink-concat::
 .. code:: python
 
-   import test_package
-   test_package.bar()
+   import test_project
+   test_project.bar()
 
 .. automodule:: test_project
 
@@ -207,7 +207,7 @@ Test package
     another = """
 Another
 -------
-.. autolink-examples:: test_package.bar
+.. autolink-examples:: test_project.bar
 """
 
     files = {'conf.py': default_conf, 'index.rst': index, 'another.rst': another}
@@ -218,14 +218,13 @@ Another
 
 def test_raise_unexpected(tmp_path: Path):
     index = """
-Test package
+Test project
 ------------
 
-.. autolink-concat::
 .. code:: python
 
-   import test_package
-   test_package.bar()
+   import test_project
+   test_project.bar()
 
 .. automodule:: test_project
 """
@@ -245,7 +244,41 @@ Test package
         _sphinx_build(tmp_path, 'html', files)
 
 
-def _sphinx_build(folder: Path, builder: str, files: Dict[str, str]) -> Path:
+def test_parallel_build(tmp_path: Path):
+    index = """
+Test project
+------------
+.. automodule:: test_project
+.. toctree::
+"""
+    template = """
+{header}
+---
+.. code:: python
+
+   import test_project
+   test_project.bar()
+"""
+    links = ['test_project', 'test_project.bar']
+
+    n_subfiles = 20
+    subfiles = {
+        name: template.format(header=name)
+        for name in map(lambda x: f'F{x}', range(n_subfiles))
+    }
+    index = index + '\n   '.join([''] + list(subfiles))
+    files = {'conf.py': default_conf, 'index.rst': index}
+    files.update({k + '.rst': v for k, v in subfiles.items()})
+    result_dir = _sphinx_build(tmp_path, 'html', files, n_processes=4)
+
+    for file in subfiles:
+        assert_links(result_dir / (file + '.html'), links)
+    assert check_link_targets(result_dir) == n_subfiles * len(links)
+
+
+def _sphinx_build(
+    folder: Path, builder: str, files: Dict[str, str], n_processes: int = None
+) -> Path:
     """Build Sphinx documentation and return result folder."""
     src_dir = folder / 'src'
     src_dir.mkdir(exist_ok=True)
@@ -253,7 +286,10 @@ def _sphinx_build(folder: Path, builder: str, files: Dict[str, str]) -> Path:
         (src_dir / name).write_text(content, 'utf-8')
 
     build_dir = folder / 'build'
-    ret_val = sphinx_main(['-M', builder, str(src_dir), str(build_dir)])
+    args = ['-M', builder, str(src_dir), str(build_dir)]
+    if n_processes:
+        args.extend(['-j', str(n_processes)])
+    ret_val = sphinx_main(args)
     if ret_val:
         raise RuntimeError('Sphinx build failed!')
     return build_dir / builder

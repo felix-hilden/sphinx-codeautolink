@@ -85,6 +85,7 @@ class SphinxCodeAutoLink:
 
         self.cache = DataCache(app.doctreedir, app.srcdir)
         self.cache.read()
+        app.env.sphinx_codeautolink_transforms = self.cache.transforms
         self.outdated_docs = {str(Path(d)) for d in app.builder.get_outdated_docs()}
         self.custom_blocks = app.config.codeautolink_custom_blocks
         for k, v in self.custom_blocks.items():
@@ -128,6 +129,18 @@ class SphinxCodeAutoLink:
         )
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms
+
+    @staticmethod
+    def merge_environments(app, env, docnames, other):
+        """Merge transform information."""
+        env.sphinx_codeautolink_transforms.update(
+            other.sphinx_codeautolink_transforms
+        )
+
+    def purge_doc_from_environment(self, app, env, docname):
+        """Remove transforms from cache."""
+        if self.cache:
+            self.cache.transforms.pop(docname, None)
 
     @staticmethod
     def make_inventory(app):

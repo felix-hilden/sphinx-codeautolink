@@ -8,7 +8,7 @@ sess = requests.Session()
 external_site_ids = {}
 
 
-def check_links(root: Path) -> int:
+def check_link_targets(root: Path) -> int:
     """Validate links in HTML site at root, return number of links found."""
     site_docs = {
         p.relative_to(root): BeautifulSoup(p.read_text('utf-8'), 'html.parser')
