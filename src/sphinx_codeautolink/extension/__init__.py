@@ -61,15 +61,20 @@ class SphinxCodeAutoLink:
     """Provide functionality and manage state between events."""
 
     def __init__(self):
+        # Configuration
         self.do_nothing = False
-        self.cache: Optional[DataCache] = None
-        self.code_refs: Dict[str, List[CodeExample]] = {}
-        self._inventory = {}
-        self.outdated_docs: Set[str] = set()
         self.global_preface: List[str] = []
         self.custom_blocks = None
         self.concat_default = None
         self.search_css_classes = None
+
+        # Populated once
+        self.outdated_docs: Set[str] = set()
+        self.inventory = {}
+        self.code_refs: Dict[str, List[CodeExample]] = {}
+
+        # Changing state
+        self.cache: Optional[DataCache] = None
 
     @print_exceptions()
     def build_inited(self, app):
@@ -124,48 +129,9 @@ class SphinxCodeAutoLink:
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms
 
-    @print_exceptions(append_source=True)
-    def generate_backref_tables(self, app, doctree, docname):
-        """Generate backreference tables."""
-        self.once_on_doctree_resolved(app)
-        if self.do_nothing:
-            rm_vis = RemoveExtensionVisitor(doctree)
-            return doctree.walkabout(rm_vis)
-
-        visitor = CodeRefsVisitor(doctree, code_refs=self.code_refs)
-        doctree.walk(visitor)
-
-    def once_on_doctree_resolved(self, app):
-        """Clean source transforms and create code references."""
-        if self.code_refs or self.do_nothing:
-            return
-
-        for transforms in self.cache.transforms.values():
-            self.filter_and_resolve(transforms, app)
-            for transform in transforms:
-                for name in transform.names:
-                    self.code_refs.setdefault(name.resolved_location, []).append(
-                        transform.example
-                    )
-
-    def filter_and_resolve(self, transforms: List[SourceTransform], app):
-        """Try to link name chains to objects."""
-        inventory = self.make_inventory(app)
-        for transform in transforms:
-            filtered = []
-            for name in transform.names:
-                key = resolve_location(name, inventory)
-                if not key or key not in inventory:
-                    continue
-                name.resolved_location = key
-                filtered.append(name)
-            transform.names = filtered
-
-    def make_inventory(self, app):
+    @staticmethod
+    def make_inventory(app):
         """Create object inventory from local info and intersphinx."""
-        if self._inventory:
-            return self._inventory
-
         inv_parts = {
             k: str(
                 Path(app.outdir)
@@ -179,8 +145,44 @@ class SphinxCodeAutoLink:
         inter_inv = InventoryAdapter(app.env).main_inventory
         transposed = transpose_inventory(inter_inv, relative_to=app.outdir)
         transposed.update(transpose_inventory(inventory, relative_to=app.outdir))
-        self._inventory = transposed
-        return self._inventory
+        return transposed
+
+    @print_exceptions()
+    def create_references(self, app, env):
+        """Clean source transforms and create code references."""
+        if self.do_nothing:
+            return
+
+        self.inventory = self.make_inventory(app)
+        for transforms in self.cache.transforms.values():
+            self.filter_and_resolve(transforms)
+            for transform in transforms:
+                for name in transform.names:
+                    self.code_refs.setdefault(name.resolved_location, []).append(
+                        transform.example
+                    )
+
+    def filter_and_resolve(self, transforms: List[SourceTransform]):
+        """Try to link name chains to objects."""
+        for transform in transforms:
+            filtered = []
+            for name in transform.names:
+                key = resolve_location(name, self.inventory)
+                if not key or key not in self.inventory:
+                    continue
+                name.resolved_location = key
+                filtered.append(name)
+            transform.names = filtered
+
+    @print_exceptions(append_source=True)
+    def generate_backref_tables(self, app, doctree, docname):
+        """Generate backreference tables."""
+        if self.do_nothing:
+            rm_vis = RemoveExtensionVisitor(doctree)
+            return doctree.walkabout(rm_vis)
+
+        visitor = CodeRefsVisitor(doctree, code_refs=self.code_refs)
+        doctree.walk(visitor)
 
     @print_exceptions()
     def apply_links(self, app, exception):
@@ -196,7 +198,7 @@ class SphinxCodeAutoLink:
                 file,
                 app.outdir,
                 transforms,
-                self.make_inventory(app),
+                self.inventory,
                 self.custom_blocks,
                 self.search_css_classes,
             )
