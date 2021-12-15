@@ -16,6 +16,7 @@ Unreleased
 - Allow to specify block parsers as importable references (:issue:`76`)
 - Correctly produce links for ``py`` code blocks (:issue:`81`)
 - Automatic support for ``ipython3`` code blocks (:issue:`79`)
+- Allow parallel builds (:issue:`77`)
 
 0.7.0 (2021-11-28)
 ------------------

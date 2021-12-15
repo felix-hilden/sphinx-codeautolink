@@ -29,6 +29,8 @@ def setup(app: Sphinx):
     app.connect('builder-inited', state.build_inited)
     app.connect('autodoc-process-docstring', state.autodoc_process_docstring)
     app.connect('doctree-read', state.parse_blocks)
+    app.connect('env-merge-info', state.merge_environments)
+    app.connect('env-purge-doc', state.purge_doc_from_environment)
     app.connect('env-updated', state.create_references)
     app.connect('doctree-resolved', state.generate_backref_tables)
     app.connect('build-finished', state.apply_links)
@@ -39,4 +41,4 @@ def setup(app: Sphinx):
     app.add_node(
         backref.SummaryNode, html=(backref.visit_summary, backref.depart_summary)
     )
-    return {'version': __version__}
+    return {'version': __version__, 'parallel_read_safe': True}

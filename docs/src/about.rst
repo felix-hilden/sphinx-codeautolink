@@ -47,8 +47,10 @@ Caveats
   on the expected failures, see our `test suite on GitHub <https://github.com
   /felix-hilden/sphinx-codeautolink>`_. Please report any unexpected failures!
 
-Clean Sphinx build
-------------------
+Sphinx semantics
+----------------
+Clean build
+***********
 For correct partial builds, code reference information is saved to a file
 which is updated when parsing new or outdated files.
 It shouldn't become outdated, but a clean build can be achieved with
@@ -56,10 +58,16 @@ It shouldn't become outdated, but a clean build can be achieved with
 #cmdoption-sphinx-build-E>`_ or by deleting the build directory.
 
 Sphinx cache
-------------
+************
 A function specified in :confval:`codeautolink_custom_blocks` prevents Sphinx
 from caching documentation results. Consider using an importable instead.
 For more information, see the discussion in :issue:`76`.
+
+Parallel build and custom parsers
+*********************************
+Locally defined custom block parsers in :confval:`codeautolink_custom_blocks`
+cannot be passed to Pickle, which prevents parallel Sphinx builds.
+Please consider using an importable function instead.
 
 Copying code blocks
 -------------------
