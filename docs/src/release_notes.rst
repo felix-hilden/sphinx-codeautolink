@@ -8,15 +8,15 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.8.0 (2021-12-16)
+------------------
 - Correctly test for optional types in annotations (:issue:`72`)
 - Don't check for ``notranslate`` CSS class, allowing for additional classes
   (:issue:`75`)
 - Allow to specify block parsers as importable references (:issue:`76`)
-- Correctly produce links for ``py`` code blocks (:issue:`81`)
-- Automatic support for ``ipython3`` code blocks (:issue:`79`)
 - Allow parallel builds (:issue:`77`)
+- Automatic support for ``ipython3`` code blocks (:issue:`79`)
+- Correctly produce links for ``py`` code blocks (:issue:`81`)
 
 0.7.0 (2021-11-28)
 ------------------
