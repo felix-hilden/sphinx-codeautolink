@@ -286,7 +286,7 @@ def _sphinx_build(
         (src_dir / name).write_text(content, 'utf-8')
 
     build_dir = folder / 'build'
-    args = ['-M', builder, str(src_dir), str(build_dir)]
+    args = ['-M', builder, str(src_dir), str(build_dir), '-W']
     if n_processes:
         args.extend(['-j', str(n_processes)])
     ret_val = sphinx_main(args)

@@ -9,9 +9,7 @@ from sphinx.util import import_object
 from sphinx.ext.intersphinx import InventoryAdapter
 
 from .backref import CodeRefsVisitor, CodeExample
-from .block import (
-    CodeBlockAnalyser, SourceTransform, link_html, UserError, ParsingError
-)
+from .block import CodeBlockAnalyser, SourceTransform, link_html
 from .directive import RemoveExtensionVisitor
 from .cache import DataCache
 from .resolve import resolve_location
@@ -40,8 +38,6 @@ def print_exceptions(append_source: bool = False):
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except (UserError, ParsingError):
-                raise
             except Exception as e:
                 print_exc()
                 if append_source:

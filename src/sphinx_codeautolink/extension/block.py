@@ -28,14 +28,6 @@ class SourceTransform:
     example: CodeExample
 
 
-class ParsingError(Exception):
-    """Error in sphinx-autocodelink parsing."""
-
-
-class UserError(Exception):
-    """Error in sphinx-autocodelink usage."""
-
-
 def clean_pycon(source: str) -> Tuple[str, str]:
     """Clean up Python console syntax to pure Python."""
     in_statement = False
@@ -103,10 +95,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         """Handle and delete custom directives, ignore others."""
         if isinstance(node, ConcatMarker):
             if node.mode not in ('off', 'section', 'on'):
-                raise UserError(
-                    f'Invalid concatenation argument: `{node.mode}` '
-                    f'in document "{self.current_document}"'
-                )
+                msg = f'Invalid concatenation argument: `{node.mode}`'
+                logger.error(msg, type=warn_type, subtype='user_error', location=node)
 
             self.concat_sources = []
             if node.mode == 'section':
@@ -120,10 +110,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             node.parent.remove(node)
         elif isinstance(node, SkipMarker):
             if node.level not in ('next', 'section', 'file', 'off'):
-                raise UserError(
-                    f'Invalid skipping argument: `{node.level}` '
-                    f'in document "{self.current_document}"'
-                )
+                msg = f'Invalid skipping argument: `{node.level}`'
+                logger.error(msg, type=warn_type, subtype='user_error', location=node)
             self.skip = node.level if node.level != 'off' else None
             node.parent.remove(node)
 
@@ -219,7 +207,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 f'Parsed source in `{language}` block:',
                 show_source,
             ])
-            raise ParsingError(msg + '\n') from e
+            logger.error(msg, type=warn_type, subtype='parsing_error', location=node)
+            return
 
         if prefaces or self.concat_sources or self.global_preface:
             concat_lens = [s.count('\n') + 1 for s in self.concat_sources]
