@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Use Sphinx logging instead of the builtin ``warnings`` to warn (:issue:`89`)
+
 0.8.0 (2021-12-16)
 ------------------
 - Correctly test for optional types in annotations (:issue:`72`)

@@ -3,7 +3,6 @@ import re
 
 from typing import List, Union, Optional, Dict, Callable, Tuple
 from pathlib import Path
-from warnings import warn
 from dataclasses import dataclass
 
 from bs4 import BeautifulSoup
@@ -12,7 +11,7 @@ from docutils import nodes
 from ..parse import parse_names, Name, LinkContext
 from .backref import CodeExample
 from .directive import ConcatMarker, PrefaceMarker, SkipMarker
-
+from .warn import logger, warn_type
 
 BUILTIN_BLOCKS = {
     'python': None,
@@ -273,11 +272,10 @@ def link_html(
                 inner = inners.pop(ix)
                 break
         else:
-            msg = (
-                f'Could not match a code example to HTML in document "{document}", '
-                f'source:\n{trans.source}'
+            msg = f'Could not match a code example to HTML, source:\n{trans.source}'
+            logger.warning(
+                msg, type=warn_type, subtype='match_block', location=str(document)
             )
-            warn(msg, RuntimeWarning)
             continue
 
         lines = str(inner).split('\n')
@@ -292,10 +290,12 @@ def link_html(
             if not matches:
                 msg = (
                     f'Could not match transformation of `{name.code_str}` '
-                    f'on source lines {name.lineno}-{name.end_lineno} '
-                    f'in document "{document}", source:\n{trans.source}'
+                    f'on source lines {name.lineno}-{name.end_lineno}, '
+                    f'source:\n{trans.source}'
                 )
-                warn(msg, RuntimeWarning)
+                logger.warning(
+                    msg, type=warn_type, subtype='match_name', location=str(document)
+                )
                 continue
 
             start, end = matches[0].span()

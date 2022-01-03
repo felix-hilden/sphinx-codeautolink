@@ -120,3 +120,12 @@ They are intended to be used with :confval:`codeautolink_custom_blocks`.
 .. autofunction:: sphinx_codeautolink.clean_pycon
 
 .. autofunction:: sphinx_codeautolink.clean_ipython
+
+Warning types
+-------------
+Sphinx logging machinery is used to issue warnings during documentation builds.
+All warning subtypes below are in the ``codeautolink.*`` namespace
+and can be ignored with configuring ``suppress_warnings``.
+
+- ``match_block``: issued when a block cannot be matched
+- ``match_name``: issued when a code snippet cannot be matched
