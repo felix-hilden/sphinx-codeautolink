@@ -1,0 +1,16 @@
+print
+RuntimeError
+# split
+extensions = [
+    "sphinx.ext.intersphinx",
+    "sphinx_codeautolink",
+]
+intersphinx_mapping = {"python": ('https://docs.python.org/3/', None)}
+# split
+Test project
+============
+
+.. code:: python
+
+   print("Hi")
+   raise RuntimeError("Bye")

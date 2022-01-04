@@ -79,13 +79,13 @@ class TestAssign:
 
     @refs_equal
     def test_annassign_uses_imported(self):
-        s = 'import a\na: str = 1\na'
+        s = 'import a\na: b = 1\na'
         refs = [('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_annassign_uses_and_assigns_imported(self):
-        s = 'import a\na: str = a\na'
+        s = 'import a\na: b = a\na'
         refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
         return s, refs
 
@@ -97,7 +97,7 @@ class TestAssign:
 
     @refs_equal
     def test_annassign_without_value_overrides_annotation_but_not_linked(self):
-        s = 'import a\na: str\na'
+        s = 'import a\na: b\na'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 

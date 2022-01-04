@@ -41,6 +41,7 @@ autodoc_default_options = {
 }
 autodoc_typehints = "description"
 intersphinx_mapping = {
+    "python": ('https://docs.python.org/3/', None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
 }

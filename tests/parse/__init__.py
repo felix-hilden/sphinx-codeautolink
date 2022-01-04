@@ -19,6 +19,19 @@ class TestSimple:
         return '1\na = 2\nb()', []
 
     @refs_equal
+    def test_builtins(self):
+        s = 'print()'
+        refs = [('print', 'print')]
+        return s, refs
+
+    @pytest.mark.xfail(reason='Magics are currently not tracked.')
+    @refs_equal
+    def test_magics(self):
+        s = '__file__'
+        refs = [('__file__', '__file__')]
+        return s, refs
+
+    @refs_equal
     def test_import_from(self):
         s = 'from lib import a'
         refs = [('lib', 'lib'), ('lib.a', 'a')]

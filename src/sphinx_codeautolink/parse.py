@@ -1,6 +1,7 @@
 """Analyse AST of code blocks to determine used names and their sources."""
 import ast
 import sys
+import builtins
 
 from contextlib import contextmanager
 from enum import Enum
@@ -201,6 +202,11 @@ def track_parents(func):
     return wrapper
 
 
+builtin_components: Dict[str, List[Component]] = {
+    b: [Component(b, -1, -1, LinkContext.none)] for b in dir(builtins)
+}
+
+
 class ImportTrackerVisitor(ast.NodeVisitor):
     """Track imports and their use through source code."""
 
@@ -213,7 +219,9 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         # Stack for dealing with class body pseudo scopes
         # which are completely bypassed by inner scopes (func, lambda).
         # Current values are copied to the next class body level.
-        self.pseudo_scopes_stack: List[Dict[str, List[Component]]] = [{}]
+        self.pseudo_scopes_stack: List[Dict[str, List[Component]]] = [
+            builtin_components.copy()
+        ]
         # Stack for dealing with nested scopes.
         # Holds references to the values of previous nesting levels.
         self.outer_scopes_stack: List[Dict[str, List[Component]]] = []

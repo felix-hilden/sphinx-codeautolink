@@ -158,11 +158,18 @@ An object type "class" seems to work for other types as well.
 
 Intersphinx integration
 -----------------------
-When writing documentation that references other libraries, `intersphinx
+When writing code examples that use builtins or other libraries, `intersphinx
 <https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html>`_
-is a great extension to use. It enables links to documentation on other sites.
-sphinx-codeautolink integrates this functionality seamlessly,
-linking objects as long as the correct ``intersphinx_mapping`` is defined.
+can be used to enable links to documentation on other Sphinx-generated sites.
+Intersphinx is integrated seamlessly, linking objects as long as the correct
+``intersphinx_mapping`` is defined.
+
+.. code:: python
+
+   if __debug__:
+       print(...)
+   else:
+       raise RuntimeError(f"Could not debug!")
 
 .. code:: python
 

@@ -310,10 +310,10 @@ def link_html(
 # ---------------------------------------------------------------
 period = r'\s*<span class="o">.</span>\s*'
 name_pattern = '<span class="n">{name}</span>'
-# Pygments has special classes for decorators (nd) and builtins (nb),
+# Pygments has special classes for different types of nouns
 # which are also highlighted in import statements
-first_name_pattern = '<span class="n[bd]?">@?{name}</span>'
-import_target_pattern = '<span class="n[nb]?">{name}</span>'
+first_name_pattern = '<span class="[a-z]+">@?{name}</span>'
+import_target_pattern = '<span class="[a-z]+">{name}</span>'
 import_from_pattern = '<span class="nn">{name}</span>'
 
 # The builtin re doesn't support variable-width lookbehind,

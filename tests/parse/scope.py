@@ -175,61 +175,61 @@ class TestFunction:
 class TestComprehension:
     @refs_equal
     def test_comp_uses_in_value(self):
-        s = 'import a\n[a for _ in range(2)]'
+        s = 'import a\n[a for b in c]'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_setcomp_uses_in_value(self):
-        s = 'import a\n{a for _ in range(2)}'
+        s = 'import a\n{a for b in c}'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_dictcomp_uses_in_value(self):
-        s = 'import a\n{a: a for _ in range(2)}'
+        s = 'import a\n{a: a for b in c}'
         refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_generator_uses_in_value(self):
-        s = 'import a\n(a for _ in range(2))'
+        s = 'import a\n(a for b in c)'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_comp_uses_in_ifs(self):
-        s = 'import a\n[_ for _ in range(2) if a]'
+        s = 'import a\n[_ for _ in b if a]'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_comp_uses_in_iter(self):
-        s = 'import a\n[_ for _ in range(a)]'
+        s = 'import a\n[_ for _ in b(a)]'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_comp_overrides(self):
-        s = 'import a\n[a for a in range(2) if a]'
+        s = 'import a\n[a for a in b if a]'
         refs = [('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_comp_overrides_used_after(self):
-        s = 'import a\n[a for a in range(2)]\na'
+        s = 'import a\n[a for a in b]\na'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_multicomp_overrides(self):
-        s = 'import a\n[a for a in range(2) for b in a]'
+        s = 'import a\n[a for a in b for b in a]'
         refs = [('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_multicomp_uses_then_overrides(self):
-        s = 'import a\n[a for b in range(a) for a in b]'
+        s = 'import a\n[a for b in c(a) for a in b]'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
@@ -239,7 +239,7 @@ class TestComprehension:
     @pytest.mark.xfail(reason='Assignments are not tracked.')
     @refs_equal
     def test_comp_leaks_walrus(self):
-        s = 'import a\n[a := i for i in range(2)]\na'
+        s = 'import a\n[a := i for i in b]\na'
         refs = [('a', 'a')]
         return s, refs
 
