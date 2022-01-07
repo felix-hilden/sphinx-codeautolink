@@ -49,9 +49,19 @@ BUILTIN_BLOCKS['pycon'] = clean_pycon
 
 
 def clean_ipython(source: str) -> Tuple[str, str]:
-    """Clean up IPython syntax to pure Python."""
+    """Clean up IPython magics and console syntax to pure Python."""
     from IPython.core.inputtransformer2 import TransformerManager
-    return source, TransformerManager().transform_cell(source)
+
+    in_statement = True
+    clean_lines = []
+    for line in source.split('\n'):
+        if re.match(r'^In \[[0-9]+\]:\s', line):
+            in_statement = True
+        elif re.match(r'^Out\[[0-9]+\]:\s', line):
+            in_statement = False
+        clean_lines.append(line * in_statement)
+
+    return source, TransformerManager().transform_cell('\n'.join(clean_lines))
 
 
 try:
@@ -60,6 +70,7 @@ except ImportError:
     pass
 else:
     del IPython
+    BUILTIN_BLOCKS['ipython'] = clean_ipython
     BUILTIN_BLOCKS['ipython3'] = clean_ipython
 
 

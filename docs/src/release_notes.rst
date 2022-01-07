@@ -14,6 +14,7 @@ Unreleased
 - Link builtins if visible to intersphinx (:issue:`87`)
 - Use Sphinx logging instead of the builtin ``warnings`` to warn
   (:issue:`89`, :issue:`94`)
+- Support IPython's ``.. ipython::`` directive (:issue:`91`)
 
 0.8.0 (2021-12-16)
 ------------------

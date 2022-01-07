@@ -1,17 +1,20 @@
 test_project
 test_project.bar
 # split
+extensions.append('IPython.sphinxext.ipython_directive')
 # split
 Test project
 ============
 
-.. code:: ipython
+.. ipython::
 
-   In [1]: %cd subdir
    In [2]: import test_project
+
    In [3]: b = test_project.bar()
+
    In [4]: 2 + 2
    Out[4]: 4
+
    In [5]: class A:
       ...:     pass
 
