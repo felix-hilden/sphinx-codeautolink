@@ -55,9 +55,9 @@ def clean_ipython(source: str) -> Tuple[str, str]:
     in_statement = True
     clean_lines = []
     for line in source.split('\n'):
-        if re.match(r'^In \[[0-9]+\]:\s', line):
+        if re.match(r'^In \[[0-9]+\]: ', line):
             in_statement = True
-        elif re.match(r'^Out\[[0-9]+\]:\s', line):
+        elif re.match(r'^Out\[[0-9]+\]: ', line):
             in_statement = False
         clean_lines.append(line * in_statement)
 
