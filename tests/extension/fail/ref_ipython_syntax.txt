@@ -1,0 +1,22 @@
+extensions.append('IPython.sphinxext.ipython_directive')
+# split
+Test project
+============
+
+.. ipython::
+   :verbatim:
+
+   In [15]: !wc *
+       2    12    77 README.txt
+      40    97   884 buttons.py
+      26    90   712 check_buttons.py
+      19    52   416 cursor.py
+     180   404  4882 menu.py
+      16    45   337 multicursor.py
+      36   106   916 radio_buttons.py
+      48   226  2082 rectangle_selector.py
+      43   118  1063 slider_demo.py
+      40   124  1088 span_selector.py
+     450  1274 12457 total
+
+.. automodule:: test_project
