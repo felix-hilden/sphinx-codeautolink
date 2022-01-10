@@ -207,7 +207,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 f'Parsed source in `{language}` block:',
                 show_source,
             ])
-            logger.error(msg, type=warn_type, subtype='parsing_error', location=node)
+            logger.warning(msg, type=warn_type, subtype='parsing_error', location=node)
             return
 
         if prefaces or self.concat_sources or self.global_preface:
