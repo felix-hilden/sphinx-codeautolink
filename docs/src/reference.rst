@@ -40,6 +40,8 @@ Configuration
    The transformer must return two strings: the code appearing in documentation
    (often just the original source) and the cleaned Python source code.
    The transformer must preserve line numbers for correct matching.
+   The transformer may raise a syntax error, which is caught automatically and
+   a corresponding Sphinx warning using subtype "parsing_error" is issued.
 
 .. confval:: codeautolink_search_css_classes
 

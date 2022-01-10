@@ -219,11 +219,11 @@ However, any test setup and teardown code is not taken into account.
    >>> import lib
    >>> lib.Knight()
 
-IPython code blocks
--------------------
-Code blocks using the language setting ``ipython3`` are supported by default.
+IPython blocks and notebooks
+----------------------------
+Code blocks using ``ipython`` or ``ipython3`` lexers are supported by default.
 The function :func:`~sphinx_codeautolink.clean_ipython` is used to handle
-IPython-specific syntax like so-called `magic functions`_.
+IPython-specific syntax like `magic functions`_ and console prefixes.
 
 .. _magic functions: https://ipython.readthedocs.io/en/stable/
    interactive/tutorial.html#magic-functions
@@ -234,8 +234,18 @@ IPython-specific syntax like so-called `magic functions`_.
    import lib
    lib.Knight().taunt()
 
-This is useful for integrating Jupyter notebooks, which is possible with
-separate Sphinx extensions like nbsphinx_ or MyST-NB_.
+IPython's ``.. ipython::`` `directive <https://ipython.readthedocs.io/en/
+stable/sphinxext.html#>`_ is also supported:
+
+.. ipython::
+
+   In [1]: import lib
+
+   In [2]: lib.Knight().taunt()
+   Out[2]: -taunt here-
+
+They are also useful for integrating Jupyter notebooks and similar source code,
+which is possible with separate Sphinx extensions like nbsphinx_ or MyST-NB_.
 IPython processing is enabled if the ``ipython`` library is installed.
 It is also included in the ``ipython`` extra of sphinx-codeautolink.
 

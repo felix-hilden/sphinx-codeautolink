@@ -1,0 +1,12 @@
+extensions.append('IPython.sphinxext.ipython_directive')
+# split
+Test project
+============
+
+.. ipython::
+
+   In [2]: alias bracket echo "Input in brackets <%l>"
+   In [3]: bracket hello world
+   Input in brackets: <hello world>
+
+.. automodule:: test_project

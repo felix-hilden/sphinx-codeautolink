@@ -49,9 +49,19 @@ BUILTIN_BLOCKS['pycon'] = clean_pycon
 
 
 def clean_ipython(source: str) -> Tuple[str, str]:
-    """Clean up IPython syntax to pure Python."""
+    """Clean up IPython magics and console syntax to pure Python."""
     from IPython.core.inputtransformer2 import TransformerManager
-    return source, TransformerManager().transform_cell(source)
+
+    in_statement = True
+    clean_lines = []
+    for line in source.split('\n'):
+        if re.match(r'^In \[[0-9]+\]: ', line):
+            in_statement = True
+        elif re.match(r'^Out\[[0-9]+\]: ', line):
+            in_statement = False
+        clean_lines.append(line * in_statement)
+
+    return source, TransformerManager().transform_cell('\n'.join(clean_lines))
 
 
 try:
@@ -60,6 +70,7 @@ except ImportError:
     pass
 else:
     del IPython
+    BUILTIN_BLOCKS['ipython'] = clean_ipython
     BUILTIN_BLOCKS['ipython3'] = clean_ipython
 
 
@@ -167,7 +178,15 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         source = node.children[0].astext()
         transformer = self.transformers[language]
         if transformer:
-            source, clean_source = transformer(source)
+            try:
+                source, clean_source = transformer(source)
+            except SyntaxError as e:
+                show_source = self._format_source_for_error(source, prefaces)
+                msg = self._parsing_error_msg(e, language, show_source)
+                logger.warning(
+                    msg, type=warn_type, subtype='parsing_error', location=node
+                )
+                return
         else:
             clean_source = source
         example = CodeExample(
@@ -185,28 +204,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         try:
             names = parse_names(modified_source, node)
         except SyntaxError as e:
-            guides = [''] * len(modified_source)
-            ix = 0
-            if self.global_preface:
-                guides[0] = 'global preface:'
-                ix += len(self.global_preface)
-            if self.concat_sources:
-                guides[ix] = 'concatenations:'
-                ix += len(self.concat_sources)
-            if prefaces:
-                guides[ix] = 'local preface:'
-                ix += len(prefaces)
-            guides[ix] = 'block source:'
-            pad = max(len(i) + 1 for i in guides)
-            guides = [g.ljust(pad) for g in guides]
-            split_source = modified_source.split('\n')
-            show_source = '\n'.join([g + s for g, s in zip(guides, split_source)])
-
-            msg = '\n'.join([
-                str(e) + f' in document "{self.current_document}"',
-                f'Parsed source in `{language}` block:',
-                show_source,
-            ])
+            show_source = self._format_source_for_error(source, prefaces)
+            msg = self._parsing_error_msg(e, language, show_source)
             logger.warning(msg, type=warn_type, subtype='parsing_error', location=node)
             return
 
@@ -224,6 +223,31 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 
         # Remove transforms from concatenated sources
         transform.names.extend([n for n in names if n.lineno > 0])
+
+    def _format_source_for_error(self, source: str, prefaces: List[str]) -> str:
+        split_source = source.split('\n')
+        guides = [''] * len(split_source)
+        ix = 0
+        if self.global_preface:
+            guides[0] = 'global preface:'
+            ix += len(self.global_preface)
+        if self.concat_sources:
+            guides[ix] = 'concatenations:'
+            ix += len(self.concat_sources)
+        if prefaces:
+            guides[ix] = 'local preface:'
+            ix += len(prefaces)
+        guides[ix] = 'block source:'
+        pad = max(len(i) + 1 for i in guides)
+        guides = [g.ljust(pad) for g in guides]
+        return '\n'.join([g + s for g, s in zip(guides, split_source)])
+
+    def _parsing_error_msg(self, error: Exception, language: str, source: str) -> str:
+        return '\n'.join([
+            str(error) + f' in document "{self.current_document}"',
+            f'Parsed source in `{language}` block:',
+            source,
+        ])
 
 
 def link_html(

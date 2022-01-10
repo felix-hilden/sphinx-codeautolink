@@ -25,6 +25,8 @@ extensions = [
     "sphinx_codeautolink",
     "matplotlib.sphinxext.plot_directive",
     "sphinx.ext.doctest",
+    "IPython.sphinxext.ipython_directive",
+    "IPython.sphinxext.ipython_console_highlighting",
 ]
 
 # Builtin options
