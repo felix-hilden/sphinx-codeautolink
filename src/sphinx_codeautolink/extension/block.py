@@ -11,7 +11,7 @@ from docutils import nodes
 from ..parse import parse_names, Name, LinkContext
 from .backref import CodeExample
 from .directive import ConcatMarker, PrefaceMarker, SkipMarker
-from .warn import logger, warn_type
+from ..warn import logger, warn_type
 
 BUILTIN_BLOCKS = {
     'python': None,
@@ -183,7 +183,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             + [clean_source]
         )
         try:
-            names = parse_names(modified_source)
+            names = parse_names(modified_source, node)
         except SyntaxError as e:
             guides = [''] * len(modified_source)
             ix = 0

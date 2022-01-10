@@ -1,0 +1,10 @@
+non_project
+# split
+Test project
+============
+
+.. code:: python
+
+   from non_project import *
+
+.. automodule:: test_project

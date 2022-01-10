@@ -136,9 +136,3 @@ class TestSimple:
             ('sphinx_codeautolink.setup', 'setup')
         ]
         return s, refs
-
-    @refs_equal
-    def test_import_star_invalid(self):
-        s = 'from not_a_module import *'
-        refs = [('not_a_module', 'not_a_module')]
-        return s, refs

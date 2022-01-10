@@ -6,7 +6,7 @@ def refs_equal(func):
     @wraps(func)
     def wrapper(self):
         source, expected = func(self)
-        names = parse_names(source)
+        names = parse_names(source, doctree_node=None)
         names = sorted(names, key=lambda name: name.lineno)
         for n, e in zip(names, expected):
             s = '.'.join(c for c in n.import_components)

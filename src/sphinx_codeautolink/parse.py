@@ -8,14 +8,15 @@ from enum import Enum
 from functools import wraps
 from importlib import import_module
 from typing import Dict, Union, List, Optional, Tuple
-from warnings import warn
 from dataclasses import dataclass, field
 
+from .warn import logger, warn_type
 
-def parse_names(source: str) -> List['Name']:
+
+def parse_names(source: str, doctree_node) -> List['Name']:
     """Parse names from source."""
     tree = ast.parse(source)
-    visitor = ImportTrackerVisitor()
+    visitor = ImportTrackerVisitor(doctree_node)
     visitor.visit(tree)
     return sum([split_access(a) for a in visitor.accessed], [])
 
@@ -210,11 +211,12 @@ builtin_components: Dict[str, List[Component]] = {
 class ImportTrackerVisitor(ast.NodeVisitor):
     """Track imports and their use through source code."""
 
-    def __init__(self):
+    def __init__(self, doctree_node):
         super().__init__()
         self.accessed: List[Access] = []
         self.in_augassign = False
         self._parents = 0
+        self.doctree_node = doctree_node
 
         # Stack for dealing with class body pseudo scopes
         # which are completely bypassed by inner scopes (func, lambda).
@@ -356,7 +358,12 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                 ]
                 aliases = [None] * len(import_names)
             except ImportError:
-                warn(f'Could not import module `{node.module}` for parsing!')
+                logger.error(
+                    f'Could not import module `{node.module}` for parsing!',
+                    type=warn_type,
+                    subtype='import_star',
+                    location=self.doctree_node,
+                )
                 import_names = []
                 aliases = []
         else:
@@ -534,7 +541,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                 continue
             self.visit(arg.annotation)
 
-        inner = self.__class__()
+        inner = self.__class__(self.doctree_node)
         inner.pseudo_scopes_stack[0] = self.pseudo_scopes_stack[0].copy()
         inner.outer_scopes_stack = list(self.outer_scopes_stack)
         inner.outer_scopes_stack.append(self.pseudo_scopes_stack[0])
@@ -555,7 +562,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         args = self._get_args(node.args)
         args += [node.args.vararg, node.args.kwarg]
 
-        inner = self.__class__()
+        inner = self.__class__(self.doctree_node)
         inner.pseudo_scopes_stack[0] = self.pseudo_scopes_stack[0].copy()
         for arg in args:
             if arg is None:
@@ -591,7 +598,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self, values: List[ast.AST], generators: List[ast.comprehension]
     ):
         """Separate inner scope, respects class body scope."""
-        inner = self.__class__()
+        inner = self.__class__(self.doctree_node)
         inner.pseudo_scopes_stack[0] = self.pseudo_scopes_stack[-1].copy()
         for gen in generators:
             inner.visit(gen)

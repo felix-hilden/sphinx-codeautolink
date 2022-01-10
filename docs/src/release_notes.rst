@@ -12,7 +12,8 @@ Unreleased
 ----------
 - Use Sphinx logging instead of raising exceptions (:issue:`86`)
 - Link builtins if visible to intersphinx (:issue:`87`)
-- Use Sphinx logging instead of the builtin ``warnings`` to warn (:issue:`89`)
+- Use Sphinx logging instead of the builtin ``warnings`` to warn
+  (:issue:`89`, :issue:`94`)
 
 0.8.0 (2021-12-16)
 ------------------
