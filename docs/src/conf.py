@@ -12,7 +12,7 @@ sys.path.insert(0, str(_src_dir))
 
 project = "sphinx-codeautolink"
 author = "Felix Hildén"
-copyright = "2021, Felix Hildén"
+copyright = "2021-2022, Felix Hildén"
 version = Path(_package_root, "sphinx_codeautolink", "VERSION").read_text().strip()
 release = version
 
