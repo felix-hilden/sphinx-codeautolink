@@ -129,8 +129,8 @@ Sphinx logging machinery is used to issue warnings during documentation builds.
 All warning subtypes below are in the ``codeautolink.*`` namespace
 and can be ignored with configuring ``suppress_warnings``.
 
-- ``user_error``: issued when a directive is used incorrectly
-- ``parsing_error``: issued when parsing a code block fails
+- ``invalid_argument``: issued when a directive is used incorrectly
+- ``parse_block``: issued when parsing a code block fails
 - ``import_star``: issued when a library cannot be imported to determine
   the names that an ``import *`` would introduce
 - ``match_block``: issued when a block cannot be matched

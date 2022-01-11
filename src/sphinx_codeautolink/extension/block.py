@@ -107,7 +107,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if isinstance(node, ConcatMarker):
             if node.mode not in ('off', 'section', 'on'):
                 msg = f'Invalid concatenation argument: `{node.mode}`'
-                logger.error(msg, type=warn_type, subtype='user_error', location=node)
+                logger.error(
+                    msg, type=warn_type, subtype='invalid_argument', location=node
+                )
 
             self.concat_sources = []
             if node.mode == 'section':
@@ -122,7 +124,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         elif isinstance(node, SkipMarker):
             if node.level not in ('next', 'section', 'file', 'off'):
                 msg = f'Invalid skipping argument: `{node.level}`'
-                logger.error(msg, type=warn_type, subtype='user_error', location=node)
+                logger.error(
+                    msg, type=warn_type, subtype='invalid_argument', location=node
+                )
             self.skip = node.level if node.level != 'off' else None
             node.parent.remove(node)
 
@@ -184,7 +188,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 show_source = self._format_source_for_error(source, prefaces)
                 msg = self._parsing_error_msg(e, language, show_source)
                 logger.warning(
-                    msg, type=warn_type, subtype='parsing_error', location=node
+                    msg, type=warn_type, subtype='parse_block', location=node
                 )
                 return
         else:
@@ -206,7 +210,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         except SyntaxError as e:
             show_source = self._format_source_for_error(source, prefaces)
             msg = self._parsing_error_msg(e, language, show_source)
-            logger.warning(msg, type=warn_type, subtype='parsing_error', location=node)
+            logger.warning(msg, type=warn_type, subtype='parse_block', location=node)
             return
 
         if prefaces or self.concat_sources or self.global_preface:
