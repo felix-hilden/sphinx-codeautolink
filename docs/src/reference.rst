@@ -131,5 +131,7 @@ and can be ignored with configuring ``suppress_warnings``.
 
 - ``user_error``: issued when a directive is used incorrectly
 - ``parsing_error``: issued when parsing a code block fails
+- ``import_star``: issued when a library cannot be imported to determine
+  the names that an ``import *`` would introduce
 - ``match_block``: issued when a block cannot be matched
 - ``match_name``: issued when a code snippet cannot be matched

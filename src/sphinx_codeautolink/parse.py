@@ -358,7 +358,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                 ]
                 aliases = [None] * len(import_names)
             except ImportError:
-                logger.error(
+                logger.warning(
                     f'Could not import module `{node.module}` for parsing!',
                     type=warn_type,
                     subtype='import_star',
