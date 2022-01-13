@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.9.0 (2022-01-13)
+------------------
 - Use Sphinx logging instead of raising exceptions (:issue:`86`)
 - Link builtins if visible to intersphinx (:issue:`87`)
 - Use Sphinx logging instead of the builtin ``warnings`` to warn
