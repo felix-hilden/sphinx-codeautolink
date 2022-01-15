@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Don't try to link empty name between two subsequent calls (:issue:`96`)
+
 0.9.0 (2022-01-13)
 ------------------
 - Use Sphinx logging instead of raising exceptions (:issue:`86`)
