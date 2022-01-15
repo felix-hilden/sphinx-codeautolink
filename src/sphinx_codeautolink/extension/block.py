@@ -255,7 +255,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 
 
 def link_html(
-    document: Path,
+    document: str,
     out_dir: str,
     transforms: List[SourceTransform],
     inventory: dict,
@@ -263,7 +263,8 @@ def link_html(
     search_css_classes: list,
 ):
     """Inject links to code blocks on disk."""
-    text = document.read_text('utf-8')
+    html_file = Path(out_dir) / (document + '.html')
+    text = html_file.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
 
     block_types = BUILTIN_BLOCKS.keys() | custom_blocks.keys()
@@ -277,7 +278,7 @@ def link_html(
     blocks = sorted(unique_blocks, key=lambda b: b.sourceline)
     inners = [block.select('div > pre')[0] for block in blocks]
 
-    up_lvls = len(document.relative_to(out_dir).parents) - 1
+    up_lvls = len(html_file.relative_to(out_dir).parents) - 1
     local_prefix = '../' * up_lvls
     link_pattern = (
         '<a href="{link}" title="{title}" class="sphinx-codeautolink-a">{text}</a>'
@@ -291,7 +292,7 @@ def link_html(
         else:
             msg = f'Could not match a code example to HTML, source:\n{trans.source}'
             logger.warning(
-                msg, type=warn_type, subtype='match_block', location=str(document)
+                msg, type=warn_type, subtype='match_block', location=document
             )
             continue
 
@@ -311,7 +312,7 @@ def link_html(
                     f'source:\n{trans.source}'
                 )
                 logger.warning(
-                    msg, type=warn_type, subtype='match_name', location=str(document)
+                    msg, type=warn_type, subtype='match_name', location=document
                 )
                 continue
 
@@ -330,7 +331,7 @@ def link_html(
 
         inner.replace_with(BeautifulSoup('\n'.join(lines), 'html.parser'))
 
-    document.write_text(str(soup), 'utf-8')
+    html_file.write_text(str(soup), 'utf-8')
 
 
 # ---------------------------------------------------------------

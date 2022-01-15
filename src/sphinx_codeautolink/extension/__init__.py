@@ -202,9 +202,8 @@ class SphinxCodeAutoLink:
         for doc, transforms in self.cache.transforms.items():
             if not transforms or str(Path(doc)) not in self.outdated_docs:
                 continue
-            file = Path(app.outdir) / (doc + '.html')
             link_html(
-                file,
+                doc,
                 app.outdir,
                 transforms,
                 self.inventory,
