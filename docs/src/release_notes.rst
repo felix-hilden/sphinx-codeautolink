@@ -11,6 +11,7 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Don't try to link empty name between two subsequent calls (:issue:`96`)
+- Support callable classes (:issue:`98`)
 
 0.9.0 (2022-01-13)
 ------------------

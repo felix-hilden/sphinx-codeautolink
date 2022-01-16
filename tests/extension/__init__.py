@@ -38,10 +38,11 @@ def assert_links(file: Path, links: list):
     text = file.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
     blocks = list(soup.find_all('a', attrs={'class': 'sphinx-codeautolink-a'}))
+    strings = [any_whitespace.sub('', ''.join(b.strings)) for b in blocks]
 
-    assert len(blocks) == len(links)
-    for block, link in zip(blocks, links):
-        assert any_whitespace.sub('', ''.join(block.strings)) == link
+    assert len(strings) == len(links)
+    for s, link in zip(strings, links):
+        assert s == link
 
 
 @pytest.mark.parametrize('file', ref_tests)
@@ -111,10 +112,11 @@ def test_tables(file: Path, tmp_path: Path):
     text = index_html.read_text('utf-8')
     soup = BeautifulSoup(text, 'html.parser')
     blocks = list(soup.select('table a'))
+    strings = [any_whitespace.sub('', ''.join(b.strings)) for b in blocks]
 
-    assert len(blocks) == len(links)
-    for block, link in zip(blocks, links):
-        assert any_whitespace.sub('', ''.join(block.strings)) == link
+    assert len(strings) == len(links)
+    for s, link in zip(strings, links):
+        assert s == link
 
 
 fail_tests = list(Path(__file__).with_name('fail').glob('*.txt'))

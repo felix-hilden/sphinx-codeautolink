@@ -3,8 +3,8 @@ test_project.Foo
 attr
 test_project.Foo.attr
 test_project.Baz
-attr
-test_project.Baz.attr
+bute
+test_project.Baz.bute
 # split
 # split
 Test project
@@ -16,7 +16,7 @@ Test project
 
    test_project.Foo().attr
    test_project.Foo.attr
-   test_project.Baz().attr
-   test_project.Baz.attr
+   test_project.Baz().bute
+   test_project.Baz.bute
 
 .. automodule:: test_project

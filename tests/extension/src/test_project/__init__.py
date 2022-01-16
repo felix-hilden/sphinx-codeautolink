@@ -7,20 +7,23 @@ from .sub import subfoo  # NOQA
 class Baz:
     """Baz test class."""
 
-    attr = 1
+    bute = 1
 
 
 class Foo:
     """Foo test class."""
 
     attr: str = 'test'
+    type_attr = Baz
 
     def meth(self) -> Baz:
         """Test method."""
 
     def selfref(self) -> "Foo":
         """Return self."""
-        return self
+
+    def __call__(self) -> Baz:
+        """Test call."""
 
 
 def bar() -> Foo:
