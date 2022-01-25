@@ -49,6 +49,16 @@ Configuration
    when matching the final HTML. May contain multiple values separated by
    spaces as they would be passed to :code:`bs4.BeautifulSoup.find_all`.
 
+.. confval:: codeautolink_warn_on_missing_inventory
+
+   Type: ``bool``. Issue warning when an object cannot be found in
+   the inventory (autodoc or intersphinx). Defaults to :code:`False`.
+
+.. confval:: codeautolink_warn_on_failed_resolve
+
+   Type: ``bool``. Issue warning when failing to resolve the canonical location
+   of an object that a code element references. Defaults to :code:`False`.
+
 Directives
 ----------
 .. rst:directive:: .. autolink-examples:: object
@@ -135,3 +145,9 @@ and can be ignored with configuring ``suppress_warnings``.
   the names that an ``import *`` would introduce
 - ``match_block``: issued when a block cannot be matched
 - ``match_name``: issued when a code snippet cannot be matched
+
+The following warnings are only issued depending on configuration:
+
+- ``missing_inventory``: issued when an object cannot be found in the inventory
+- ``failed_resolve``: issued when an object's canonical location in a module
+  cannot be determined

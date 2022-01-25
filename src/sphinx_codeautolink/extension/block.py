@@ -26,6 +26,7 @@ class SourceTransform:
     source: str
     names: List[Name]
     example: CodeExample
+    doc_lineno: int
 
 
 def clean_pycon(source: str) -> Tuple[str, str]:
@@ -196,7 +197,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         example = CodeExample(
             self.current_document, self.current_refid, list(self.title_stack)
         )
-        transform = SourceTransform(source, [], example)
+        transform = SourceTransform(source, [], example, node.line)
         self.source_transforms.append(transform)
 
         modified_source = '\n'.join(

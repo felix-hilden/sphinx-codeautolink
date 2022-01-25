@@ -11,6 +11,9 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Don't try to link empty name between two subsequent calls (:issue:`96`)
+- Introduce :confval:`codeautolink_warn_on_missing_inventory` and
+  :confval:`codeautolink_warn_on_failed_resolve` to issue additional warnings
+  when linking or resolving an object fails (:issue:`97`)
 - Support callable classes (:issue:`98`)
 
 0.9.0 (2022-01-13)

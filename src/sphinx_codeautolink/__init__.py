@@ -20,6 +20,12 @@ def setup(app: Sphinx):
     app.add_config_value('codeautolink_custom_blocks', {}, 'html', types=[dict])
     app.add_config_value('codeautolink_concat_default', False, 'html', types=[bool])
     app.add_config_value('codeautolink_search_css_classes', [], 'html', types=[list])
+    app.add_config_value(
+        'codeautolink_warn_on_missing_inventory', False, 'html', types=[bool]
+    )
+    app.add_config_value(
+        'codeautolink_warn_on_failed_resolve', False, 'html', types=[bool]
+    )
 
     app.add_directive('autolink-concat', directive.Concat)
     app.add_directive('autolink-examples', directive.Examples)
