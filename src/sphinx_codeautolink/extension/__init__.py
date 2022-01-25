@@ -13,7 +13,8 @@ from .block import CodeBlockAnalyser, SourceTransform, link_html
 from .directive import RemoveExtensionVisitor
 from .cache import DataCache
 from .resolve import resolve_location, CouldNotResolve
-from ..parse import NameBreak
+from ..parse import Name, NameBreak
+from ..warn import logger, warn_type
 
 
 @dataclass
@@ -64,6 +65,8 @@ class SphinxCodeAutoLink:
         self.custom_blocks = None
         self.concat_default = None
         self.search_css_classes = None
+        self.warn_missing_inventory = None
+        self.warn_failed_resolve = None
 
         # Populated once
         self.outdated_docs: Set[str] = set()
@@ -90,6 +93,8 @@ class SphinxCodeAutoLink:
                 self.custom_blocks[k] = import_object(v)
         self.concat_default = app.config.codeautolink_concat_default
         self.search_css_classes = app.config.codeautolink_search_css_classes
+        self.warn_missing_inventory = app.config.codeautolink_warn_on_missing_inventory
+        self.warn_failed_resolve = app.config.codeautolink_warn_on_failed_resolve
 
         # Append static resources path so references in setup() are valid
         app.config.html_static_path.append(
@@ -163,16 +168,26 @@ class SphinxCodeAutoLink:
         if self.do_nothing:
             return
 
+        skipped = set()
         self.inventory = self.make_inventory(app)
-        for transforms in self.cache.transforms.values():
-            self.filter_and_resolve(transforms)
+        for doc, transforms in self.cache.transforms.items():
+            self.filter_and_resolve(transforms, skipped, doc)
             for transform in transforms:
                 for name in transform.names:
                     self.code_refs.setdefault(name.resolved_location, []).append(
                         transform.example
                     )
+        if skipped and self.warn_missing_inventory:
+            tops = sorted(set(s.split('.')[0] for s in skipped))
+            msg = (
+                f'Cannot locate modules: {str(tops)[1:-1]}'
+                '\n  because of missing intersphinx or documentation entries'
+            )
+            logger.warning(msg, type=warn_type, subtype='missing_inventory')
 
-    def filter_and_resolve(self, transforms: List[SourceTransform]):
+    def filter_and_resolve(
+        self, transforms: List[SourceTransform], skipped: Set[str], doc: str
+    ):
         """Try to link name chains to objects."""
         for transform in transforms:
             filtered = []
@@ -182,12 +197,40 @@ class SphinxCodeAutoLink:
                 try:
                     key = resolve_location(name, self.inventory)
                 except CouldNotResolve:
+                    if self.warn_failed_resolve:
+                        logger.warning(
+                            f'Could not resolve {self._resolve_msg(name)}',
+                            type=warn_type,
+                            subtype='failed_resolve',
+                            location=(doc, transform.doc_lineno),
+                        )
                     continue
                 if key not in self.inventory:
+                    if self.warn_missing_inventory:
+                        msg = (
+                            f'Inventory missing `{key}`'
+                            f' when resolving {self._resolve_msg(name)}'
+                        )
+                        logger.warning(
+                            msg,
+                            type=warn_type,
+                            subtype='missing_inventory',
+                            location=(doc, transform.doc_lineno),
+                        )
+                    skipped.add(key)
                     continue
                 name.resolved_location = key
                 filtered.append(name)
             transform.names = filtered
+
+    @staticmethod
+    def _resolve_msg(name: Name):
+        if name.lineno == name.end_lineno:
+            line = f'line {name.lineno}'
+        else:
+            line = f'lines {name.lineno}-{name.end_lineno}'
+
+        return f'`{name.code_str}` on {line}'
 
     @print_exceptions(append_source=True)
     def generate_backref_tables(self, app, doctree, docname):

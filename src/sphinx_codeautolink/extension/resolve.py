@@ -30,10 +30,8 @@ def resolve_location(chain: Name, inventory) -> str:
         try:
             comps, cursor = make_cursor(comps)
         except CouldNotResolve:
-            if '.'.join(comps) in inventory:
-                # Last ditch effort to locate based on the string only
-                return '.'.join(comps)
-            raise
+            # Last ditch effort to locate based on the string only
+            return '.'.join(comps)
 
     cursor = locate_type(cursor, tuple(comps), inventory)
     return cursor.location if cursor is not None else None

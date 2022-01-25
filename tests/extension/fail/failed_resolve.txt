@@ -1,6 +1,4 @@
-test_project
-test_project.optional_counter
-# split
+codeautolink_warn_on_failed_resolve = True
 # split
 Test project
 ============

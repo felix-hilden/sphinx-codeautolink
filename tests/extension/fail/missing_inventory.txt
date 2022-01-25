@@ -1,0 +1,9 @@
+codeautolink_warn_on_missing_inventory = True
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   test_project.bar()
