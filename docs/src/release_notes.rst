@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.10.0 (2022-01-25)
+-------------------
 - Don't try to link empty name between two subsequent calls (:issue:`96`)
 - Introduce :confval:`codeautolink_warn_on_missing_inventory` and
   :confval:`codeautolink_warn_on_failed_resolve` to issue additional warnings
