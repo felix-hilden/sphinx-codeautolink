@@ -198,8 +198,13 @@ class SphinxCodeAutoLink:
                     key = resolve_location(name, self.inventory)
                 except CouldNotResolve:
                     if self.warn_failed_resolve:
+                        path = '.'.join(name.import_components).replace('.()', '()')
+                        msg = (
+                            f'Could not resolve {self._resolve_msg(name)}'
+                            f' using path `{path}`'
+                        )
                         logger.warning(
-                            f'Could not resolve {self._resolve_msg(name)}',
+                            msg,
                             type=warn_type,
                             subtype='failed_resolve',
                             location=(doc, transform.doc_lineno),
