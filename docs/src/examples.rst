@@ -23,6 +23,8 @@ Different import styles are supported, along with all Python syntax.
 Star imports might be particularly handy in code examples.
 `Doctest <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html
 #doctest-blocks>`_ and console blocks using :code:`.. code:: pycon` work too.
+Including code via :rst:dir:`literalinclude` requires using a
+:code:`:language: py` parameter.
 
 .. code:: pycon
 
