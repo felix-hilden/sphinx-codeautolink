@@ -132,9 +132,11 @@ class SphinxCodeAutoLink:
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms
 
-    @staticmethod
-    def merge_environments(app, env, docnames, other):
+    def merge_environments(self, app, env, docnames, other):
         """Merge transform information."""
+        if self.do_nothing:
+            return
+
         env.sphinx_codeautolink_transforms.update(
             other.sphinx_codeautolink_transforms
         )
