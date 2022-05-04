@@ -47,4 +47,4 @@ def setup(app: Sphinx):
     app.add_node(
         backref.SummaryNode, html=(backref.visit_summary, backref.depart_summary)
     )
-    return {'version': __version__, 'parallel_read_safe': True}
+    return {'version': __version__, 'env_version': 1, 'parallel_read_safe': True}

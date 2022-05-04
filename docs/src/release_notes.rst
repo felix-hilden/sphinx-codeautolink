@@ -12,6 +12,7 @@ Unreleased
 ----------
 - Include the expected location of a type in
   :confval:`codeautolink_warn_on_failed_resolve` for debugging (:issue:`106`)
+- Define extension environment version for Sphinx (:issue:`107`)
 
 0.10.0 (2022-01-25)
 -------------------

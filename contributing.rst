@@ -92,6 +92,13 @@ Releasing
 ---------
 Before releasing, make sure the version number is incremented
 and the release notes reference the new release.
+
+.. note::
+
+    With sphinx-codeautolink specifically, if Sphinx's environment data
+    structure was modified, increment the environment version number before
+    releasing a new version.
+
 Running tests once more is also good practice.
 The following commands build source and wheel distributions
 to a clean directory, and publish them on PyPI
