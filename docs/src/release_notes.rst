@@ -10,6 +10,7 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+- Support Python 3.10 (:issue:`33`)
 - Include the expected location of a type in
   :confval:`codeautolink_warn_on_failed_resolve` for debugging (:issue:`106`)
 - Define extension environment version for Sphinx (:issue:`107`)
