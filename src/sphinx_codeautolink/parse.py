@@ -21,6 +21,11 @@ def parse_names(source: str, doctree_node) -> List['Name']:
     return sum([split_access(a) for a in visitor.accessed], [])
 
 
+def linenos(node: ast.AST) -> Tuple[int, int]:
+    """Return lineno and end_lineno safely."""
+    return node.lineno, getattr(node, 'end_lineno', node.lineno)
+
+
 @dataclass
 class Component:
     """Name access component."""
@@ -46,8 +51,7 @@ class Component:
             name = NameBreak.call
         else:
             raise ValueError(f'Invalid AST for component: {node.__class__.__name__}')
-        end_lineno = getattr(node, 'end_lineno', node.lineno)
-        return cls(name, node.lineno, end_lineno, context)
+        return cls(name, *linenos(node), context)
 
 
 @dataclass
@@ -372,10 +376,9 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             import_names = [name.name for name in node.names]
             aliases = [name.asname for name in node.names]
 
-        end_lineno = getattr(node, 'end_lineno', node.lineno)
         prefix_parts = prefix.rstrip('.').split('.') if prefix else []
         prefix_components = [
-            Component(n, node.lineno, end_lineno, 'load') for n in prefix_parts
+            Component(n, *linenos(node), 'load') for n in prefix_parts
         ]
         if prefix:
             self.accessed.append(Access(LinkContext.import_from, [], prefix_components))
@@ -383,7 +386,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         for import_name, alias in zip(import_names, aliases):
             if not import_star:
                 components = [
-                    Component(n, node.lineno, end_lineno, 'load')
+                    Component(n, *linenos(node), 'load')
                     for n in import_name.split('.')
                 ]
                 self.accessed.append(
@@ -396,7 +399,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                 import_name = import_name.split('.')[0]
 
             full_components = [
-                Component(n, node.lineno, end_lineno, 'store')
+                Component(n, *linenos(node), 'store')
                 for n in (prefix + import_name).split('.')
             ]
             self._assign(alias or import_name, full_components)
@@ -470,12 +473,9 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             if value is not None:
                 self._access(value)
 
-            annot.components.append(Component(
-                NameBreak.call,
-                node.annotation.lineno,
-                node.annotation.end_lineno,
-                'load',
-            ))
+            annot.components.append(
+                Component(NameBreak.call, *linenos(node.annotation), 'load')
+            )
             value = annot
 
         target = self.visit(node.target)
@@ -567,8 +567,9 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         if arg.annotation is not None:
             value = self.visit(arg.annotation)
             if value is not None:
-                comp = Component(NameBreak.call, arg.lineno, arg.end_lineno, 'load')
-                value.components.append(comp)
+                value.components.append(
+                    Component(NameBreak.call, *linenos(arg), 'load')
+                )
         else:
             value = None
         return Assignment([PendingAssign(target)], value)
