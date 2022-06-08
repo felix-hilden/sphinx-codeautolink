@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.11.0 (2022-06-08)
+-------------------
 - Support Python 3.10 (:issue:`33`)
 - Include the expected location of a type in
   :confval:`codeautolink_warn_on_failed_resolve` for debugging (:issue:`106`)
