@@ -78,27 +78,42 @@ class TestAssign:
         return s, refs
 
     @refs_equal
-    def test_annassign_uses_imported(self):
+    def test_annassign_overwrites_imported(self):
         s = 'import a\na: b = 1\na'
         refs = [('a', 'a')]
         return s, refs
 
     @refs_equal
     def test_annassign_uses_and_assigns_imported(self):
-        s = 'import a\na: b = a\na'
-        refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
+        s = 'import a\nb: 1 = a\nb.c'
+        refs = [('a', 'a'), ('a', 'a'), ('a.c', 'b.c')]
+        return s, refs
+
+    @refs_equal
+    def test_annassign_uses_and_annotates_imported(self):
+        s = 'import a\nb: a = 1\nb.c'
+        refs = [('a', 'a'), ('a', 'a'), ('a.().c', 'b.c')]
+        return s, refs
+
+    @refs_equal
+    def test_annassign_prioritises_annotation(self):
+        s = 'import a, b\nc: a = b\nc.d'
+        # note that AnnAssign is executed from value -> annot -> target
+        refs = [('a', 'a'), ('b', 'b'), ('b', 'b'), ('a', 'a'), ('a.().d', 'c.d')]
         return s, refs
 
     @refs_equal
     def test_annassign_why_would_anyone_do_this(self):
-        s = 'import a\na: a = a\na'
-        refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a', 'a')]
+        s = 'import a\na: a = a\na.b'
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a.().b', 'a.b')]
         return s, refs
 
     @refs_equal
     def test_annassign_without_value_overrides_annotation_but_not_linked(self):
+        # note that this is different from runtime behavior
+        # which does not overwrite the variable value
         s = 'import a\na: b\na'
-        refs = [('a', 'a'), ('a', 'a')]
+        refs = [('a', 'a')]
         return s, refs
 
     @pytest.mark.skipif(

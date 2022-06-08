@@ -8,6 +8,8 @@ def refs_equal(func):
         source, expected = func(self)
         names = parse_names(source, doctree_node=None)
         names = sorted(names, key=lambda name: name.lineno)
+        print('All names:')
+        [print(n) for n in names]
         for n, e in zip(names, expected):
             s = '.'.join(c for c in n.import_components)
             assert s == e[0], f'Wrong import! Expected\n{e}\ngot\n{n}'

@@ -22,27 +22,6 @@ def parse_names(source: str, doctree_node) -> List['Name']:
 
 
 @dataclass
-class PendingAccess:
-    """Pending name access."""
-
-    components: List[ast.AST]
-
-
-@dataclass
-class PendingAssign:
-    """
-    Pending assign target.
-
-    `targets` represent the assignment targets.
-    If a single PendingAccess is found, it should be used to store the value
-    on the right hand side of the assignment. If multiple values are found,
-    they should overwrite any names in the current scope and not assign values.
-    """
-
-    targets: Union[Optional[PendingAccess], List[Optional[PendingAccess]]]
-
-
-@dataclass
 class Component:
     """Name access component."""
 
@@ -61,12 +40,35 @@ class Component:
         elif isinstance(node, ast.Attribute):
             name = node.attr
             context = node.ctx.__class__.__name__.lower()
+        elif isinstance(node, ast.arg):
+            name = node.arg
         elif isinstance(node, ast.Call):
             name = NameBreak.call
         else:
             raise ValueError(f'Invalid AST for component: {node.__class__.__name__}')
         end_lineno = getattr(node, 'end_lineno', node.lineno)
         return cls(name, node.lineno, end_lineno, context)
+
+
+@dataclass
+class PendingAccess:
+    """Pending name access."""
+
+    components: List[Component]
+
+
+@dataclass
+class PendingAssign:
+    """
+    Pending assign target.
+
+    `targets` represent the assignment targets.
+    If a single PendingAccess is found, it should be used to store the value
+    on the right hand side of the assignment. If multiple values are found,
+    they should overwrite any names in the current scope and not assign values.
+    """
+
+    targets: Union[Optional[PendingAccess], List[Optional[PendingAccess]]]
 
 
 class NameBreak(str, Enum):
@@ -269,7 +271,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self.pseudo_scopes_stack[-1][local_name] = components
 
     def _access(self, access: PendingAccess) -> Optional[Access]:
-        components = [Component.from_ast(n) for n in access.components]
+        components = access.components
         prior = self.pseudo_scopes_stack[-1].get(components[0].name, None)
 
         if prior is None:
@@ -306,7 +308,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                     continue
 
                 if len(target.components) == 1:
-                    comp = Component.from_ast(target.components[0])
+                    comp = target.components[0]
                     self._overwrite(comp.name)
                     if access is not None:
                         self._assign(comp.name, access.full_components)
@@ -408,16 +410,16 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             self.visit_Import(node, prefix=node.module + '.')
 
     @track_parents
-    def visit_Name(self, node):
+    def visit_Name(self, node: ast.Name):
         """Visit a Name node."""
-        return PendingAccess([node])
+        return PendingAccess([Component.from_ast(node)])
 
     @track_parents
-    def visit_Attribute(self, node):
+    def visit_Attribute(self, node: ast.Attribute):
         """Visit an Attribute node."""
         inner: Optional[PendingAccess] = self.visit(node.value)
         if inner is not None:
-            inner.components.append(node)
+            inner.components.append(Component.from_ast(node))
         return inner
 
     @track_parents
@@ -425,7 +427,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         """Visit a Call node."""
         inner: Optional[PendingAccess] = self.visit(node.func)
         if inner is not None:
-            inner.components.append(node)
+            inner.components.append(Component.from_ast(node))
         with self.reset_parents():
             for arg in node.args + node.keywords:
                 self.visit(arg)
@@ -462,14 +464,22 @@ class ImportTrackerVisitor(ast.NodeVisitor):
     @track_parents
     def visit_AnnAssign(self, node: ast.AnnAssign):
         """Visit an AnnAssign node."""
-        if node.value is not None:
-            value = self.visit(node.value)
+        value = self.visit(node.value) if node.value is not None else None
+        annot = self.visit(node.annotation)
+        if annot is not None:
+            if value is not None:
+                self._access(value)
+
+            annot.components.append(Component(
+                NameBreak.call,
+                node.annotation.lineno,
+                node.annotation.end_lineno,
+                'load',
+            ))
+            value = annot
+
         target = self.visit(node.target)
-
-        with self.reset_parents():
-            self.visit(node.annotation)
-
-        if node.value is not None:
+        if value is not None:
             return Assignment([PendingAssign(target)], value)
 
     def visit_AugAssign(self, node: ast.AugAssign):
@@ -528,30 +538,40 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self._overwrite(node.name)
         for dec in node.decorator_list:
             self.visit(dec)
-        if node.returns is not None:
-            self.visit(node.returns)
         for d in node.args.defaults + node.args.kw_defaults:
             if d is None:
                 continue
             self.visit(d)
         args = self._get_args(node.args)
         args += [node.args.vararg, node.args.kwarg]
-        for arg in args:
-            if arg is None or arg.annotation is None:
-                continue
-            self.visit(arg.annotation)
 
         inner = self.__class__(self.doctree_node)
         inner.pseudo_scopes_stack[0] = self.pseudo_scopes_stack[0].copy()
         inner.outer_scopes_stack = list(self.outer_scopes_stack)
         inner.outer_scopes_stack.append(self.pseudo_scopes_stack[0])
+
         for arg in args:
             if arg is None:
                 continue
-            inner._overwrite(arg.arg)
+            inner.visit(arg)
+        if node.returns is not None:
+            self.visit(node.returns)
         for n in node.body:
             inner.visit(n)
         self.accessed.extend(inner.accessed)
+
+    @track_parents
+    def visit_arg(self, arg: ast.arg):
+        """Handle function argument and its annotation."""
+        target = PendingAccess([Component.from_ast(arg)])
+        if arg.annotation is not None:
+            value = self.visit(arg.annotation)
+            if value is not None:
+                comp = Component(NameBreak.call, arg.lineno, arg.end_lineno, 'load')
+                value.components.append(comp)
+        else:
+            value = None
+        return Assignment([PendingAssign(target)], value)
 
     def visit_Lambda(self, node: ast.Lambda):
         """Swap node order and separate inner scope."""

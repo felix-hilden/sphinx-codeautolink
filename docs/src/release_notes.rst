@@ -15,6 +15,7 @@ Unreleased
   :confval:`codeautolink_warn_on_failed_resolve` for debugging (:issue:`106`)
 - Define extension environment version for Sphinx (:issue:`107`)
 - Merge environments only when the extension is active (:issue:`107`)
+- Link arguments and annotated assignment with type hints (:issue:`108`)
 
 0.10.0 (2022-01-25)
 -------------------

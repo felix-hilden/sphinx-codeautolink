@@ -62,6 +62,24 @@ class TestSimple:
         return s, refs
 
     @refs_equal
+    def test_inside_list_literal(self):
+        s = 'import lib\n[lib]'
+        refs = [('lib', 'lib'), ('lib', 'lib')]
+        return s, refs
+
+    @refs_equal
+    def test_inside_subscript(self):
+        s = 'import lib\n0[lib]'
+        refs = [('lib', 'lib'), ('lib', 'lib')]
+        return s, refs
+
+    @refs_equal
+    def test_outside_subscript(self):
+        s = 'import lib\nlib[0]'
+        refs = [('lib', 'lib'), ('lib', 'lib')]
+        return s, refs
+
+    @refs_equal
     def test_simple_import_then_attrib(self):
         s = 'import lib\nlib.attr'
         refs = [('lib', 'lib'), ('lib.attr', 'lib.attr')]

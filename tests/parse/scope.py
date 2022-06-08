@@ -42,9 +42,36 @@ class TestFunction:
         return s, refs
 
     @refs_equal
-    def test_func_annotations_then_assigns(self):
+    def test_func_annotates_then_uses(self):
+        s = 'import a\ndef f(arg: a):\n  arg.b'
+        refs = [('a', 'a'), ('a', 'a'), ('a.().b', 'arg.b')]
+        return s, refs
+
+    @refs_equal
+    def test_func_annotates_then_assigns(self):
         s = 'import a\ndef f(arg: a) -> a:\n  a = 1'
         refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_func_annotates_as_generic_then_uses(self):
+        s = 'import a\ndef f(arg: a[0]):\n  arg.b'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_func_annotates_inside_generic_then_uses(self):
+        s = 'import a\ndef f(arg: b[a]):\n  arg.b'
+        refs = [('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @pytest.mark.skipif(
+        sys.version_info < (3, 10), reason='Union syntax introduced in 3.10.'
+    )
+    @refs_equal
+    def test_func_annotates_union_then_uses(self):
+        s = 'import a\ndef f(arg: a | 1):\n  arg.b'
+        refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
