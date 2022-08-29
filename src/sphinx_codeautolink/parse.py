@@ -204,7 +204,7 @@ def track_parents(func):
             if isinstance(r, Assignment):
                 self._resolve_assignment(r)
             elif isinstance(r, PendingAccess):
-                self._access(r)
+                self._handle_access(r)
         return r
     return wrapper
 
@@ -247,6 +247,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         ast.Call,
         ast.Assign,
         ast.AnnAssign,
+        ast.arg,
     )
     if sys.version_info >= (3, 8):
         track_nodes += (ast.NamedExpr,)
@@ -274,27 +275,33 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self._overwrite(local_name)  # Technically unnecessary unless we follow dots
         self.pseudo_scopes_stack[-1][local_name] = components
 
-    def _access(self, access: PendingAccess) -> Optional[Access]:
-        components = access.components
-        prior = self.pseudo_scopes_stack[-1].get(components[0].name, None)
-
+    def _create_access(
+        self, scope_key: str, new_components: List[Component]
+    ) -> Optional[Access]:
+        prior = self.pseudo_scopes_stack[-1].get(scope_key, None)
         if prior is None:
             return
+
+        access = Access(LinkContext.none, prior, new_components)
+        self.accessed.append(access)
+        return access
+
+    def _handle_access(self, access: PendingAccess) -> Optional[Access]:
+        components = access.components
 
         context = components[0].context
         if context == 'store' and not self.in_augassign:
             self._overwrite(components[0].name)
             return
 
-        access = Access(LinkContext.none, prior, components)
-        self.accessed.append(access)
+        access = self._create_access(components[0].name, components)
         if context == 'del':
             self._overwrite(components[0].name)
         return access
 
     def _resolve_assignment(self, assignment: Assignment):
         value = assignment.value
-        access = self._access(value) if value is not None else None
+        access = self._handle_access(value) if value is not None else None
 
         for assign in assignment.to:
             if assign is None or assign.targets is None:
@@ -316,19 +323,13 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                     self._overwrite(comp.name)
                     if access is not None:
                         self._assign(comp.name, access.full_components)
+                        self._create_access(comp.name, target.components)
                 else:
-                    self._access(target)
+                    self._handle_access(target)
 
     def _access_simple(self, name: str, lineno: int) -> Optional[Access]:
         component = Component(name, lineno, lineno, 'load')
-        prior = self.pseudo_scopes_stack[-1].get(component.name, None)
-
-        if prior is None:
-            return
-
-        access = Access(LinkContext.none, prior, [component])
-        self.accessed.append(access)
-        return access
+        return self._create_access(component.name, [component])
 
     def visit_Global(self, node: ast.Global):
         """Import from top scope."""
@@ -471,7 +472,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         annot = self.visit(node.annotation)
         if annot is not None:
             if value is not None:
-                self._access(value)
+                self._handle_access(value)
 
             annot.components.append(
                 Component(NameBreak.call, *linenos(node.annotation), 'load')

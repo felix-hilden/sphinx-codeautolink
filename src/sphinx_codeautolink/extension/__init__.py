@@ -13,7 +13,7 @@ from .block import CodeBlockAnalyser, SourceTransform, link_html
 from .directive import RemoveExtensionVisitor
 from .cache import DataCache
 from .resolve import resolve_location, CouldNotResolve
-from ..parse import Name, NameBreak
+from ..parse import Name
 from ..warn import logger, warn_type
 
 
@@ -194,8 +194,8 @@ class SphinxCodeAutoLink:
         for transform in transforms:
             filtered = []
             for name in transform.names:
-                if name.import_components[-1] == NameBreak.call:
-                    continue  # empty call target (2 calls in a row)
+                if not name.code_str:
+                    continue  # empty transform target (2 calls in a row)
                 try:
                     key = resolve_location(name, self.inventory)
                 except CouldNotResolve:

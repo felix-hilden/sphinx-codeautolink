@@ -1,4 +1,5 @@
 test_project
+b
 test_project.bar
 # split
 # split

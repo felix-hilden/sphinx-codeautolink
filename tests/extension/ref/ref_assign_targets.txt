@@ -1,0 +1,24 @@
+test_project
+bar
+Foo
+target
+bar
+target
+arg
+Foo
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   from test_project import bar, Foo
+
+   target = bar()
+   target
+
+   def f(arg: Foo):
+       pass
+
+.. automodule:: test_project

@@ -8,6 +8,11 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Link assignment targets, bare names and annotated function arguments
+  (:issue:`109`)
+
 0.11.0 (2022-06-08)
 -------------------
 - Support Python 3.10 (:issue:`33`)

@@ -44,13 +44,14 @@ class TestFunction:
     @refs_equal
     def test_func_annotates_then_uses(self):
         s = 'import a\ndef f(arg: a):\n  arg.b'
-        refs = [('a', 'a'), ('a', 'a'), ('a.().b', 'arg.b')]
+        refs = [('a', 'a'), ('a', 'a'), ('a.()', 'arg'), ('a.().b', 'arg.b')]
         return s, refs
 
     @refs_equal
     def test_func_annotates_then_assigns(self):
+        # Note: inner nodes after outer ones
         s = 'import a\ndef f(arg: a) -> a:\n  a = 1'
-        refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a.()', 'arg')]
         return s, refs
 
     @refs_equal
@@ -75,8 +76,8 @@ class TestFunction:
         return s, refs
 
     @refs_equal
-    def test_func_kw_default_uses(self):
-        s = 'import a\ndef f(*_, c, b=a):\n  pass'
+    def test_func_kw_default_uses_not_assigned(self):
+        s = 'import a\ndef f(*_, c, b=a):\n  b'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
@@ -112,7 +113,7 @@ class TestFunction:
         return s, refs
 
     @refs_equal
-    def test_lambda_arg_default_uses(self):
+    def test_lambda_arg_default_uses_not_assigned(self):
         s = 'import a\nlambda x=a: x'
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs

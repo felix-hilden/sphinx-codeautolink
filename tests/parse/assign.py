@@ -18,9 +18,15 @@ class TestAssign:
         return s, refs
 
     @refs_equal
+    def test_assign_to_other_name_linked(self):
+        s = 'import a\nb = a'
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'b')]
+        return s, refs
+
+    @refs_equal
     def test_assign_uses_and_assigns_imported(self):
         s = 'import a\na = a\na'
-        refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a', 'a')]
         return s, refs
 
     @refs_equal
@@ -44,7 +50,7 @@ class TestAssign:
     @refs_equal
     def test_multitarget_assign_uses_and_overwrites(self):
         s = 'import a\na = b = a\na, b'
-        refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a', 'b')]
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'b'), ('a', 'a'), ('a', 'a'), ('a', 'b')]
         return s, refs
 
     @refs_equal
@@ -86,26 +92,33 @@ class TestAssign:
     @refs_equal
     def test_annassign_uses_and_assigns_imported(self):
         s = 'import a\nb: 1 = a\nb.c'
-        refs = [('a', 'a'), ('a', 'a'), ('a.c', 'b.c')]
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'b'), ('a.c', 'b.c')]
         return s, refs
 
     @refs_equal
     def test_annassign_uses_and_annotates_imported(self):
         s = 'import a\nb: a = 1\nb.c'
-        refs = [('a', 'a'), ('a', 'a'), ('a.().c', 'b.c')]
+        refs = [('a', 'a'), ('a', 'a'), ('a.()', 'b'), ('a.().c', 'b.c')]
         return s, refs
 
     @refs_equal
     def test_annassign_prioritises_annotation(self):
         s = 'import a, b\nc: a = b\nc.d'
         # note that AnnAssign is executed from value -> annot -> target
-        refs = [('a', 'a'), ('b', 'b'), ('b', 'b'), ('a', 'a'), ('a.().d', 'c.d')]
+        refs = [
+            ('a', 'a'),
+            ('b', 'b'),
+            ('b', 'b'),
+            ('a', 'a'),
+            ('a.()', 'c'),
+            ('a.().d', 'c.d'),
+        ]
         return s, refs
 
     @refs_equal
     def test_annassign_why_would_anyone_do_this(self):
         s = 'import a\na: a = a\na.b'
-        refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a.().b', 'a.b')]
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a.()', 'a'), ('a.().b', 'a.b')]
         return s, refs
 
     @refs_equal
@@ -131,7 +144,7 @@ class TestAssign:
     @refs_equal
     def test_walrus_uses_and_assigns_imported(self):
         s = 'import a\n(a := a)\na'
-        refs = [('a', 'a'), ('a', 'a'), ('a', 'a')]
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a', 'a')]
         return s, refs
 
     @pytest.mark.skipif(
@@ -161,48 +174,50 @@ class TestFollowAssignment:
     @refs_equal
     def test_follow_simple_assign(self):
         s = 'import a\nb = a\nb'
-        refs = [('a', 'a'), ('a', 'a'), ('a', 'b')]
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'b'), ('a', 'b')]
         return s, refs
 
     @refs_equal
     def test_follow_simple_assign_attr(self):
         s = 'import a\nb = a\nb.c'
-        refs = [('a', 'a'), ('a', 'a'), ('a.c', 'b.c')]
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'b'), ('a.c', 'b.c')]
         return s, refs
 
     @refs_equal
     def test_follow_attr_assign(self):
         s = 'import a\nc = a.b\nc'
-        refs = [('a', 'a'), ('a.b', 'a.b'), ('a.b', 'c')]
+        refs = [('a', 'a'), ('a.b', 'a.b'), ('a.b', 'c'), ('a.b', 'c')]
         return s, refs
 
     @refs_equal
     def test_follow_attr_assign_attr(self):
         s = 'import a\nc = a.b\nc.d'
-        refs = [('a', 'a'), ('a.b', 'a.b'), ('a.b.d', 'c.d')]
+        refs = [('a', 'a'), ('a.b', 'a.b'), ('a.b', 'c'), ('a.b.d', 'c.d')]
         return s, refs
 
     @refs_equal
     def test_follow_attr_call_assign_attr(self):
         s = 'import a\nc = a.b()\nc.d'
-        refs = [('a', 'a'), ('a.b', 'a.b'), ('a.b.().d', 'c.d')]
+        refs = [('a', 'a'), ('a.b', 'a.b'), ('a.b.()', 'c'), ('a.b.().d', 'c.d')]
         return s, refs
 
     @refs_equal
     def test_follow_attr_call_assign_attr_call(self):
         s = 'import a\nc = a.b()\nc.d()'
-        refs = [('a', 'a'), ('a.b', 'a.b'), ('a.b.().d', 'c.d')]
+        refs = [('a', 'a'), ('a.b', 'a.b'), ('a.b.()', 'c'), ('a.b.().d', 'c.d')]
         return s, refs
 
     @refs_equal
     def test_follow_through_two_complex_assignments(self):
-        s = 'import a\nd = a.b().c\ne = d().f'
+        s = 'import a\nd = a.b().c\nf = d().e'
         refs = [
             ('a', 'a'),
             ('a.b', 'a.b'),
             ('a.b.().c', 'c'),
             ('a.b.().c', 'd'),
-            ('a.b.().c.().f', 'f'),
+            ('a.b.().c', 'd'),
+            ('a.b.().c.().e', 'e'),
+            ('a.b.().c.().e', 'f'),
         ]
         return s, refs
 
