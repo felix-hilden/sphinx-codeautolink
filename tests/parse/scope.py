@@ -1,7 +1,6 @@
-import sys
 import pytest
 
-from ._util import refs_equal
+from ._util import refs_equal, skip_type_union, skip_walrus
 
 
 class TestFunction:
@@ -66,9 +65,7 @@ class TestFunction:
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
-    @pytest.mark.skipif(
-        sys.version_info < (3, 10), reason='Union syntax introduced in 3.10.'
-    )
+    @skip_type_union
     @refs_equal
     def test_func_annotates_union_then_uses(self):
         s = 'import a\ndef f(arg: a | 1):\n  arg.b'
@@ -261,10 +258,8 @@ class TestComprehension:
         refs = [('a', 'a'), ('a', 'a')]
         return s, refs
 
-    @pytest.mark.skipif(
-        sys.version_info < (3, 8), reason='Walrus introduced in Python 3.8.'
-    )
-    @pytest.mark.xfail(reason='Assignments are not tracked.')
+    @skip_walrus
+    @pytest.mark.xfail(reason='Assignments are not tracked outside of a "scope".')
     @refs_equal
     def test_comp_leaks_walrus(self):
         s = 'import a\n[a := i for i in b]\na'

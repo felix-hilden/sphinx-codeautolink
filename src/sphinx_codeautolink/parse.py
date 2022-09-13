@@ -77,10 +77,16 @@ class AssignTarget:
 
 @dataclass
 class Assignment:
-    """Assignment of value to a target or multiple targets when chain assigning."""
+    """
+    Representation of an assignment statement.
+
+    - ordinarily one value to a single target
+    - multiple targets when chain assigning (a = b = c)
+    - nested assignments in walruses (a = b := c)
+    """
 
     targets: List[AssignTarget]
-    value: Optional[PendingAccess]
+    value: Union[PendingAccess, 'Assignment', None]
 
 
 class NameBreak(str, Enum):
@@ -311,10 +317,14 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             self.overwrite_name(components[0].name)
         return access
 
-    def resolve_assignment(self, assignment: Assignment) -> None:
+    def resolve_assignment(self, assignment: Assignment) -> Optional[Access]:
         """Resolve access for assignment values and targets."""
-        value = assignment.value
-        access = self.resolve_pending_access(value) if value is not None else None
+        if isinstance(assignment.value, Assignment):
+            access = self.resolve_assignment(assignment.value)
+        elif assignment.value is None:
+            access = None
+        else:
+            access = self.resolve_pending_access(assignment.value)
 
         for assign in assignment.targets:
             if assign is None:
@@ -325,6 +335,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
 
             for target in assign.elements:
                 self._resolve_assign_target(target, value)
+        return access
 
     def _resolve_assign_target(
         self, target: Optional[PendingAccess], value: Optional[Access]
