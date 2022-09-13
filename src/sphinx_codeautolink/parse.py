@@ -314,14 +314,14 @@ class ImportTrackerVisitor(ast.NodeVisitor):
     def resolve_assignment(self, assignment: Assignment) -> None:
         """Resolve access for assignment values and targets."""
         value = assignment.value
-        value = self.resolve_pending_access(value) if value is not None else None
+        access = self.resolve_pending_access(value) if value is not None else None
 
         for assign in assignment.targets:
             if assign is None:
                 continue
-            elif len(assign.elements) > 1:
-                # Multiple nested targets, only overwrite assigned names
-                value = None
+
+            # Multiple nested targets, only overwrite assigned names
+            value = access if len(assign.elements) <= 1 else None
 
             for target in assign.elements:
                 self._resolve_assign_target(target, value)

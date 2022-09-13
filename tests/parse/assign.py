@@ -54,6 +54,30 @@ class TestAssign:
         return s, refs
 
     @refs_equal
+    def test_multitarget_assign_overwrites_twice(self):
+        s = 'import a\na = a = a'
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'a'), ('a', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_multitarget_assign_overwrites_twice_with_attribute(self):
+        s = 'import a\na = a = a.b'
+        refs = [('a', 'a'), ('a.b', 'a.b'), ('a.b', 'a'), ('a.b', 'a')]
+        return s, refs
+
+    @refs_equal
+    def test_multitarget_assign_with_unpacking_first_assigns_to_other(self):
+        s = 'import a\n(c, d) = b = a'
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'b')]
+        return s, refs
+
+    @refs_equal
+    def test_multitarget_assign_with_unpacking_last_assigns_to_other(self):
+        s = 'import a\nd = (b, c) = a'
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'd')]
+        return s, refs
+
+    @refs_equal
     def test_assign_uses_and_assigns_modified_imported(self):
         s = 'import a\na = a + 1\na'
         refs = [('a', 'a'), ('a', 'a')]

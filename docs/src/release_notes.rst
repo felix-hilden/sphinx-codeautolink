@@ -12,6 +12,7 @@ Unreleased
 ----------
 - Link assignment targets, bare names and annotated function arguments
   (:issue:`109`)
+- Fix links in multi-assignments when one target is unlinkable (:issue:`113`)
 
 0.11.0 (2022-06-08)
 -------------------
