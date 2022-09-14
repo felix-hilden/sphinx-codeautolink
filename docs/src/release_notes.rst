@@ -12,6 +12,7 @@ Unreleased
 ----------
 - Link assignment targets, bare names and annotated function arguments
   (:issue:`109`)
+- Initial support for match statement (:issue:`110`)
 - Fix links when assigning walrus statement result (:issue:`112`)
 - Fix links in multi-assignments when one target is unlinkable (:issue:`113`)
 

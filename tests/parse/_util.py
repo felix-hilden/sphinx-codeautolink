@@ -14,6 +14,11 @@ skip_type_union = pytest.mark.skipif(
     reason='Type union introduced in Python 3.10.',
 )
 
+skip_match = pytest.mark.skipif(
+    sys.version_info < (3, 10),
+    reason='Match introduced in Python 3.10.',
+)
+
 
 def refs_equal(func):
     @wraps(func)

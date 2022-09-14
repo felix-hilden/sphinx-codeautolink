@@ -12,6 +12,9 @@ from dataclasses import dataclass, field
 
 from .warn import logger, warn_type
 
+HAS_WALRUS = (sys.version_info >= (3, 8))
+HAS_MATCH = (sys.version_info >= (3, 10))
+
 
 def parse_names(source: str, doctree_node) -> List['Name']:
     """Parse names from source."""
@@ -49,6 +52,9 @@ class Component:
             name = node.arg
         elif isinstance(node, ast.Call):
             name = NameBreak.call
+        elif HAS_MATCH and isinstance(node, ast.MatchAs):
+            name = node.name
+            context = 'store'
         else:
             raise ValueError(f'Invalid AST for component: {node.__class__.__name__}')
         return cls(name, *linenos(node), context)
@@ -152,8 +158,10 @@ class Access:
     @property
     def code_str(self):
         """Code representation of components."""
-        breaks = set(NameBreak)
-        return '.'.join(c.name for c in self.components if c.name not in breaks)
+        break_on = set(NameBreak)
+        breaks = [i for i, c in enumerate(self.components) if c.name in break_on]
+        start_ix = breaks[-1] + 1 if breaks else 0
+        return '.'.join(c.name for c in self.components[start_ix:])
 
     @property
     def lineno_span(self) -> Tuple[int, int]:
@@ -211,14 +219,11 @@ def track_parents(func):
     @wraps(func)
     def wrapper(self: 'ImportTrackerVisitor', *args, **kwargs):
         self._parents += 1
-        r: Union[PendingAccess, Assignment, None] = func(self, *args, **kwargs)
+        result = func(self, *args, **kwargs)
         self._parents -= 1
         if not self._parents:
-            if isinstance(r, Assignment):
-                self.resolve_assignment(r)
-            elif isinstance(r, PendingAccess):
-                self.resolve_pending_access(r)
-        return r
+            self.dispatch_result(result)
+        return result
     return wrapper
 
 
@@ -235,6 +240,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self.accessed: List[Name] = []
         self.in_augassign = False
         self._parents = 0
+        self._no_split = False
         self.doctree_node = doctree_node
 
         # Stack for dealing with class body pseudo scopes
@@ -249,8 +255,15 @@ class ImportTrackerVisitor(ast.NodeVisitor):
 
     def save_access(self, access: Access) -> None:
         """Convert Access to Names to store in the visitor for aggregation."""
-        names = access.split()
+        names = access.split() if not self._no_split else [Access.to_name(access)]
         self.accessed.extend(names)
+
+    @contextmanager
+    def no_split(self):
+        """Disable splitting Accesses."""
+        self._no_split, old = (True, self._no_split)
+        yield
+        self._no_split = old
 
     @contextmanager
     def reset_parents(self):
@@ -259,13 +272,16 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         yield
         self._parents = old
 
+    # Nodes that are excempt from resetting parents in default visit
     track_nodes = (
         ast.Name,
         ast.Attribute,
         ast.Call,
     )
-    if sys.version_info >= (3, 8):
+    if HAS_WALRUS:
         track_nodes += (ast.NamedExpr,)
+    if HAS_MATCH:
+        track_nodes += (ast.MatchAs,)
 
     def visit(self, node: ast.AST):
         """Override default visit to track name access and assignments."""
@@ -319,23 +335,20 @@ class ImportTrackerVisitor(ast.NodeVisitor):
 
     def resolve_assignment(self, assignment: Assignment) -> Optional[Access]:
         """Resolve access for assignment values and targets."""
-        if isinstance(assignment.value, Assignment):
-            access = self.resolve_assignment(assignment.value)
-        elif assignment.value is None:
-            access = None
-        else:
-            access = self.resolve_pending_access(assignment.value)
+        access = self.dispatch_result(assignment.value)
+        self._resolve_assign_targets(assignment, access)
+        return access
 
+    def _resolve_assign_targets(self, assignment: Assignment, access: Access):
         for assign in assignment.targets:
             if assign is None:
                 continue
 
-            # Multiple nested targets, only overwrite assigned names
+            # On multiple nested targets, only overwrite assigned names
             value = access if len(assign.elements) <= 1 else None
 
             for target in assign.elements:
                 self._resolve_assign_target(target, value)
-        return access
 
     def _resolve_assign_target(
         self, target: Optional[PendingAccess], value: Optional[Access]
@@ -345,8 +358,9 @@ class ImportTrackerVisitor(ast.NodeVisitor):
 
         if len(target.components) == 1:
             comp = target.components[0]
-            self.overwrite_name(comp.name)
-            if value is not None:
+            if value is None:
+                self.overwrite_name(comp.name)
+            else:
                 self.assign_name(comp.name, value.full_components)
                 self.create_access(comp.name, target.components)
         else:
@@ -356,6 +370,15 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         """Create single-component access to scope."""
         component = Component(name, lineno, lineno, 'load')
         self.create_access(component.name, [component])
+
+    def dispatch_result(
+        self, result: Union[PendingAccess, Assignment, None]
+    ) -> Optional[Access]:
+        """Determine the appropriate processing after tracking an access chain."""
+        if isinstance(result, Assignment):
+            return self.resolve_assignment(result)
+        elif isinstance(result, PendingAccess):
+            return self.resolve_pending_access(result)
 
     def visit_Global(self, node: ast.Global):
         """Import from top scope."""
@@ -376,7 +399,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             self.overwrite_name(name)
             for imports in imports_stack[::-1]:
                 if name in imports:
-                    self.pseudo_scopes_stack[-1][name] = imports[name]
+                    self.assign_name(name, imports[name])
                     self.create_simple_access(name, node.lineno)
                     break
 
@@ -527,6 +550,40 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         value = self.visit(node.value)
         target = self.visit(node.target)
         return Assignment([AssignTarget([target])], value)
+
+    @track_parents
+    def visit_MatchClass(self, node):
+        """Visit a match case class as a series of assignments."""
+        with self.reset_parents():
+            cls = self.visit(node.cls)
+
+        accesses = []
+        for n in node.patterns:
+            access = self.visit(n)
+            if access is not None:
+                accesses.append(access)
+
+        assigns = []
+        for attr, pattern in zip(node.kwd_attrs, node.kwd_patterns):
+            target = self.visit(pattern)
+            attr_comps = [
+                Component(NameBreak.call, *linenos(node), 'load'),
+                Component(attr, *linenos(node), 'load'),
+            ]
+            access = PendingAccess(cls.components + attr_comps)
+            assigns.append(Assignment([AssignTarget([target])], access))
+
+        for access in accesses:
+            self.resolve_pending_access(access)
+
+        with self.no_split():
+            for assign in assigns:
+                self.resolve_assignment(assign)
+
+    @track_parents
+    def visit_MatchAs(self, node):
+        """Track match alias names."""
+        return PendingAccess([Component.from_ast(node)])
 
     def visit_AsyncFor(self, node: ast.AsyncFor):
         """Delegate to sync for."""

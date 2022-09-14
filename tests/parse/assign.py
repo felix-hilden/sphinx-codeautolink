@@ -47,6 +47,12 @@ class TestAssign:
         return s, refs
 
     @refs_equal
+    def test_multitarget_assign_to_different_names(self):
+        s = 'import a\nc = b = a'
+        refs = [('a', 'a'), ('a', 'a'), ('a', 'b'), ('a', 'c')]
+        return s, refs
+
+    @refs_equal
     def test_multitarget_assign_uses_and_overwrites(self):
         s = 'import a\na = b = a\na, b'
         refs = [('a', 'a'), ('a', 'a'), ('a', 'b'), ('a', 'a'), ('a', 'a'), ('a', 'b')]
