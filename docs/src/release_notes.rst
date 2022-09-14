@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.12.0 (2022-09-14)
+-------------------
 - Link assignment targets, bare names and annotated function arguments
   (:issue:`109`)
 - Initial support for match statement (:issue:`110`)
