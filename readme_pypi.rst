@@ -1,6 +1,6 @@
 sphinx-codeautolink
 ===================
-|pyversions| |downloads| |license| |readthedocs|
+|pyversions| |conda-forge| |downloads| |license| |readthedocs|
 
 sphinx-codeautolink makes code examples clickable by inserting links
 from individual code elements to the corresponding reference documentation.
@@ -11,11 +11,17 @@ For a live demo, see our online documentation on
 
 Installation
 ------------
-sphinx-codeautolink can be installed from the Package Index via ``pip``.
+sphinx-codeautolink can be installed from the Python Package Index via ``pip``.
 
 .. code:: sh
 
    $ pip install sphinx-codeautolink
+
+Alternatively, for Anaconda-based distributions, using ``conda``:
+
+.. code:: sh
+
+   $ conda install -c conda-forge sphinx-codeautolink
 
 Note that the library is in early development, so version pinning is advised.
 To enable sphinx-codeautolink, modify the extension list in ``conf.py``.
@@ -36,8 +42,12 @@ have a look at the online documentation.
 .. |pyversions| image:: https://img.shields.io/pypi/pyversions/sphinx-codeautolink
    :alt: Python versions
 
+.. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/sphinx-codeautolink.svg
+   :target: https://anaconda.org/conda-forge/sphinx-codeautolink
+   :alt: Conda-Forge package
+
 .. |downloads| image:: https://img.shields.io/pypi/dm/sphinx-codeautolink
-   :alt: monthly downloads
+   :alt: Monthly downloads
 
 .. |license| image:: https://img.shields.io/badge/License-MIT-blue.svg
    :target: https://choosealicense.com/licenses/mit
@@ -45,4 +55,4 @@ have a look at the online documentation.
 
 .. |readthedocs| image:: https://rtfd.org/projects/sphinx-codeautolink/badge/?version=stable
    :target: https://sphinx-codeautolink.rtfd.org/en/stable/
-   :alt: documentation
+   :alt: Documentation

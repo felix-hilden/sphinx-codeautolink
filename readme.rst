@@ -18,7 +18,7 @@ sphinx-codeautolink elsewhere:
 Installation
 ------------
 
-For pure python environments:
+For pure Python environments:
 
 .. code:: sh
 

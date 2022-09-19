@@ -1,10 +1,11 @@
 sphinx-codeautolink
 ===================
-|pypi| |license|
+|pypi| |conda-forge| |license|
 
 sphinx-codeautolink makes code examples clickable by inserting links
 from individual code elements to the corresponding reference documentation.
 We aim for a minimal setup assuming your examples are already valid Python.
+
 Click any names in the example below for a demonstration:
 
 .. code:: python
@@ -36,9 +37,17 @@ Integration with intersphinx is seamless:
 Quick start
 -----------
 
+For pure Python environments:
+
 .. code:: sh
 
    $ pip install sphinx-codeautolink
+
+Alternatively, for Anaconda-based distributions:
+
+.. code:: sh
+
+   $ conda install -c conda-forge sphinx-codeautolink
 
 To enable sphinx-codeautolink, modify the extension list in ``conf.py``.
 Note that the extension name uses an underscore rather than a hyphen.
@@ -100,11 +109,22 @@ your documentation, you'll not be disappointed in their offer.
    ↪ PyPI <https://pypi.org/project/sphinx-codeautolink>
    ↪ GitHub <https://github.com/felix-hilden/sphinx-codeautolink>
 
-
 .. |pypi| image:: https://img.shields.io/pypi/v/sphinx-codeautolink.svg
    :target: https://pypi.org/project/sphinx-codeautolink
    :alt: PyPI package
 
+.. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/sphinx-codeautolink.svg
+   :target: https://anaconda.org/conda-forge/sphinx-codeautolink
+   :alt: Conda-Forge package
+
 .. |license| image:: https://img.shields.io/badge/License-MIT-blue.svg
    :target: https://choosealicense.com/licenses/mit
    :alt: License: MIT
+
+.. |readthedocs| image:: https://rtfd.org/projects/sphinx-codeautolink/badge/?version=latest
+   :target: https://sphinx-codeautolink.rtfd.org/en/latest/
+   :alt: documentation
+
+.. |build| image:: https://github.com/felix-hilden/sphinx-codeautolink/workflows/CI/badge.svg
+   :target: https://github.com/felix-hilden/sphinx-codeautolink/actions
+   :alt: build status
