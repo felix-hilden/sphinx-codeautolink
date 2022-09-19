@@ -18,17 +18,13 @@ sphinx-codeautolink elsewhere:
 Installation
 ------------
 
-For pure Python environments:
+sphinx-codeautolink can be installed from the following sources:
 
 .. code:: sh
 
-   $ pip install sphinx-codeautolink
-   
-Alternatively, for Anaconda-based distributions:
-
-.. code:: sh
-  
-   $ conda install -c conda-forge sphinx-codeautolink
+    $ pip install sphinx-codeautolink
+    # or, alternatively:
+    $ conda install -c conda-forge sphinx-codeautolink
 
 To enable sphinx-codeautolink, modify the extension list in ``conf.py``.
 Note that the extension name uses an underscore rather than a hyphen.
@@ -49,7 +45,7 @@ have a look at the online documentation.
    :target: https://pypi.org/project/sphinx-codeautolink
    :alt: PyPI package
    
-.. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/sphinx-codeautolink.svg
+.. |conda-forge| image:: https://anaconda.org/conda-forge/sphinx-codeautolink/badges/installer/conda.svg
    :target: https://anaconda.org/conda-forge/sphinx-codeautolink
    :alt: Conda-Forge package
 
