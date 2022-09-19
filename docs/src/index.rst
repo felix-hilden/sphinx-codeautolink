@@ -1,6 +1,6 @@
 sphinx-codeautolink
 ===================
-|pypi| |conda-forge| |license|
+|pypi| |conda-forge| |license| |build|
 
 sphinx-codeautolink makes code examples clickable by inserting links
 from individual code elements to the corresponding reference documentation.
@@ -120,10 +120,6 @@ your documentation, you'll not be disappointed in their offer.
 .. |license| image:: https://img.shields.io/badge/License-MIT-blue.svg
    :target: https://choosealicense.com/licenses/mit
    :alt: License: MIT
-
-.. |readthedocs| image:: https://rtfd.org/projects/sphinx-codeautolink/badge/?version=latest
-   :target: https://sphinx-codeautolink.rtfd.org/en/latest/
-   :alt: documentation
 
 .. |build| image:: https://github.com/felix-hilden/sphinx-codeautolink/workflows/CI/badge.svg
    :target: https://github.com/felix-hilden/sphinx-codeautolink/actions
