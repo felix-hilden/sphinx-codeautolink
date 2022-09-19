@@ -11,17 +11,14 @@ For a live demo, see our online documentation on
 
 Installation
 ------------
-sphinx-codeautolink can be installed from the Python Package Index via ``pip``.
+
+sphinx-codeautolink can be installed from the following sources:
 
 .. code:: sh
 
-   $ pip install sphinx-codeautolink
-
-Alternatively, for Anaconda-based distributions, using ``conda``:
-
-.. code:: sh
-
-   $ conda install -c conda-forge sphinx-codeautolink
+    $ pip install sphinx-codeautolink
+    # or, alternatively:
+    $ conda install -c conda-forge sphinx-codeautolink
 
 Note that the library is in early development, so version pinning is advised.
 To enable sphinx-codeautolink, modify the extension list in ``conf.py``.
