@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+0.13.0 (unreleased)
+-------------------
+- Adjust `tox` settings to allow for more isolated/replicable testing environments (:issue:`117`)
+
 0.12.0 (2022-09-14)
 -------------------
 - Link assignment targets, bare names and annotated function arguments
