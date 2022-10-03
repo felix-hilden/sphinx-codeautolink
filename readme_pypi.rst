@@ -39,7 +39,7 @@ have a look at the online documentation.
    :alt: Python versions
 
 .. |downloads| image:: https://img.shields.io/pypi/dm/sphinx-codeautolink
-   :alt: monthly downloads
+   :alt: Monthly downloads
 
 .. |license| image:: https://img.shields.io/badge/License-MIT-blue.svg
    :target: https://choosealicense.com/licenses/mit
@@ -47,4 +47,4 @@ have a look at the online documentation.
 
 .. |readthedocs| image:: https://rtfd.org/projects/sphinx-codeautolink/badge/?version=stable
    :target: https://sphinx-codeautolink.rtfd.org/en/stable/
-   :alt: documentation
+   :alt: Documentation
