@@ -10,7 +10,7 @@ sphinx-codeautolink adheres to
 
 0.13.0 (unreleased)
 -------------------
-- Adjust `tox` settings to allow for more isolated/replicable testing environments (:issue:`117`)
+- Adjust `tox` settings for more isolated testing environments (:issue:`117`)
 
 0.12.0 (2022-09-14)
 -------------------
