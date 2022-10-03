@@ -6,6 +6,23 @@ root = Path(os.path.realpath(__file__)).parent
 version_file = root / "src" / "sphinx_codeautolink" / "VERSION"
 readme_file = root / "readme_pypi.rst"
 
+extras_file = root / "requirements" / "extras.txt"
+extras_requirements = [line.rstrip() for line in extras_file.open()]
+
+docs_file = root / "requirements" / "docs.txt"
+docs_requirements = extras_requirements.copy()
+docs_requirements.extend([line.rstrip() for line in docs_file.open()])
+
+test_file = root / "requirements" / "tests.txt"
+test_requirements = extras_requirements.copy()
+test_requirements.extend([line.rstrip() for line in test_file.open()])
+
+dev_file = root / "requirements" / "dev.txt"
+dev_requirements = [line.rstrip() for line in dev_file.open()]
+dev_requirements.extend(
+    list(set(extras_requirements + docs_requirements + test_requirements))
+)
+
 setuptools.setup(
     name="sphinx-codeautolink",
     version=version_file.read_text().strip(),
@@ -38,9 +55,12 @@ setuptools.setup(
         'beautifulsoup4',
         'dataclasses;python_version<"3.7"',
     ],
-    # Keep extras in sync with requirements manually
     extras_require={
-        "ipython": ["ipython"],
+        "dev": dev_requirements,
+        "docs": docs_requirements,
+        "extras": extras_requirements,
+        # test_requires field is deprecated in setup.py
+        "test": test_requirements
     },
 
     classifiers=[

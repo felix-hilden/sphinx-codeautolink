@@ -1,10 +1,5 @@
--r extras
--r docs
--r tests
-
-# Tests / checks tooling
 tox
-doc8>=0.9
+doc8>=0.9,<1.0
 flake8
 flake8-bugbear
 pydocstyle[toml]>=6.1

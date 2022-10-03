@@ -3,4 +3,5 @@ graft docs
 prune docs/build
 graft tests
 include readme_pypi.rst
+recursive-include requirements *.txt
 global-exclude *.py[cod] __pycache__ *.so

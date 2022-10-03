@@ -1,4 +1,2 @@
--r extras
-
 sphinx-rtd-theme
 matplotlib
