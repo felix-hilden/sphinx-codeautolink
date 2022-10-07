@@ -12,7 +12,6 @@ For a live demo, see our online documentation on
 sphinx-codeautolink elsewhere:
 
 - Package on `PyPI <https://pypi.org/project/sphinx-codeautolink>`_
-- Package on `Conda-Forge <https://anaconda.org/conda-forge/sphinx-codeautolink>`_
 - How to contribute on `GitHub <https://github.com/felix-hilden/
   sphinx-codeautolink/blob/master/contributing.rst>`_
 
