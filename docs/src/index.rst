@@ -1,6 +1,6 @@
 sphinx-codeautolink
 ===================
-|pypi| |conda-forge| |license|
+|license|
 
 sphinx-codeautolink makes code examples clickable by inserting links
 from individual code elements to the corresponding reference documentation.
@@ -35,6 +35,7 @@ Integration with intersphinx is seamless:
 
 Quick start
 -----------
+|pypi| |conda-forge|
 
 sphinx-codeautolink can be installed from the following sources:
 

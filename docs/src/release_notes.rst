@@ -10,7 +10,7 @@ sphinx-codeautolink adheres to
 
 0.13.0 (unreleased)
 -------------------
-- Add Conda-Forge installation instructions (:issue:`111`)
+- Created an Anaconda (Conda-Forge) binary. (:issue:`111`)
 
 0.12.0 (2022-09-14)
 -------------------
