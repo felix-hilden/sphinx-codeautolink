@@ -10,7 +10,8 @@ sphinx-codeautolink adheres to
 
 0.13.0 (unreleased)
 -------------------
-- Adjust `tox` settings for more isolated testing environments (:issue:`117`)
+- Created an Anaconda (Conda-Forge) binary. (:issue:`111`)
+- [TODO: changes to be determined] (:issue:`117`)
 
 0.12.0 (2022-09-14)
 -------------------
