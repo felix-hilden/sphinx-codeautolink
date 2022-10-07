@@ -9,11 +9,11 @@ testpaths = ["tests"]
 [tool.coverage.run]
 source = ["src"]
 branch = true
-relative_files = true
 command_line = "-m pytest"
 
 [tool.coverage.report]
 precision = 1
+show_missing = true
 skip_covered = true
 
 [tool.pydocstyle]
