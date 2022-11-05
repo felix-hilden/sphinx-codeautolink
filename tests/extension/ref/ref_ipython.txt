@@ -1,6 +1,7 @@
 test_project
 b
 test_project.bar
+test_project
 # split
 # split
 Test project
@@ -15,5 +16,10 @@ Test project
    Out[4]: 4
    In [5]: class A:
       ...:     pass
+   In [6]: 
+   In [7]: print(test_project)
+   Out[7]:
+   multiline
+   msg
 
 .. automodule:: test_project

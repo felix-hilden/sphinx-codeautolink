@@ -69,6 +69,7 @@ dmypy.json
 # Editors
 .idea/
 .vim/
+.vscode/
 
 # Misc
 /*.egg-info/

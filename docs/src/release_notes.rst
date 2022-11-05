@@ -8,9 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-0.13.0 (unreleased)
--------------------
-- Created an Anaconda (Conda-Forge) binary. (:issue:`111`)
+Unreleased
+----------
+- Created an Anaconda (Conda-Forge) binary (:issue:`111`)
+- Fix IPython parsing on multiline output and empty input (:issue:`119`)
 
 0.12.0 (2022-09-14)
 -------------------

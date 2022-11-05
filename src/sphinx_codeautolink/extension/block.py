@@ -56,9 +56,10 @@ def clean_ipython(source: str) -> Tuple[str, str]:
     in_statement = True
     clean_lines = []
     for line in source.split('\n'):
+        # Space after "In" is required by transformer but removed in RST preprocessing
         if re.match(r'^In \[[0-9]+\]: ', line):
             in_statement = True
-        elif re.match(r'^Out\[[0-9]+\]: ', line):
+        elif re.match(r'^Out\[[0-9]+\]:', line) or re.match(r'^In \[[0-9]+\]:$', line):
             in_statement = False
         clean_lines.append(line * in_statement)
 
