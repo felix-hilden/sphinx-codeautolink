@@ -46,7 +46,7 @@ have a look at the online documentation.
    :target: https://pypi.org/project/sphinx-codeautolink
    :alt: PyPI package
 
-.. |conda-forge| image:: https://anaconda.org/conda-forge/sphinx-codeautolink/badges/installer/conda.svg
+.. |conda-forge| image:: https://anaconda.org/conda-forge/sphinx-codeautolink/badges/version.svg
    :target: https://anaconda.org/conda-forge/sphinx-codeautolink
    :alt: Conda-Forge package
 
