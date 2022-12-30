@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Declare support for Python 3.11 (:issue:`122`)
+
 0.12.1 (2022-11-05)
 -------------------
 - Created an Anaconda (Conda-Forge) binary (:issue:`111`)
