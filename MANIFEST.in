@@ -1,6 +1,6 @@
-graft src/sphinx_codeautolink
 graft docs
 prune docs/build
+graft requirements
 graft tests
-include readme_pypi.rst
+include contributing.rst tox.ini
 global-exclude *.py[cod] __pycache__ *.so

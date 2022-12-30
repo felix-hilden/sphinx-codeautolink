@@ -57,6 +57,7 @@ command_line = "-m pytest"
 
 [tool.coverage.report]
 precision = 1
+show_missing = true
 skip_covered = true
 
 [tool.pydocstyle]

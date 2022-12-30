@@ -50,6 +50,6 @@ jobs:
       - name: Run tox environments
         run: tox
       - name: Build documentation
-        run: cd docs && make html
+        run: cd docs && make html && cd ..
       - name: Build and check dist
         run: python -m build && twine check --strict dist/*
