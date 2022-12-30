@@ -40,7 +40,7 @@ setuptools.setup(
     ],
     # Keep extras in sync with requirements manually
     extras_require={
-        "ipython": ["ipython"],
+        "ipython": ["ipython!=8.7.0"],
     },
 
     classifiers=[
