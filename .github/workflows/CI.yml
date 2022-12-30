@@ -51,3 +51,5 @@ jobs:
         run: tox
       - name: Build documentation
         run: cd docs && make html
+      - name: Build and check dist
+        run: python -m build && twine check --strict dist/*
