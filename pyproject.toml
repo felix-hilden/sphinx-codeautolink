@@ -1,6 +1,50 @@
 [build-system]
-requires = ["setuptools>=41.0", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "sphinx-codeautolink"
+description = "Automatic links from code examples to reference documentation."
+readme = "readme_pypi.rst"
+license = {file = "LICENSE"}
+dynamic = ["version"]
+
+requires-python = ">=3.7"
+dependencies = [
+    "sphinx>=3.2.0",
+    "beautifulsoup4",
+]
+# Keep extras in sync with requirements manually
+optional-dependencies = {ipython = ["ipython!=8.7.0"]}
+
+keywords = ["sphinx", "extension", "code", "link"]
+authors = [{name = "Felix Hildén", email = "felix.hilden@gmail.com"}]
+maintainers = [{name = "Felix Hildén", email = "felix.hilden@gmail.com"}]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Sphinx",
+    "Framework :: Sphinx :: Extension",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Documentation",
+    "Topic :: Documentation :: Sphinx",
+    "Topic :: Software Development :: Documentation",
+]
+
+[project.urls]
+homepage = "https://pypi.org/project/sphinx-codeautolink"
+download = "https://pypi.org/project/sphinx-codeautolink"
+source = "https://github.com/felix-hilden/sphinx-codeautolink"
+issues = "https://github.com/felix-hilden/sphinx-codeautolink/issues"
+documentation = "https://sphinx-codeautolink.rtfd.org"
+
+[tool.setuptools.dynamic]
+version = {attr = "sphinx_codeautolink.__version__"}
 
 [tool.pytest.ini_options]
 python_files = "*.py"

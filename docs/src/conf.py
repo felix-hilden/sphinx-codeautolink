@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 
-from sphinx_codeautolink import clean_pycon
+from sphinx_codeautolink import clean_pycon, __version__
 
 # Insert package root to path
 _src_dir = Path(os.path.realpath(__file__)).parent
@@ -13,7 +13,7 @@ sys.path.insert(0, str(_src_dir))
 project = "sphinx-codeautolink"
 author = "Felix Hildén"
 copyright = "2021-2022, Felix Hildén"
-version = Path(_package_root, "sphinx_codeautolink", "VERSION").read_text().strip()
+version = __version__
 release = version
 
 extensions = [

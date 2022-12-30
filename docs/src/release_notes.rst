@@ -11,6 +11,7 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Declare support for Python 3.11 (:issue:`122`)
+- Remove support for Python 3.6 (:issue:`123`)
 
 0.12.1 (2022-11-05)
 -------------------

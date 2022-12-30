@@ -1,13 +1,9 @@
 """Sphinx extension for linking code examples to reference documentation."""
-import os as _os
-from pathlib import Path as _Path
-
 from sphinx.application import Sphinx
 from .extension import backref, directive, SphinxCodeAutoLink
 from .extension.block import clean_pycon, clean_ipython  # NOQA
 
-_version_file = _Path(_os.path.realpath(__file__)).parent / "VERSION"
-__version__ = _version_file.read_text().strip()
+__version__ = "0.12.1"
 
 
 def setup(app: Sphinx):
