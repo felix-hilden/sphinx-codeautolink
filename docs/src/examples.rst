@@ -248,6 +248,7 @@ stable/sphinxext.html#>`_ is also supported:
 
 They are also useful for integrating Jupyter notebooks and similar source code,
 which is possible with separate Sphinx extensions like nbsphinx_ or MyST-NB_.
+Enabling :confval:`codeautolink_concat_default` with notebooks is recommended.
 IPython processing is enabled if the ``ipython`` library is installed.
 It is also included in the ``ipython`` extra of sphinx-codeautolink.
 
