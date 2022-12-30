@@ -15,7 +15,7 @@ jobs:
   matrix:
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.10", "3.11"]
+        python-version: ["3.7", "3.8", "3.10", "3.11"]
     name: Pytest on ${{matrix.python-version}}
     runs-on: ubuntu-latest
 
