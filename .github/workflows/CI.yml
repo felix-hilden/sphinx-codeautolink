@@ -15,7 +15,7 @@ jobs:
   matrix:
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.10", "3.11"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
     name: Pytest on ${{matrix.python-version}}
     runs-on: ubuntu-latest
 
@@ -34,14 +34,14 @@ jobs:
         run: pytest
 
   full-build:
-    name: Full 3.9 build
+    name: Full 3.11 build
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: "3.11"
       - name: Install package
         run: |
           python -m pip install --upgrade pip
