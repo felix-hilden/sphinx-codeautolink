@@ -40,7 +40,7 @@ setuptools.setup(
     ],
     # Keep extras in sync with requirements manually
     extras_require={
-        "ipython": ["ipython"],
+        "ipython": ["ipython!=8.7.0"],
     },
 
     classifiers=[
@@ -54,6 +54,7 @@ setuptools.setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Documentation',
         'Topic :: Documentation :: Sphinx',
         'Topic :: Software Development :: Documentation',
