@@ -1,15 +1,11 @@
 -r extras
 -r docs
 -r tests
+-r build
 
-# Tests / checks tooling
 tox>=4
 doc8>=0.9
 flake8
 flake8-bugbear
 pydocstyle[toml]>=6.1
 pygments
-
-# Build / publishing
-build
-twine

@@ -39,54 +39,16 @@ specifically `opening a pull request
 
 Testing
 -------
-The install can be verified, and any changes tested by running tox.
+The installation can be verified, and any changes tested by running tox.
 
 .. code:: sh
 
     $ tox
 
-Now tests and static checks have been run.
-A list of all individual tasks can be viewed with their descriptions.
-
-.. code:: sh
-
-    $ tox -a -v
-
-Test suite
-**********
-The repository contains a suite of test cases
-which can be studied and run to ensure the package works as intended.
-
-.. code:: sh
-
-    $ pytest
-
-For tox, this is the default command when running e.g. ``tox -e py``.
-To measure test coverage and view uncovered lines or branches run ``coverage``.
-
-.. code:: sh
-
-    $ coverage run
-    $ coverage report
-
-This can be achieved with tox by running ``tox -e coverage``.
-
-Documentation
-*************
-Documentation can be built locally with Sphinx.
-
-.. code:: sh
-
-    $ cd docs
-    $ make html
-
-The main page ``index.html`` can be found in ``build/html``.
-
-Code style
-**********
-A set of style rules is followed using a variety of tools,
-which check code, docstrings and documentation files.
-To run all style checks use ``tox -e lint``.
+It will execute the test suite (also available plainly as
+``coverage run && coverage report``), build documentation to
+``docs/build/html/index.html`` (``tox -m docs``), check code style
+(``tox -m lint``), and perform a packaging dry run (``tox -m build``).
 
 Releasing
 ---------
@@ -100,22 +62,18 @@ and the release notes reference the new release.
     releasing a new version.
 
 Running tests once more is also good practice.
-The following commands build source and wheel distributions
-to a clean directory, and publish them on PyPI
-according to the project name specified in the project metadata.
+Tox is used to build the appropriate distributions and publish them on PyPI.
 
 .. code:: sh
 
-    $ rm -r dist
-    $ python -m build
-    $ twine check --strict dist/*
-    $ twine upload dist/*
+    $ tox -m publish
 
 If you'd like to test the upload and the resulting package,
-use `TestPyPI <https://test.pypi.org>`_ instead.
+upload manually to `TestPyPI <https://test.pypi.org>`_ instead.
 
 .. code:: sh
 
+    $ python -m build
     $ twine upload --repository testpypi dist/*
     $ pip install --index-url https://test.pypi.org/simple/ sphinx-codeautolink
 
