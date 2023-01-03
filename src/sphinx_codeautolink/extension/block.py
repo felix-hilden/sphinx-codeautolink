@@ -12,10 +12,7 @@ from ..warn import logger, warn_type
 from .backref import CodeExample
 from .directive import ConcatMarker, PrefaceMarker, SkipMarker
 
-BUILTIN_BLOCKS = {
-    'python': None,
-    'py': None,
-}
+BUILTIN_BLOCKS = {"python": None, "py": None}
 
 
 @dataclass
@@ -31,21 +28,21 @@ class SourceTransform:
 def clean_pycon(source: str) -> Tuple[str, str]:
     """Clean up Python console syntax to pure Python."""
     in_statement = False
-    source = re.sub(r'^\s*<BLANKLINE>', '', source, flags=re.MULTILINE)
+    source = re.sub(r"^\s*<BLANKLINE>", "", source, flags=re.MULTILINE)
     clean_lines = []
-    for line in source.split('\n'):
-        if line.startswith('>>> '):
+    for line in source.split("\n"):
+        if line.startswith(">>> "):
             in_statement = True
             clean_lines.append(line[4:])
-        elif in_statement and line.startswith('... '):
+        elif in_statement and line.startswith("... "):
             clean_lines.append(line[4:])
         else:
             in_statement = False
-            clean_lines.append('')
-    return source, '\n'.join(clean_lines)
+            clean_lines.append("")
+    return source, "\n".join(clean_lines)
 
 
-BUILTIN_BLOCKS['pycon'] = clean_pycon
+BUILTIN_BLOCKS["pycon"] = clean_pycon
 
 
 def clean_ipython(source: str) -> Tuple[str, str]:
@@ -54,15 +51,15 @@ def clean_ipython(source: str) -> Tuple[str, str]:
 
     in_statement = True
     clean_lines = []
-    for line in source.split('\n'):
+    for line in source.split("\n"):
         # Space after "In" is required by transformer but removed in RST preprocessing
-        if re.match(r'^In \[[0-9]+\]: ', line):
+        if re.match(r"^In \[[0-9]+\]: ", line):
             in_statement = True
-        elif re.match(r'^Out\[[0-9]+\]:', line) or re.match(r'^In \[[0-9]+\]:$', line):
+        elif re.match(r"^Out\[[0-9]+\]:", line) or re.match(r"^In \[[0-9]+\]:$", line):
             in_statement = False
         clean_lines.append(line * in_statement)
 
-    return source, TransformerManager().transform_cell('\n'.join(clean_lines))
+    return source, TransformerManager().transform_cell("\n".join(clean_lines))
 
 
 try:
@@ -71,8 +68,8 @@ except ImportError:
     pass
 else:
     del IPython
-    BUILTIN_BLOCKS['ipython'] = clean_ipython
-    BUILTIN_BLOCKS['ipython3'] = clean_ipython
+    BUILTIN_BLOCKS["ipython"] = clean_ipython
+    BUILTIN_BLOCKS["ipython3"] = clean_ipython
 
 
 class CodeBlockAnalyser(nodes.SparseNodeVisitor):
@@ -89,8 +86,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     ):
         super().__init__(*args, **kwargs)
         self.source_transforms: List[SourceTransform] = []
-        relative_path = Path(self.document['source']).relative_to(source_dir)
-        self.current_document = str(relative_path.with_suffix(''))
+        relative_path = Path(self.document["source"]).relative_to(source_dir)
+        self.current_document = str(relative_path.with_suffix(""))
         self.global_preface = global_preface
         self.transformers = BUILTIN_BLOCKS.copy()
         self.transformers.update(custom_blocks)
@@ -106,29 +103,29 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     def unknown_visit(self, node):
         """Handle and delete custom directives, ignore others."""
         if isinstance(node, ConcatMarker):
-            if node.mode not in ('off', 'section', 'on'):
-                msg = f'Invalid concatenation argument: `{node.mode}`'
+            if node.mode not in ("off", "section", "on"):
+                msg = f"Invalid concatenation argument: `{node.mode}`"
                 logger.error(
-                    msg, type=warn_type, subtype='invalid_argument', location=node
+                    msg, type=warn_type, subtype="invalid_argument", location=node
                 )
 
             self.concat_sources = []
-            if node.mode == 'section':
+            if node.mode == "section":
                 self.concat_section = True
             else:
                 self.concat_section = False
-                self.concat_global = (node.mode == 'on')
+                self.concat_global = node.mode == "on"
             node.parent.remove(node)
         elif isinstance(node, PrefaceMarker):
-            self.prefaces.extend(node.content.split('\n'))
+            self.prefaces.extend(node.content.split("\n"))
             node.parent.remove(node)
         elif isinstance(node, SkipMarker):
-            if node.level not in ('next', 'section', 'file', 'off'):
-                msg = f'Invalid skipping argument: `{node.level}`'
+            if node.level not in ("next", "section", "file", "off"):
+                msg = f"Invalid skipping argument: `{node.level}`"
                 logger.error(
-                    msg, type=warn_type, subtype='invalid_argument', location=node
+                    msg, type=warn_type, subtype="invalid_argument", location=node
                 )
-            self.skip = node.level if node.level != 'off' else None
+            self.skip = node.level if node.level != "off" else None
             node.parent.remove(node)
 
     def unknown_departure(self, node):
@@ -140,12 +137,12 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if self.concat_section:
             self.concat_section = False
             self.concat_sources = []
-        if self.skip == 'section':
+        if self.skip == "section":
             self.skip = None
 
     def visit_section(self, node):
         """Record first section ID."""
-        self.current_refid = node['ids'][0]
+        self.current_refid = node["ids"][0]
 
     def depart_section(self, node):
         """Pop latest title."""
@@ -153,23 +150,23 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 
     def visit_doctest_block(self, node):
         """Visit a Python doctest block."""
-        return self.parse_source(node, 'pycon')
+        return self.parse_source(node, "pycon")
 
     def visit_literal_block(self, node: nodes.literal_block):
         """Visit a generic literal block."""
-        return self.parse_source(node, node.get('language', None))
+        return self.parse_source(node, node.get("language", None))
 
     def parse_source(
         self,
         node: Union[nodes.literal_block, nodes.doctest_block],
-        language: Optional[str]
+        language: Optional[str],
     ):
         """Analyse Python code blocks."""
         prefaces = self.prefaces
         self.prefaces = []
 
         skip = self.skip
-        if skip == 'next':
+        if skip == "next":
             self.skip = None
 
         if (
@@ -189,7 +186,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 show_source = self._format_source_for_error(source, prefaces)
                 msg = self._parsing_error_msg(e, language, show_source)
                 logger.warning(
-                    msg, type=warn_type, subtype='parse_block', location=node
+                    msg, type=warn_type, subtype="parse_block", location=node
                 )
                 return
         else:
@@ -200,25 +197,20 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         transform = SourceTransform(source, [], example, node.line)
         self.source_transforms.append(transform)
 
-        modified_source = '\n'.join(
-            self.global_preface
-            + self.concat_sources
-            + prefaces
-            + [clean_source]
+        modified_source = "\n".join(
+            self.global_preface + self.concat_sources + prefaces + [clean_source]
         )
         try:
             names = parse_names(modified_source, node)
         except SyntaxError as e:
             show_source = self._format_source_for_error(source, prefaces)
             msg = self._parsing_error_msg(e, language, show_source)
-            logger.warning(msg, type=warn_type, subtype='parse_block', location=node)
+            logger.warning(msg, type=warn_type, subtype="parse_block", location=node)
             return
 
         if prefaces or self.concat_sources or self.global_preface:
-            concat_lens = [s.count('\n') + 1 for s in self.concat_sources]
-            hidden_len = (
-                len(prefaces) + sum(concat_lens) + len(self.global_preface)
-            )
+            concat_lens = [s.count("\n") + 1 for s in self.concat_sources]
+            hidden_len = len(prefaces) + sum(concat_lens) + len(self.global_preface)
             for name in names:
                 name.lineno -= hidden_len
                 name.end_lineno -= hidden_len
@@ -230,29 +222,31 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         transform.names.extend([n for n in names if n.lineno > 0])
 
     def _format_source_for_error(self, source: str, prefaces: List[str]) -> str:
-        split_source = source.split('\n')
-        guides = [''] * len(split_source)
+        split_source = source.split("\n")
+        guides = [""] * len(split_source)
         ix = 0
         if self.global_preface:
-            guides[0] = 'global preface:'
+            guides[0] = "global preface:"
             ix += len(self.global_preface)
         if self.concat_sources:
-            guides[ix] = 'concatenations:'
+            guides[ix] = "concatenations:"
             ix += len(self.concat_sources)
         if prefaces:
-            guides[ix] = 'local preface:'
+            guides[ix] = "local preface:"
             ix += len(prefaces)
-        guides[ix] = 'block source:'
+        guides[ix] = "block source:"
         pad = max(len(i) + 1 for i in guides)
         guides = [g.ljust(pad) for g in guides]
-        return '\n'.join([g + s for g, s in zip(guides, split_source)])
+        return "\n".join([g + s for g, s in zip(guides, split_source)])
 
     def _parsing_error_msg(self, error: Exception, language: str, source: str) -> str:
-        return '\n'.join([
-            str(error) + f' in document "{self.current_document}"',
-            f'Parsed source in `{language}` block:',
-            source,
-        ])
+        return "\n".join(
+            [
+                str(error) + f' in document "{self.current_document}"',
+                f"Parsed source in `{language}` block:",
+                source,
+            ]
+        )
 
 
 def link_html(
@@ -264,75 +258,73 @@ def link_html(
     search_css_classes: list,
 ):
     """Inject links to code blocks on disk."""
-    html_file = Path(out_dir) / (document + '.html')
-    text = html_file.read_text('utf-8')
-    soup = BeautifulSoup(text, 'html.parser')
+    html_file = Path(out_dir) / (document + ".html")
+    text = html_file.read_text("utf-8")
+    soup = BeautifulSoup(text, "html.parser")
 
     block_types = BUILTIN_BLOCKS.keys() | custom_blocks.keys()
-    classes = [f'highlight-{t}' for t in block_types] + ['doctest']
+    classes = [f"highlight-{t}" for t in block_types] + ["doctest"]
     classes += search_css_classes
 
     blocks = []
     for c in classes:
-        blocks.extend(list(soup.find_all('div', attrs={'class': c})))
+        blocks.extend(list(soup.find_all("div", attrs={"class": c})))
     unique_blocks = {b.sourceline: b for b in blocks}.values()
     blocks = sorted(unique_blocks, key=lambda b: b.sourceline)
-    inners = [block.select('div > pre')[0] for block in blocks]
+    inners = [block.select("div > pre")[0] for block in blocks]
 
     up_lvls = len(html_file.relative_to(out_dir).parents) - 1
-    local_prefix = '../' * up_lvls
+    local_prefix = "../" * up_lvls
     link_pattern = (
         '<a href="{link}" title="{title}" class="sphinx-codeautolink-a">{text}</a>'
     )
 
     for trans in transforms:
         for ix in range(len(inners)):
-            if trans.source.rstrip() == ''.join(inners[ix].strings).rstrip():
+            if trans.source.rstrip() == "".join(inners[ix].strings).rstrip():
                 inner = inners.pop(ix)
                 break
         else:
-            msg = f'Could not match a code example to HTML, source:\n{trans.source}'
+            msg = f"Could not match a code example to HTML, source:\n{trans.source}"
             logger.warning(
-                msg, type=warn_type, subtype='match_block', location=document
+                msg, type=warn_type, subtype="match_block", location=document
             )
             continue
 
-        lines = str(inner).split('\n')
+        lines = str(inner).split("\n")
 
         for name in trans.names:
             begin_line = name.lineno - 1
             end_line = name.end_lineno - 1
-            selection = '\n'.join(lines[begin_line:end_line + 1])
+            selection = "\n".join(lines[begin_line : end_line + 1])
 
             # Reverse because a.b = a.b should replace from the right
             matches = list(re.finditer(construct_name_pattern(name), selection))[::-1]
             if not matches:
                 msg = (
-                    f'Could not match transformation of `{name.code_str}` '
-                    f'on source lines {name.lineno}-{name.end_lineno}, '
-                    f'source:\n{trans.source}'
+                    f"Could not match transformation of `{name.code_str}` "
+                    f"on source lines {name.lineno}-{name.end_lineno}, "
+                    f"source:\n{trans.source}"
                 )
                 logger.warning(
-                    msg, type=warn_type, subtype='match_name', location=document
+                    msg, type=warn_type, subtype="match_name", location=document
                 )
                 continue
 
             start, end = matches[0].span()
             start += len(matches[0].group(1))
             location = inventory[name.resolved_location]
-            if not any(location.startswith(s) for s in ('http://', 'https://')):
+            if not any(location.startswith(s) for s in ("http://", "https://")):
                 location = local_prefix + location
             link = link_pattern.format(
-                link=location,
-                title=name.resolved_location,
-                text=selection[start:end]
+                link=location, title=name.resolved_location, text=selection[start:end]
             )
             transformed = selection[:start] + link + selection[end:]
-            lines[begin_line:end_line + 1] = transformed.split('\n')
+            lines[begin_line : end_line + 1] = transformed.split("\n")
 
-        inner.replace_with(BeautifulSoup('\n'.join(lines), 'html.parser'))
+        inner.replace_with(BeautifulSoup("\n".join(lines), "html.parser"))
 
-    html_file.write_text(str(soup), 'utf-8')
+    html_file.write_text(str(soup), "utf-8")
 
 
 # ---------------------------------------------------------------
@@ -365,14 +357,14 @@ from_postre = r'(?=\s*<span class="kn">import</span>)'
 def construct_name_pattern(name: Name) -> str:
     """Construct a regex pattern for searching a name in HTML."""
     if name.context == LinkContext.none:
-        parts = name.code_str.split('.')
+        parts = name.code_str.split(".")
         pattern = period.join(
             [first_name_pattern.format(name=parts[0])]
             + [name_pattern.format(name=p) for p in parts[1:]]
         )
         return no_dot_prere + pattern + no_dot_postre
     elif name.context == LinkContext.after_call:
-        parts = name.code_str.split('.')
+        parts = name.code_str.split(".")
         pattern = period.join(
             [first_name_pattern.format(name=parts[0])]
             + [name_pattern.format(name=p) for p in parts[1:]]

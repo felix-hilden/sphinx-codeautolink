@@ -13,7 +13,7 @@ class Baz:
 class Foo:
     """Foo test class."""
 
-    attr: str = 'test'
+    attr: str = "test"
     type_attr = Baz
 
     def meth(self) -> Baz:

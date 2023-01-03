@@ -37,18 +37,15 @@ python_use_unqualified_type_names = True
 codeautolink_autodoc_inject = True
 codeautolink_custom_blocks = {"python3": None, "pycon3": clean_pycon}
 
-autodoc_default_options = {
-    "members": True,
-    "undoc-members": True,
-}
+autodoc_default_options = {"members": True, "undoc-members": True}
 autodoc_typehints = "description"
 intersphinx_mapping = {
-    "python": ('https://docs.python.org/3/', None),
+    "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
 }
 extlinks = {
-    'issue': ('https://github.com/felix-hilden/sphinx-codeautolink/issues/%s', '#'),
+    "issue": ("https://github.com/felix-hilden/sphinx-codeautolink/issues/%s", "#")
 }
 # Copy plot directive options from Seaborn
 # Include the example source for plots in API docs
@@ -60,8 +57,8 @@ plot_html_show_source_link = False
 
 def setup(app):
     app.add_object_type(
-        'confval',
-        'confval',
-        objname='configuration value',
-        indextemplate='pair: %s; configuration value'
+        "confval",
+        "confval",
+        objname="configuration value",
+        indextemplate="pair: %s; configuration value",
     )

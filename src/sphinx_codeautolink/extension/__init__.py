@@ -35,6 +35,7 @@ def print_exceptions(append_source: bool = False):
     If append_source is set, information about the currently processed document
     is pulled from the second argument named "doctree" and added to the message.
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -43,15 +44,17 @@ def print_exceptions(append_source: bool = False):
             except Exception as e:
                 print_exc()
                 if append_source:
-                    doctree = args[2] if len(args) > 1 else kwargs['doctree']
-                    source = doctree['source']
-                    msg = f'in document `{source}`'
+                    doctree = args[2] if len(args) > 1 else kwargs["doctree"]
+                    source = doctree["source"]
+                    msg = f"in document `{source}`"
                     if e.args:
-                        e.args = (e.args[0] + f' ({msg})',) + e.args[1:]
+                        e.args = (e.args[0] + f" ({msg})",) + e.args[1:]
                     else:
-                        e.args = (f'Unexpected error {msg}',)
+                        e.args = (f"Unexpected error {msg}",)
                 raise
+
         return wrapper
+
     return decorator
 
 
@@ -79,7 +82,7 @@ class SphinxCodeAutoLink:
     @print_exceptions()
     def build_inited(self, app):
         """Handle initial setup."""
-        if app.builder.name != 'html':
+        if app.builder.name != "html":
             self.do_nothing = True
             return
 
@@ -98,12 +101,12 @@ class SphinxCodeAutoLink:
 
         # Append static resources path so references in setup() are valid
         app.config.html_static_path.append(
-            str(Path(__file__).parent.with_name('static').absolute())
+            str(Path(__file__).parent.with_name("static").absolute())
         )
 
         preface = app.config.codeautolink_global_preface
         if preface:
-            self.global_preface = preface.split('\n')
+            self.global_preface = preface.split("\n")
 
     @print_exceptions()
     def autodoc_process_docstring(self, app, what, name, obj, options, lines):
@@ -112,9 +115,9 @@ class SphinxCodeAutoLink:
             return
 
         if app.config.codeautolink_autodoc_inject:
-            lines.append('')
-            lines.append('.. autolink-examples:: ' + name)
-            lines.append('   :collapse:')
+            lines.append("")
+            lines.append(".. autolink-examples:: " + name)
+            lines.append("   :collapse:")
 
     @print_exceptions(append_source=True)
     def parse_blocks(self, app, doctree):
@@ -137,9 +140,7 @@ class SphinxCodeAutoLink:
         if self.do_nothing:
             return
 
-        env.sphinx_codeautolink_transforms.update(
-            other.sphinx_codeautolink_transforms
-        )
+        env.sphinx_codeautolink_transforms.update(other.sphinx_codeautolink_transforms)
 
     def purge_doc_from_environment(self, app, env, docname):
         """Remove transforms from cache."""
@@ -152,13 +153,13 @@ class SphinxCodeAutoLink:
         inv_parts = {
             k: str(
                 Path(app.outdir)
-                / (app.builder.get_target_uri(v.docname) + f'#{v.node_id}')
+                / (app.builder.get_target_uri(v.docname) + f"#{v.node_id}")
             )
-            for k, v in app.env.domains['py'].objects.items()
+            for k, v in app.env.domains["py"].objects.items()
         }
-        inventory = {'py:class': {
-            k: (None, None, v, None) for k, v in inv_parts.items()
-        }}
+        inventory = {
+            "py:class": {k: (None, None, v, None) for k, v in inv_parts.items()}
+        }
         inter_inv = InventoryAdapter(app.env).main_inventory
         transposed = transpose_inventory(inter_inv, relative_to=app.outdir)
         transposed.update(transpose_inventory(inventory, relative_to=app.outdir))
@@ -180,12 +181,12 @@ class SphinxCodeAutoLink:
                         transform.example
                     )
         if skipped and self.warn_missing_inventory:
-            tops = sorted(set(s.split('.')[0] for s in skipped))
+            tops = sorted(set(s.split(".")[0] for s in skipped))
             msg = (
-                f'Cannot locate modules: {str(tops)[1:-1]}'
-                '\n  because of missing intersphinx or documentation entries'
+                f"Cannot locate modules: {str(tops)[1:-1]}"
+                "\n  because of missing intersphinx or documentation entries"
             )
-            logger.warning(msg, type=warn_type, subtype='missing_inventory')
+            logger.warning(msg, type=warn_type, subtype="missing_inventory")
 
     def filter_and_resolve(
         self, transforms: List[SourceTransform], skipped: Set[str], doc: str
@@ -200,28 +201,28 @@ class SphinxCodeAutoLink:
                     key = resolve_location(name, self.inventory)
                 except CouldNotResolve:
                     if self.warn_failed_resolve:
-                        path = '.'.join(name.import_components).replace('.()', '()')
+                        path = ".".join(name.import_components).replace(".()", "()")
                         msg = (
-                            f'Could not resolve {self._resolve_msg(name)}'
-                            f' using path `{path}`'
+                            f"Could not resolve {self._resolve_msg(name)}"
+                            f" using path `{path}`"
                         )
                         logger.warning(
                             msg,
                             type=warn_type,
-                            subtype='failed_resolve',
+                            subtype="failed_resolve",
                             location=(doc, transform.doc_lineno),
                         )
                     continue
                 if key not in self.inventory:
                     if self.warn_missing_inventory:
                         msg = (
-                            f'Inventory missing `{key}`'
-                            f' when resolving {self._resolve_msg(name)}'
+                            f"Inventory missing `{key}`"
+                            f" when resolving {self._resolve_msg(name)}"
                         )
                         logger.warning(
                             msg,
                             type=warn_type,
-                            subtype='missing_inventory',
+                            subtype="missing_inventory",
                             location=(doc, transform.doc_lineno),
                         )
                     skipped.add(key)
@@ -233,11 +234,11 @@ class SphinxCodeAutoLink:
     @staticmethod
     def _resolve_msg(name: Name):
         if name.lineno == name.end_lineno:
-            line = f'line {name.lineno}'
+            line = f"line {name.lineno}"
         else:
-            line = f'lines {name.lineno}-{name.end_lineno}'
+            line = f"lines {name.lineno}-{name.end_lineno}"
 
-        return f'`{name.code_str}` on {line}'
+        return f"`{name.code_str}` on {line}"
 
     @print_exceptions(append_source=True)
     def generate_backref_tables(self, app, doctree, docname):
@@ -285,11 +286,11 @@ def transpose_inventory(inv: dict, relative_to: str):
     """
     transposed = {}
     for type_, items in inv.items():
-        if not type_.startswith('py:'):
+        if not type_.startswith("py:"):
             continue
         for item, info in items.items():
             location = info[2]
-            if not location.startswith('http'):
+            if not location.startswith("http"):
                 location = str(Path(location).relative_to(relative_to))
             transposed[item] = location
     return transposed

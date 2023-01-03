@@ -23,26 +23,23 @@ class Examples(Directive):
     has_content = False
     required_arguments = 1
     optional_arguments = 0
-    option_spec = {
-        'collapse': directives.flag,
-        'type': directives.unchanged,
-    }
+    option_spec = {"collapse": directives.flag, "type": directives.unchanged}
 
     def run(self):
         """Run directive to insert a :class:`DeferredExamples`."""
         name = self.arguments[0]
-        collapse = self.options.get('collapse', False) is None
+        collapse = self.options.get("collapse", False) is None
         par = nodes.paragraph()
         deferred = DeferredExamples(name, collapse)
         par += deferred
         ref = addnodes.pending_xref(
-            refdomain='py',
+            refdomain="py",
             refexplicit=False,
             refwarn=False,
-            reftype=self.options.get('type', 'class'),
+            reftype=self.options.get("type", "class"),
             reftarget=name,
         )
-        ref += nodes.literal(classes=['xref', 'py', 'py-class'], text=name)
+        ref += nodes.literal(classes=["xref", "py", "py-class"], text=name)
         deferred += ref
         return [par]
 
@@ -68,7 +65,7 @@ class Concat(Directive):
 
     def run(self):
         """Insert :class:`ConcatMarker`."""
-        arg = self.arguments[0] if self.arguments else 'on'
+        arg = self.arguments[0] if self.arguments else "on"
         return [ConcatMarker(arg)]
 
 
@@ -95,7 +92,7 @@ class Preface(Directive):
     def run(self):
         """Insert :class:`PrefaceMarker`."""
         lines = list(self.arguments) + list(self.content)
-        return [PrefaceMarker('\n'.join(lines))]
+        return [PrefaceMarker("\n".join(lines))]
 
 
 class SkipMarker(nodes.Element):
@@ -119,7 +116,7 @@ class Skip(Directive):
 
     def run(self):
         """Insert :class:`SkipMarker`."""
-        arg = self.arguments[0] if self.arguments else 'next'
+        arg = self.arguments[0] if self.arguments else "next"
         return [SkipMarker(arg)]
 
 

@@ -63,6 +63,9 @@ skip_covered = true
 [tool.pydocstyle]
 ignore = "D107,D203,D212,D413,D416"
 
+[tool.black]
+skip-magic-trailing-comma = true
+
 [tool.isort]
 atomic = true
 profile = "black"

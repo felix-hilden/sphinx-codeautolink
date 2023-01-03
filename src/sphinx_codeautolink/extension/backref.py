@@ -26,12 +26,12 @@ class DetailsNode(nodes.Element):
 
 def visit_details(self, node: DetailsNode):
     """Insert a details tag."""
-    self.body.append('<details>')
+    self.body.append("<details>")
 
 
 def depart_details(self, node: DetailsNode):
     """Close a details tag."""
-    self.body.append('</details>')
+    self.body.append("</details>")
 
 
 class SummaryNode(nodes.TextElement):
@@ -44,12 +44,12 @@ class SummaryNode(nodes.TextElement):
 
 def visit_summary(self, node: SummaryNode):
     """Insert a summary tag."""
-    self.body.append('<summary>')
+    self.body.append("<summary>")
 
 
 def depart_summary(self, node: SummaryNode):
     """Close a summary tag."""
-    self.body.append('</summary>')
+    self.body.append("</summary>")
 
 
 class CodeRefsVisitor(nodes.SparseNodeVisitor):
@@ -69,10 +69,10 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
 
         items = []
         for ref in self.code_refs.get(node.ref, []):
-            link = ref.document + '.html'
+            link = ref.document + ".html"
             if ref.ref_id is not None:
-                link += f'#{ref.ref_id}'
-            items.append((link, ' / '.join(ref.headings)))
+                link += f"#{ref.ref_id}"
+            items.append((link, " / ".join(ref.headings)))
 
         items = sorted(set(items))
 
@@ -98,7 +98,7 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
             entry = nodes.entry()
             row += entry
             title = nodes.paragraph()
-            title += nodes.Text('References to ')
+            title += nodes.Text("References to ")
             title += orig_ref
             entry += title
 
@@ -118,7 +118,7 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
         if node.collapse:
             details = DetailsNode()
             summary = SummaryNode()
-            summary += nodes.Text('Expand for references to ')
+            summary += nodes.Text("Expand for references to ")
             summary += orig_ref
             details += summary
             details += table
