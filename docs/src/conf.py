@@ -45,7 +45,7 @@ intersphinx_mapping = {
     "matplotlib": ("https://matplotlib.org/stable/", None),
 }
 extlinks = {
-    "issue": ("https://github.com/felix-hilden/sphinx-codeautolink/issues/%s", "#")
+    "issue": ("https://github.com/felix-hilden/sphinx-codeautolink/issues/%s", "#%s")
 }
 # Copy plot directive options from Seaborn
 # Include the example source for plots in API docs
