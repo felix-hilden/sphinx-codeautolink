@@ -1,7 +1,8 @@
 import sys
+from functools import wraps
+
 import pytest
 
-from functools import wraps
 from sphinx_codeautolink.parse import parse_names
 
 skip_walrus = pytest.mark.skipif(

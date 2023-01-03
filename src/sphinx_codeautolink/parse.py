@@ -1,14 +1,13 @@
 """Analyse AST of code blocks to determine used names and their sources."""
 import ast
-import sys
 import builtins
-
+import sys
 from contextlib import contextmanager
+from dataclasses import dataclass, field
 from enum import Enum
 from functools import wraps
 from importlib import import_module
-from typing import Dict, Union, List, Optional, Tuple
-from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Tuple, Union
 
 from .warn import logger, warn_type
 

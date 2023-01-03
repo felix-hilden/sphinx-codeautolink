@@ -1,10 +1,10 @@
 import re
 import sys
-import pytest
-
-from unittest.mock import patch
-from typing import Dict
 from pathlib import Path
+from typing import Dict
+from unittest.mock import patch
+
+import pytest
 from bs4 import BeautifulSoup
 from sphinx.cmd.build import main as sphinx_main
 

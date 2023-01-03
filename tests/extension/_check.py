@@ -1,5 +1,6 @@
-import requests
 from pathlib import Path
+
+import requests
 from bs4 import BeautifulSoup
 
 # Cache external pages for the duration of the runtime,

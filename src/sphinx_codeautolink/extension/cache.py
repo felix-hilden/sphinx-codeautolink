@@ -1,11 +1,10 @@
 """Extension data cache."""
 import json
-
 from dataclasses import asdict
-from typing import Dict, List
 from pathlib import Path
+from typing import Dict, List
 
-from .block import SourceTransform, CodeExample, Name
+from .block import CodeExample, Name, SourceTransform
 
 
 class DataCache:

@@ -1,7 +1,8 @@
 """Sphinx extension for linking code examples to reference documentation."""
 from sphinx.application import Sphinx
-from .extension import backref, directive, SphinxCodeAutoLink
-from .extension.block import clean_pycon, clean_ipython  # NOQA
+
+from .extension import SphinxCodeAutoLink, backref, directive
+from .extension.block import clean_ipython, clean_pycon  # NOQA
 
 __version__ = "0.12.1"
 

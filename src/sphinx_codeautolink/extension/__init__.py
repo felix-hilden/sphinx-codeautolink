@@ -1,20 +1,20 @@
 """Sphinx extension implementation."""
 from dataclasses import dataclass
 from functools import wraps
-from typing import Dict, List, Optional, Set
-from traceback import print_exc
 from pathlib import Path
+from traceback import print_exc
+from typing import Dict, List, Optional, Set
 
-from sphinx.util import import_object
 from sphinx.ext.intersphinx import InventoryAdapter
+from sphinx.util import import_object
 
-from .backref import CodeRefsVisitor, CodeExample
-from .block import CodeBlockAnalyser, SourceTransform, link_html
-from .directive import RemoveExtensionVisitor
-from .cache import DataCache
-from .resolve import resolve_location, CouldNotResolve
 from ..parse import Name
 from ..warn import logger, warn_type
+from .backref import CodeExample, CodeRefsVisitor
+from .block import CodeBlockAnalyser, SourceTransform, link_html
+from .cache import DataCache
+from .directive import RemoveExtensionVisitor
+from .resolve import CouldNotResolve, resolve_location
 
 
 @dataclass

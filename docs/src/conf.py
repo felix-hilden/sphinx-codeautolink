@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 
-from sphinx_codeautolink import clean_pycon, __version__
+from sphinx_codeautolink import __version__, clean_pycon
 
 # Insert package root to path
 _src_dir = Path(os.path.realpath(__file__)).parent

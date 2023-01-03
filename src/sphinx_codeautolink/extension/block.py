@@ -1,17 +1,16 @@
 """Code block processing."""
 import re
-
-from typing import List, Union, Optional, Dict, Callable, Tuple
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from bs4 import BeautifulSoup
 from docutils import nodes
 
-from ..parse import parse_names, Name, LinkContext
+from ..parse import LinkContext, Name, parse_names
+from ..warn import logger, warn_type
 from .backref import CodeExample
 from .directive import ConcatMarker, PrefaceMarker, SkipMarker
-from ..warn import logger, warn_type
 
 BUILTIN_BLOCKS = {
     'python': None,

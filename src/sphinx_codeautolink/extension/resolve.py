@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from importlib import import_module
 from inspect import isclass, isroutine
-from typing import Optional, Tuple, Any, Union, Callable, List
+from typing import Any, Callable, List, Optional, Tuple, Union
+
 from ..parse import Name, NameBreak
 
 

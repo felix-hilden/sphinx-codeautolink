@@ -1,5 +1,7 @@
 import pytest
+
 from sphinx_codeautolink.parse import Component
+
 from ._util import refs_equal
 
 

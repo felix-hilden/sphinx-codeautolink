@@ -62,3 +62,9 @@ skip_covered = true
 
 [tool.pydocstyle]
 ignore = "D107,D203,D212,D413,D416"
+
+[tool.isort]
+atomic = true
+profile = "black"
+line_length = 88
+skip_gitignore = true
