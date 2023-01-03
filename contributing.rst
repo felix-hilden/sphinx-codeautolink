@@ -45,10 +45,18 @@ The installation can be verified, and any changes tested by running tox.
 
     $ tox
 
-It will execute the test suite (also available plainly as
-``coverage run && coverage report``), build documentation to
-``docs/build/html/index.html`` (``tox -m docs``), check code style
-(``tox -m lint``), and perform a packaging dry run (``tox -m build``).
+Developing
+----------
+A number of tools are used to automate development tasks.
+They are available through tox labels.
+
+.. code:: sh
+
+    $ coverage run && coverage report  # execute test suite
+    $ tox -m docs  # build documentation to docs/build/html/index.html
+    $ tox -m lint  # check code style
+    $ tox -m format  # autoformat code
+    $ tox -m build  # packaging dry run
 
 Releasing
 ---------
