@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from importlib import import_module
 from inspect import isclass, isroutine
-from typing import Optional, Tuple, Any, Union, Callable, List
+from typing import Any, Callable, List, Optional, Tuple, Union
+
 from ..parse import Name, NameBreak
 
 
@@ -31,7 +32,7 @@ def resolve_location(chain: Name, inventory) -> str:
             comps, cursor = make_cursor(comps)
         except CouldNotResolve:
             # Last ditch effort to locate based on the string only
-            return '.'.join(comps)
+            return ".".join(comps)
 
     cursor = locate_type(cursor, tuple(comps), inventory)
     return cursor.location if cursor is not None else None
@@ -55,18 +56,16 @@ def make_cursor(components: List[str]) -> Tuple[List[str], Cursor]:
     value, index = closest_module(tuple(components))
     if value is None or index is None:
         raise CouldNotResolve()
-    location = '.'.join(components[:index])
+    location = ".".join(components[:index])
     return components[index:], Cursor(location, value, False)
 
 
-def locate_type(
-    cursor: Cursor, components: Tuple[str, ...], inventory
-) -> Cursor:
+def locate_type(cursor: Cursor, components: Tuple[str, ...], inventory) -> Cursor:
     """Find type hint and resolve to new location."""
     previous = cursor
     for i, component in enumerate(components):
         cursor = Cursor(
-            cursor.location + '.' + component,
+            cursor.location + "." + component,
             getattr(cursor.value, component, None),
             cursor.instance,
         )
@@ -77,9 +76,8 @@ def locate_type(
         if isclass(cursor.value):
             cursor.instance = False
 
-        if (
-            isclass(cursor.value)
-            or (isroutine(cursor.value) and cursor.location not in inventory)
+        if isclass(cursor.value) or (
+            isroutine(cursor.value) and cursor.location not in inventory
         ):
             # Normalise location of type or imported function
             try:
@@ -91,7 +89,7 @@ def locate_type(
         if isclass(previous.value) and cursor.location not in inventory:
             for val in previous.value.mro():
                 name = fully_qualified_name(val)
-                if name + '.' + component in inventory:
+                if name + "." + component in inventory:
                     previous.location = name
                     return locate_type(previous, components[i:], inventory)
 
@@ -120,12 +118,12 @@ def call_value(cursor: Cursor):
 
 def get_return_annotation(func: Callable) -> Optional[type]:
     """Determine the target of a function return type hint."""
-    annotations = getattr(func, '__annotations__', {})
-    ret_annotation = annotations.get('return', None)
+    annotations = getattr(func, "__annotations__", {})
+    ret_annotation = annotations.get("return", None)
 
     # Inner type from typing.Optional or Union[None, T]
-    origin = getattr(ret_annotation, '__origin__', None)
-    args = getattr(ret_annotation, '__args__', None)
+    origin = getattr(ret_annotation, "__origin__", None)
+    args = getattr(ret_annotation, "__args__", None)
     if origin is Union and len(args) == 2:
         nonetype = type(None)
         if args[0] is nonetype:
@@ -136,13 +134,13 @@ def get_return_annotation(func: Callable) -> Optional[type]:
     # Try to resolve a string annotation in the module scope
     if isinstance(ret_annotation, str):
         location = fully_qualified_name(func)
-        mod, _ = closest_module(tuple(location.split('.')))
+        mod, _ = closest_module(tuple(location.split(".")))
         ret_annotation = getattr(mod, ret_annotation, ret_annotation)
 
     if (
         not ret_annotation
         or not isinstance(ret_annotation, type)
-        or hasattr(ret_annotation, '__origin__')
+        or hasattr(ret_annotation, "__origin__")
     ):
         raise CouldNotResolve()
 
@@ -151,7 +149,7 @@ def get_return_annotation(func: Callable) -> Optional[type]:
 
 def fully_qualified_name(thing: Union[type, Callable]) -> str:
     """Construct the fully qualified name of a type."""
-    return thing.__module__ + '.' + thing.__qualname__
+    return thing.__module__ + "." + thing.__qualname__
 
 
 @lru_cache(maxsize=None)
@@ -164,7 +162,7 @@ def closest_module(components: Tuple[str, ...]) -> Tuple[Any, Optional[int]]:
 
     for i in range(1, len(components)):
         try:
-            mod = import_module('.'.join(components[:i + 1]))
+            mod = import_module(".".join(components[: i + 1]))
         except ImportError:
             # import failed, exclude previously added item
             return mod, i

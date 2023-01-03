@@ -1,22 +1,21 @@
 """Analyse AST of code blocks to determine used names and their sources."""
 import ast
-import sys
 import builtins
-
+import sys
 from contextlib import contextmanager
+from dataclasses import dataclass, field
 from enum import Enum
 from functools import wraps
 from importlib import import_module
-from typing import Dict, Union, List, Optional, Tuple
-from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Tuple, Union
 
 from .warn import logger, warn_type
 
-HAS_WALRUS = (sys.version_info >= (3, 8))
-HAS_MATCH = (sys.version_info >= (3, 10))
+HAS_WALRUS = sys.version_info >= (3, 8)
+HAS_MATCH = sys.version_info >= (3, 10)
 
 
-def parse_names(source: str, doctree_node) -> List['Name']:
+def parse_names(source: str, doctree_node) -> List["Name"]:
     """Parse names from source."""
     tree = ast.parse(source)
     visitor = ImportTrackerVisitor(doctree_node)
@@ -26,7 +25,7 @@ def parse_names(source: str, doctree_node) -> List['Name']:
 
 def linenos(node: ast.AST) -> Tuple[int, int]:
     """Return lineno and end_lineno safely."""
-    return node.lineno, getattr(node, 'end_lineno', node.lineno)
+    return node.lineno, getattr(node, "end_lineno", node.lineno)
 
 
 @dataclass
@@ -41,7 +40,7 @@ class Component:
     @classmethod
     def from_ast(cls, node):
         """Generate a Component from an AST node."""
-        context = 'load'
+        context = "load"
         if isinstance(node, ast.Name):
             name = node.id
             context = node.ctx.__class__.__name__.lower()
@@ -54,9 +53,9 @@ class Component:
             name = NameBreak.call
         elif HAS_MATCH and isinstance(node, ast.MatchAs):
             name = node.name
-            context = 'store'
+            context = "store"
         else:
-            raise ValueError(f'Invalid AST for component: {node.__class__.__name__}')
+            raise ValueError(f"Invalid AST for component: {node.__class__.__name__}")
         return cls(name, *linenos(node), context)
 
 
@@ -92,22 +91,22 @@ class Assignment:
     """
 
     targets: List[AssignTarget]
-    value: Union[PendingAccess, 'Assignment', None]
+    value: Union[PendingAccess, "Assignment", None]
 
 
 class NameBreak(str, Enum):
     """Elements that break name access chains."""
 
-    call = '()'
+    call = "()"
 
 
 class LinkContext(str, Enum):
     """Context in which a link appears."""
 
-    none = 'none'
-    after_call = 'after_call'
-    import_from = 'import_from'  # from *mod.sub* import foo
-    import_target = 'import_target'  # from mod.sub import *foo*
+    none = "none"
+    after_call = "after_call"
+    import_from = "import_from"  # from *mod.sub* import foo
+    import_target = "import_target"  # from mod.sub import *foo*
 
 
 @dataclass
@@ -161,7 +160,7 @@ class Access:
         break_on = set(NameBreak)
         breaks = [i for i, c in enumerate(self.components) if c.name in break_on]
         start_ix = breaks[-1] + 1 if breaks else 0
-        return '.'.join(c.name for c in self.components[start_ix:])
+        return ".".join(c.name for c in self.components[start_ix:])
 
     @property
     def lineno_span(self) -> Tuple[int, int]:
@@ -171,7 +170,7 @@ class Access:
         return min_, max_
 
     @staticmethod
-    def to_name(instance: 'Access') -> Name:
+    def to_name(instance: "Access") -> Name:
         """Convert access to name."""
         return Name(
             [c.name for c in instance.full_components],
@@ -183,12 +182,14 @@ class Access:
     def split(self) -> List[Name]:
         """Split access into multiple names."""
         # Copy to avoid modifying the instance in place
-        items = [Access(
-            context=self.context,
-            prior_components=self.prior_components[:],
-            components=self.components[:],
-            hidden_components=self.hidden_components[:],
-        )]
+        items = [
+            Access(
+                context=self.context,
+                prior_components=self.prior_components[:],
+                components=self.components[:],
+                hidden_components=self.hidden_components[:],
+            )
+        ]
         while True:
             current = items[-1]
             for i, comp in enumerate(current.components):
@@ -216,14 +217,16 @@ def track_parents(func):
 
     Uses and increments the surrounding classes :attr:`_parents`.
     """
+
     @wraps(func)
-    def wrapper(self: 'ImportTrackerVisitor', *args, **kwargs):
+    def wrapper(self: "ImportTrackerVisitor", *args, **kwargs):
         self._parents += 1
         result = func(self, *args, **kwargs)
         self._parents -= 1
         if not self._parents:
             self.dispatch_result(result)
         return result
+
     return wrapper
 
 
@@ -273,11 +276,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self._parents = old
 
     # Nodes that are excempt from resetting parents in default visit
-    track_nodes = (
-        ast.Name,
-        ast.Attribute,
-        ast.Call,
-    )
+    track_nodes = (ast.Name, ast.Attribute, ast.Call)
     if HAS_WALRUS:
         track_nodes += (ast.NamedExpr,)
     if HAS_MATCH:
@@ -324,12 +323,12 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         components = pending.components
 
         context = components[0].context
-        if context == 'store' and not self.in_augassign:
+        if context == "store" and not self.in_augassign:
             self.overwrite_name(components[0].name)
             return
 
         access = self.create_access(components[0].name, components)
-        if context == 'del':
+        if context == "del":
             self.overwrite_name(components[0].name)
         return access
 
@@ -368,7 +367,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
 
     def create_simple_access(self, name: str, lineno: int) -> None:
         """Create single-component access to scope."""
-        component = Component(name, lineno, lineno, 'load')
+        component = Component(name, lineno, lineno, "load")
         self.create_access(component.name, [component])
 
     def dispatch_result(
@@ -403,21 +402,21 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                     self.create_simple_access(name, node.lineno)
                     break
 
-    def visit_Import(self, node: Union[ast.Import, ast.ImportFrom], prefix: str = ''):
+    def visit_Import(self, node: Union[ast.Import, ast.ImportFrom], prefix: str = ""):
         """Register import source."""
-        import_star = (node.names[0].name == '*')
+        import_star = node.names[0].name == "*"
         if import_star:
             try:
                 mod = import_module(node.module)
                 import_names = [
-                    name for name in mod.__dict__ if not name.startswith('_')
+                    name for name in mod.__dict__ if not name.startswith("_")
                 ]
                 aliases = [None] * len(import_names)
             except ImportError:
                 logger.warning(
-                    f'Could not import module `{node.module}` for parsing!',
+                    f"Could not import module `{node.module}` for parsing!",
                     type=warn_type,
-                    subtype='import_star',
+                    subtype="import_star",
                     location=self.doctree_node,
                 )
                 import_names = []
@@ -426,31 +425,28 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             import_names = [name.name for name in node.names]
             aliases = [name.asname for name in node.names]
 
-        prefix_parts = prefix.rstrip('.').split('.') if prefix else []
-        prefix_components = [
-            Component(n, *linenos(node), 'load') for n in prefix_parts
-        ]
+        prefix_parts = prefix.rstrip(".").split(".") if prefix else []
+        prefix_components = [Component(n, *linenos(node), "load") for n in prefix_parts]
         if prefix:
             self.save_access(Access(LinkContext.import_from, [], prefix_components))
 
         for import_name, alias in zip(import_names, aliases):
             if not import_star:
                 components = [
-                    Component(n, *linenos(node), 'load')
-                    for n in import_name.split('.')
+                    Component(n, *linenos(node), "load") for n in import_name.split(".")
                 ]
                 self.save_access(
                     Access(LinkContext.import_target, [], components, prefix_components)
                 )
 
-            if not alias and '.' in import_name:
+            if not alias and "." in import_name:
                 # equivalent to only import top level module since we don't
                 # follow assignments and the outer modules also get imported
-                import_name = import_name.split('.')[0]
+                import_name = import_name.split(".")[0]
 
             full_components = [
-                Component(n, *linenos(node), 'store')
-                for n in (prefix + import_name).split('.')
+                Component(n, *linenos(node), "store")
+                for n in (prefix + import_name).split(".")
             ]
             self.assign_name(alias or import_name, full_components)
 
@@ -460,7 +456,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             for name in node.names:
                 self.overwrite_name(name.asname or name.name)
         else:
-            self.visit_Import(node, prefix=node.module + '.')
+            self.visit_Import(node, prefix=node.module + ".")
 
     @track_parents
     def visit_Name(self, node: ast.Name):
@@ -484,9 +480,9 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         with self.reset_parents():
             for arg in node.args + node.keywords:
                 self.visit(arg)
-            if hasattr(node, 'starargs'):
+            if hasattr(node, "starargs"):
                 self.visit(node.starargs)
-            if hasattr(node, 'kwargs'):
+            if hasattr(node, "kwargs"):
                 self.visit(node.kwargs)
         return inner
 
@@ -529,7 +525,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                 self.resolve_pending_access(value)
 
             annot.components.append(
-                Component(NameBreak.call, *linenos(node.annotation), 'load')
+                Component(NameBreak.call, *linenos(node.annotation), "load")
             )
             value = annot
 
@@ -567,8 +563,8 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         for attr, pattern in zip(node.kwd_attrs, node.kwd_patterns):
             target = self.visit(pattern)
             attr_comps = [
-                Component(NameBreak.call, *linenos(node), 'load'),
-                Component(attr, *linenos(node), 'load'),
+                Component(NameBreak.call, *linenos(node), "load"),
+                Component(attr, *linenos(node), "load"),
             ]
             access = PendingAccess(cls.components + attr_comps)
             assigns.append(Assignment([AssignTarget([target])], access))
@@ -619,7 +615,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
 
     @staticmethod
     def _get_args(node: ast.arguments):
-        posonly = getattr(node, 'posonlyargs', [])  # only on 3.8+
+        posonly = getattr(node, "posonlyargs", [])  # only on 3.8+
         return node.args + node.kwonlyargs + posonly
 
     def visit_FunctionDef(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef]):
@@ -657,7 +653,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             value = self.visit(arg.annotation)
             if value is not None:
                 value.components.append(
-                    Component(NameBreak.call, *linenos(arg), 'load')
+                    Component(NameBreak.call, *linenos(arg), "load")
                 )
         else:
             value = None

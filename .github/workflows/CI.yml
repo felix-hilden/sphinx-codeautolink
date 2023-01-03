@@ -49,7 +49,3 @@ jobs:
           pip install .
       - name: Run tox environments
         run: tox
-      - name: Build documentation
-        run: cd docs && make html && cd ..
-      - name: Build and check dist
-        run: python -m build && twine check --strict dist/*

@@ -2,5 +2,5 @@ graft docs
 prune docs/build
 graft requirements
 graft tests
-include contributing.rst tox.ini
+include contributing.rst readme_pypi.rst tox.ini
 global-exclude *.py[cod] __pycache__ *.so
