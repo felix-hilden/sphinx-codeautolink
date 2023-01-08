@@ -13,6 +13,7 @@ Unreleased
 - Declare support for Python 3.11 (:issue:`122`)
 - Remove support for Python 3.6 (:issue:`123`)
 - Disallow faulty IPython version 8.7.0 (:issue:`124`)
+- Correctly require Beautiful Soup version 4.8.1 (:issue:`128`)
 
 0.12.1 (2022-11-05)
 -------------------

@@ -12,7 +12,7 @@ dynamic = ["version"]
 requires-python = ">=3.7"
 dependencies = [
     "sphinx>=3.2.0",
-    "beautifulsoup4",
+    "beautifulsoup4>=4.8.1",
 ]
 # Keep extras in sync with requirements manually
 optional-dependencies = {ipython = ["ipython!=8.7.0"]}
