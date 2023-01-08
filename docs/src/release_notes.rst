@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.13.0 (2023-01-08)
+-------------------
 - Declare support for Python 3.11 (:issue:`122`)
 - Remove support for Python 3.6 (:issue:`123`)
 - Disallow faulty IPython version 8.7.0 (:issue:`124`)
