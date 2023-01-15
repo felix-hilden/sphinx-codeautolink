@@ -251,7 +251,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     def _parsing_error_msg(self, error: Exception, language: str, source: str) -> str:
         return "\n".join(
             [
-                str(error) + f' in document "{self.current_document}"',
+                str(error) + f" in document {self.current_document!r}",
                 f"Parsed source in `{language}` block:",
                 source,
             ]
