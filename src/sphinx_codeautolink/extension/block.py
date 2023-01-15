@@ -45,21 +45,30 @@ def clean_pycon(source: str) -> Tuple[str, str]:
 BUILTIN_BLOCKS["pycon"] = clean_pycon
 
 
+def _exclude_ipython_output(source: str) -> str:
+    in_regex = r"^In \[[0-9]+\]: "
+    # If the first line doesn't begin with a console prompt,
+    # assume the entire block to be purely IPython *code*
+    if not re.match(in_regex, source):
+        return source
+
+    clean_lines = []
+    for line in source.split("\n"):
+        # Space after "In" is required by transformer but removed in RST preprocessing
+        if re.match(in_regex, line) or re.match(r"^\s*\.*\.\.\.: ", line):
+            in_statement = True
+        else:
+            in_statement = False
+        clean_lines.append(line * in_statement)
+    return "\n".join(clean_lines)
+
+
 def clean_ipython(source: str) -> Tuple[str, str]:
     """Clean up IPython magics and console syntax to pure Python."""
     from IPython.core.inputtransformer2 import TransformerManager
 
-    in_statement = True
-    clean_lines = []
-    for line in source.split("\n"):
-        # Space after "In" is required by transformer but removed in RST preprocessing
-        if re.match(r"^In \[[0-9]+\]: ", line):
-            in_statement = True
-        elif re.match(r"^Out\[[0-9]+\]:", line) or re.match(r"^In \[[0-9]+\]:$", line):
-            in_statement = False
-        clean_lines.append(line * in_statement)
-
-    return source, TransformerManager().transform_cell("\n".join(clean_lines))
+    clean = _exclude_ipython_output(source)
+    return source, TransformerManager().transform_cell(clean)
 
 
 try:

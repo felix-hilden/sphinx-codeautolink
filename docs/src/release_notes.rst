@@ -8,6 +8,11 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- fix IPython block parsing where output is not prefixed with `Out`
+  (:issue:`129`)
+
 0.13.0 (2023-01-08)
 -------------------
 - Declare support for Python 3.11 (:issue:`122`)

@@ -21,5 +21,7 @@ Test project
    Out[7]:
    multiline
    msg
+   In [8]: print("asd asd")
+   asd asd
 
 .. automodule:: test_project
