@@ -1,0 +1,18 @@
+test_project
+b
+test_project.bar
+# split
+extensions.append('IPython.sphinxext.ipython_directive')
+# split
+Test project
+============
+
+.. ipython:: python
+
+    # leading comment and empty line
+
+    import test_project
+    # comment
+    b = test_project.bar()
+
+.. automodule:: test_project

@@ -46,16 +46,23 @@ BUILTIN_BLOCKS["pycon"] = clean_pycon
 
 
 def _exclude_ipython_output(source: str) -> str:
-    in_regex = r"^In \[[0-9]+\]: "
+    in_regex = r"In \[[0-9]+\]: "
     # If the first line doesn't begin with a console prompt,
-    # assume the entire block to be purely IPython *code*
-    if not re.match(in_regex, source):
+    # assume the entire block to be purely IPython *code*.
+    # An arbitrary number of comments and empty lines are exempt.
+    if not re.match(rf"^(\s*(#[^\n]*)?\n)*{in_regex}", source):
         return source
 
     clean_lines = []
     for line in source.split("\n"):
-        # Space after "In" is required by transformer but removed in RST preprocessing
-        if re.match(in_regex, line) or re.match(r"^\s*\.*\.\.\.: ", line):
+        # Space after "In" is required by transformer but removed in RST preprocessing.
+        # All comment are passed through even if they are strictly not input to allow
+        # leading comment lines to not be stripped by the IPython transformer.
+        if (
+            re.match(rf"^{in_regex}", line)
+            or re.match(r"^\s*\.*\.\.\.: ", line)
+            or re.match(r"^\s*#", line)
+        ):
             in_statement = True
         else:
             in_statement = False

@@ -21,7 +21,12 @@ Test project
    Out[7]:
    multiline
    msg
-   In [8]: print("asd asd")
+   In [8]: print("asd asd\n   ...: this is output")
    asd asd
+      ...: this is output
+   In [9]: 2 + 2
+   Out[9]:
+   asd asd
+      ...: this is output
 
 .. automodule:: test_project
