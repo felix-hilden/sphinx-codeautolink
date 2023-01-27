@@ -17,11 +17,11 @@ Test project
    In [5]: class A:
       ...:     pass
    In [6]: 
-   In [7]: print(test_project)
+   In [7]: test_project
    Out[7]:
    multiline
    msg
-   In [8]: print("asd asd\n   ...: this is output")
+   In [8]: "asd asd\n   ...: this is output"
    asd asd
       ...: this is output
    In [9]: 2 + 2

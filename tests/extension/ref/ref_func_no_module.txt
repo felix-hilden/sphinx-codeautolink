@@ -1,4 +1,11 @@
+datetime
+datetime
+datetime.fromisoformat
 # split
+extensions.append("sphinx.ext.intersphinx")
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+}
 # split
 Test project
 ============

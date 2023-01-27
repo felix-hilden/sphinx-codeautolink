@@ -1,4 +1,5 @@
 Testproject
+Testproject
 # split
 codeautolink_autodoc_inject = True
 # split
@@ -10,4 +11,4 @@ Test project
    import test_project
    test_project.bar
 
-.. autofunction:: test_project.bar
+.. automodule:: test_project

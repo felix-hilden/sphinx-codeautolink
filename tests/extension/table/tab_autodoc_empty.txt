@@ -1,3 +1,4 @@
+Testproject
 # split
 codeautolink_autodoc_inject = True
 # split
@@ -8,4 +9,6 @@ Test project
 
    import test_project
 
+.. automodule:: test_project
+   :no-members:
 .. autofunction:: test_project.bar
