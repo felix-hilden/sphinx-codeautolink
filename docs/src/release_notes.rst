@@ -13,6 +13,7 @@ Unreleased
 - Add configuration for mapping inventory locations
   (:confval:`codeautolink_inventory_map`) (:issue:`131`)
 - Improve warning messages to include debugging hints (:issue:`131`)
+- Fix AnnAssigns with no links not overwriting values (:issue:`133`)
 
 0.13.2 (2023-01-26)
 -------------------

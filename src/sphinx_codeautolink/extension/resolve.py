@@ -21,9 +21,6 @@ def resolve_location(chain: Name, inventory) -> str:
             comps, cursor = make_cursor(comps)
 
         cursor = locate_type(cursor, tuple(comps), inventory)
-        if cursor is None:
-            raise CouldNotResolve()
-
         call_value(cursor)
         comps = []
 

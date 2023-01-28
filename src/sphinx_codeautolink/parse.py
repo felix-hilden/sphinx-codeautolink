@@ -530,8 +530,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             value = annot
 
         target = self.visit(node.target)
-        if value is not None:
-            return Assignment([AssignTarget([target])], value)
+        return Assignment([AssignTarget([target])], value)
 
     def visit_AugAssign(self, node: ast.AugAssign):
         """Visit an AugAssign node."""

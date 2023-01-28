@@ -1,0 +1,10 @@
+codeautolink_custom_blocks = {"python": "parser_func.syntax_error"}
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+
+.. automodule:: test_project

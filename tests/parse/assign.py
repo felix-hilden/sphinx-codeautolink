@@ -113,6 +113,12 @@ class TestAssign:
         return s, refs
 
     @refs_equal
+    def test_annassign_no_links(self):
+        s = "import a\na: 1 = 1\na"
+        refs = [("a", "a")]
+        return s, refs
+
+    @refs_equal
     def test_annassign_overwrites_imported(self):
         s = "import a\na: b = 1\na"
         refs = [("a", "a")]

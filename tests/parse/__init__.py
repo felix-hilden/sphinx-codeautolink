@@ -88,6 +88,18 @@ class TestSimple:
         return s, refs
 
     @refs_equal
+    def test_subscript_then_attrib_not_linked(self):
+        s = "import a\na[b].c"
+        refs = [("a", "a"), ("a", "a")]
+        return s, refs
+
+    @refs_equal
+    def test_subscript_then_attrib_then_call_not_linked(self):
+        s = "import a\na[b].c()"
+        refs = [("a", "a"), ("a", "a")]
+        return s, refs
+
+    @refs_equal
     def test_import_as_then_attrib(self):
         s = "import lib as b\nb.attr"
         refs = [("lib", "lib"), ("lib.attr", "b.attr")]
