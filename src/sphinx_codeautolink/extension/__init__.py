@@ -201,13 +201,12 @@ class SphinxCodeAutoLink:
                     continue  # empty transform target (2 calls in a row)
                 try:
                     key = resolve_location(name, self.inventory)
-                except CouldNotResolve:
+                except CouldNotResolve as e:
                     if self.warn_failed_resolve:
                         path = ".".join(name.import_components).replace(".()", "()")
                         msg = (
                             f"Could not resolve {self._resolve_msg(name)}"
-                            f" using path `{path}`.\nPossibly missing a type hint"
-                            " or unable to follow highly dynamic code."
+                            f" using path `{path}`.\n{str(e)}"
                         )
                         logger.warning(
                             msg,

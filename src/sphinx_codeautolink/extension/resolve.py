@@ -51,8 +51,6 @@ class Cursor:
 def make_cursor(components: List[str]) -> Tuple[List[str], Cursor]:
     """Divide components into module and rest, create cursor for following the rest."""
     value, index = closest_module(tuple(components))
-    if value is None or index is None:
-        raise CouldNotResolve()
     location = ".".join(components[:index])
     return components[index:], Cursor(location, value, False)
 
@@ -68,7 +66,7 @@ def locate_type(cursor: Cursor, components: Tuple[str, ...], inventory) -> Curso
         )
 
         if cursor.value is None:
-            raise CouldNotResolve()
+            raise CouldNotResolve(f"{cursor.location} does not exist.")
 
         if isclass(cursor.value):
             cursor.instance = False
@@ -139,7 +137,9 @@ def get_return_annotation(func: Callable) -> Optional[type]:
         or not isinstance(ret_annotation, type)
         or hasattr(ret_annotation, "__origin__")
     ):
-        raise CouldNotResolve()
+        raise CouldNotResolve(
+            f"Unable to follow return annotation of {fully_qualified_name(func)}."
+        )
 
     return ret_annotation
 
@@ -150,12 +150,12 @@ def fully_qualified_name(thing: Union[type, Callable]) -> str:
 
 
 @lru_cache(maxsize=None)
-def closest_module(components: Tuple[str, ...]) -> Tuple[Any, Optional[int]]:
+def closest_module(components: Tuple[str, ...]) -> Tuple[Any, int]:
     """Find closest importable module."""
     try:
         mod = import_module(components[0])
-    except ImportError:
-        return None, None
+    except ImportError as e:
+        raise CouldNotResolve(f"Could not import {components[0]}.") from e
 
     for i in range(1, len(components)):
         try:
