@@ -1,0 +1,19 @@
+test_project
+test_project.sub_return
+sub_attr
+# split
+codeautolink_inventory_map = {
+    "test_project.sub.SubBar": "test_project.SubBar",
+    "test_project.sub.SubBar.sub_attr": "test_project.SubBar.sub_attr",
+}
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   test_project.sub_return().sub_attr
+
+.. automodule:: test_project
+   :imported-members:

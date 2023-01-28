@@ -1,0 +1,17 @@
+test_project
+test_project.SubBar
+sub_bar
+test_project.sub_return
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   test_project.SubBar()
+   sub_bar = test_project.sub_return()
+
+.. automodule:: test_project
+   :imported-members:

@@ -8,6 +8,12 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Add configuration for mapping inventory locations
+  (:confval:`codeautolink_inventory_map`) (:issue:`131`)
+- Improve warning messages to include debugging hints (:issue:`131`)
+
 0.13.2 (2023-01-26)
 -------------------
 - Fix parsing IPython blocks that had a leading comment (:issue:`130`)

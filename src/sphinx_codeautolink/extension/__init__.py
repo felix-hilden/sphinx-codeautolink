@@ -68,6 +68,7 @@ class SphinxCodeAutoLink:
         self.custom_blocks = None
         self.concat_default = None
         self.search_css_classes = None
+        self.inventory_map: Dict[str, str] = {}
         self.warn_missing_inventory = None
         self.warn_failed_resolve = None
 
@@ -96,6 +97,7 @@ class SphinxCodeAutoLink:
                 self.custom_blocks[k] = import_object(v)
         self.concat_default = app.config.codeautolink_concat_default
         self.search_css_classes = app.config.codeautolink_search_css_classes
+        self.inventory_map = app.config.codeautolink_inventory_map
         self.warn_missing_inventory = app.config.codeautolink_warn_on_missing_inventory
         self.warn_failed_resolve = app.config.codeautolink_warn_on_failed_resolve
 
@@ -204,7 +206,8 @@ class SphinxCodeAutoLink:
                         path = ".".join(name.import_components).replace(".()", "()")
                         msg = (
                             f"Could not resolve {self._resolve_msg(name)}"
-                            f" using path `{path}`"
+                            f" using path `{path}`.\nPossibly missing a type hint"
+                            " or unable to follow highly dynamic code."
                         )
                         logger.warning(
                             msg,
@@ -213,11 +216,14 @@ class SphinxCodeAutoLink:
                             location=(doc, transform.doc_lineno),
                         )
                     continue
+                key = self.inventory_map.get(key, key)
                 if key not in self.inventory:
                     if self.warn_missing_inventory:
                         msg = (
                             f"Inventory missing `{key}`"
-                            f" when resolving {self._resolve_msg(name)}"
+                            f" when resolving {self._resolve_msg(name)}."
+                            "\nPossibly missing documentation entry entirely,"
+                            " or the object has been relocated from the source file."
                         )
                         logger.warning(
                             msg,

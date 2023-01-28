@@ -12,6 +12,8 @@ type hints and other information accessible via imports of the library.
 If a match is found, a link to the correct reference documentation entry
 is injected after the ordinary Sphinx build is finished.
 
+.. _caveats:
+
 Caveats
 -------
 - **Only works with HTML documentation**, disabled otherwise. If the extension
@@ -102,3 +104,30 @@ This is often a bug, but the known expected failure cases are presented here:
 - Multiline statements cannot be matched on Python versions before 3.8.
   This is because the builtin AST parser does not supply the necessary line
   number information to construct the proper search range.
+
+Debugging missing links
+-----------------------
+There are multiple potential reasons for missing links.
+Here are some common causes and ways to debug and resolve the issue.
+First, please enable all warning messages found in :ref:`configuration`
+to see information about known link misses.
+
+Missing Sphinx inventory entry
+******************************
+Links cannot be resolved, because the documentation entry for a particular
+object cannot be found in the Sphinx inventory. Likely causes:
+
+- The autodoc (or equivalent) entry is missing entirely. To resolve, add the
+  corresponding entry to your documentation.
+- The object has been relocated and is documented elsewhere, i.e. the
+  ``__module__`` attribute and Sphinx location are out of sync. To resolve,
+  provide the correct location in :confval:`codeautolink_inventory_map`.
+
+Failed link resolving
+*********************
+Determining the canonical location of an object failed. Likely causes:
+
+- Missing type hints in function returns or class attributes. To resolve,
+  add appropriate type hints. See :ref:`caveats` for limitations.
+- Highly dynamic or runtime-dependent code which is not possible to parse only
+  via imports. To resolve, consider simplifying or filing an issue.

@@ -1,7 +1,7 @@
 """Docstring."""
 from typing import Optional, Union
 
-from .sub import subfoo  # NOQA
+from .sub import SubBar, subfoo  # NOQA
 
 
 class Baz:
@@ -48,3 +48,7 @@ def compile():
 
 class Child(Foo):
     """Foo child class."""
+
+
+def sub_return() -> SubBar:
+    """Returns a type in a submodule."""

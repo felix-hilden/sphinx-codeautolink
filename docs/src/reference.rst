@@ -49,6 +49,12 @@ Configuration
    when matching the final HTML. May contain multiple values separated by
    spaces as they would be passed to :code:`bs4.BeautifulSoup.find_all`.
 
+.. confval:: codeautolink_inventory_map
+
+   Type: ``Dict[str, str]``. Remap the final location of any inventory entry.
+   Useful when objects are imported and documented somewhere else than their
+   original location as advertised by ``__module__``.
+
 .. confval:: codeautolink_warn_on_missing_inventory
 
    Type: ``bool``. Issue warning when an object cannot be found in
