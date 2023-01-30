@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.14.1 (2023-01-30)
+-------------------
 - Fix added debug info on failed resolving crashing the build (:issue:`134`)
 
 0.14.0 (2023-01-28)
