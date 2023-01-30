@@ -1,0 +1,11 @@
+codeautolink_warn_on_failed_resolve = True
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   test_project.Bar().__eq__().attr
+
+.. automodule:: test_project

@@ -138,7 +138,7 @@ def get_return_annotation(func: Callable) -> Optional[type]:
         or hasattr(ret_annotation, "__origin__")
     ):
         raise CouldNotResolve(
-            f"Unable to follow return annotation of {fully_qualified_name(func)}."
+            f"Unable to follow return annotation of {get_name_for_debugging(func)}."
         )
 
     return ret_annotation
@@ -147,6 +147,14 @@ def get_return_annotation(func: Callable) -> Optional[type]:
 def fully_qualified_name(thing: Union[type, Callable]) -> str:
     """Construct the fully qualified name of a type."""
     return thing.__module__ + "." + thing.__qualname__
+
+
+def get_name_for_debugging(thing: Union[type, Callable]) -> str:
+    """Construct the fully qualified name or some readable information of a type."""
+    try:
+        return fully_qualified_name(thing)
+    except (AttributeError, TypeError):
+        return repr(thing)
 
 
 @lru_cache(maxsize=None)
