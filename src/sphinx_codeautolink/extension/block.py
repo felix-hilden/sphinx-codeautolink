@@ -218,7 +218,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         try:
             names = parse_names(modified_source, node)
         except SyntaxError as e:
-            show_source = self._format_source_for_error(source, prefaces)
+            show_source = self._format_source_for_error(
+                self.global_preface, self.concat_sources, prefaces, source
+            )
             msg = self._parsing_error_msg(e, language, show_source)
             logger.warning(msg, type=warn_type, subtype="parse_block", location=node)
             return
@@ -236,23 +238,29 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         # Remove transforms from concatenated sources
         transform.names.extend([n for n in names if n.lineno > 0])
 
-    def _format_source_for_error(self, source: str, prefaces: List[str]) -> str:
-        split_source = source.split("\n")
-        guides = [""] * len(split_source)
+    @staticmethod
+    def _format_source_for_error(
+        global_preface: List[str],
+        concat_sources: List[str],
+        prefaces: List[str],
+        source: str,
+    ) -> str:
+        lines = global_preface + concat_sources + prefaces + source.split("\n")
+        guides = [""] * len(lines)
         ix = 0
-        if self.global_preface:
+        if global_preface:
             guides[0] = "global preface:"
-            ix += len(self.global_preface)
-        if self.concat_sources:
+            ix += len(global_preface)
+        if concat_sources:
             guides[ix] = "concatenations:"
-            ix += len(self.concat_sources)
+            ix += len(concat_sources)
         if prefaces:
             guides[ix] = "local preface:"
             ix += len(prefaces)
         guides[ix] = "block source:"
         pad = max(len(i) + 1 for i in guides)
         guides = [g.ljust(pad) for g in guides]
-        return "\n".join([g + s for g, s in zip(guides, split_source)])
+        return "\n".join([g + s for g, s in zip(guides, lines)])
 
     def _parsing_error_msg(self, error: Exception, language: str, source: str) -> str:
         return "\n".join(

@@ -10,6 +10,7 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+- Fix handling of syntax errors in parsed blocks (:issue:`135`)
 - Differentiate warning types of block cleaning and parsing (:issue:`136`)
 
 0.14.1 (2023-01-30)
