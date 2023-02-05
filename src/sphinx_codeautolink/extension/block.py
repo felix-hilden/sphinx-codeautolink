@@ -199,10 +199,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             try:
                 source, clean_source = transformer(source)
             except SyntaxError as e:
-                show_source = self._format_source_for_error(source, prefaces)
-                msg = self._parsing_error_msg(e, language, show_source)
+                msg = self._parsing_error_msg(e, language, source)
                 logger.warning(
-                    msg, type=warn_type, subtype="parse_block", location=node
+                    msg, type=warn_type, subtype="clean_block", location=node
                 )
                 return
         else:

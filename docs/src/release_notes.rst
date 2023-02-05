@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Differentiate warning types of block cleaning and parsing (:issue:`136`)
+
 0.14.1 (2023-01-30)
 -------------------
 - Fix added debug info on failed resolving crashing the build (:issue:`134`)

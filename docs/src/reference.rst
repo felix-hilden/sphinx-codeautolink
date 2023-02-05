@@ -146,7 +146,8 @@ All warning subtypes below are in the ``codeautolink.*`` namespace
 and can be ignored with configuring ``suppress_warnings``.
 
 - ``invalid_argument``: issued when a directive is used incorrectly
-- ``parse_block``: issued when parsing a code block fails
+- ``clean_block``: issued when cleaning a block fails with a ``SyntaxError``
+- ``parse_block``: issued when parsing a block fails with a ``SyntaxError``
 - ``import_star``: issued when a library cannot be imported to determine
   the names that an ``import *`` would introduce
 - ``match_block``: issued when a block cannot be matched
