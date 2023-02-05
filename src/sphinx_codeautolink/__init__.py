@@ -4,7 +4,7 @@ from sphinx.application import Sphinx
 from .extension import SphinxCodeAutoLink, backref, directive
 from .extension.block import clean_ipython, clean_pycon  # NOQA
 
-__version__ = "0.14.1"
+__version__ = "0.15.0"
 
 
 def setup(app: Sphinx):

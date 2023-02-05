@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.15.0 (2023-02-05)
+-------------------
 - Fix handling of syntax errors in parsed blocks (:issue:`135`)
 - Differentiate warning types of block cleaning and parsing (:issue:`136`)
 
