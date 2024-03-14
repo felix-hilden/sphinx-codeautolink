@@ -1,6 +1,5 @@
 test_project
 test_project.bar
-asdf
 # split
 # split
 Test project
