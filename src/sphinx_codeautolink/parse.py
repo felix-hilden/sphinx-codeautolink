@@ -1,4 +1,5 @@
 """Analyse AST of code blocks to determine used names and their sources."""
+
 import ast
 import builtins
 import sys

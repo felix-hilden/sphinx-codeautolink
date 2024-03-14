@@ -1,4 +1,5 @@
 """Sphinx extension for linking code examples to reference documentation."""
+
 from sphinx.application import Sphinx
 
 from .extension import SphinxCodeAutoLink, backref, directive

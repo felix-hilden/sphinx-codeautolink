@@ -1,4 +1,5 @@
 """Directive implementations."""
+
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx import addnodes

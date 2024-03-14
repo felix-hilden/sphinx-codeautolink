@@ -1,4 +1,5 @@
 """Resolve import locations and type hints."""
+
 from dataclasses import dataclass
 from functools import lru_cache
 from importlib import import_module

@@ -1,4 +1,5 @@
 """Docstring."""
+
 from typing import Optional, Union
 
 from .sub import SubBar, subfoo  # NOQA
