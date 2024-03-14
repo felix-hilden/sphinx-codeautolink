@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Fix linking blocks with line numbers (:issue:`137`)
+
 0.15.0 (2023-02-05)
 -------------------
 - Fix handling of syntax errors in parsed blocks (:issue:`135`)

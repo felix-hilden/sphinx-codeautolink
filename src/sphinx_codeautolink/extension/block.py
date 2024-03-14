@@ -1,6 +1,7 @@
 """Code block processing."""
 
 import re
+from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple, Union
@@ -305,7 +306,13 @@ def link_html(
 
     for trans in transforms:
         for ix in range(len(inners)):
-            if trans.source.rstrip() == "".join(inners[ix].strings).rstrip():
+            candidate = copy(inners[ix])
+
+            # remove line numbers for matching
+            for lineno in candidate.find_all("span", attrs={"class": "linenos"}):
+                lineno.extract()
+
+            if trans.source.rstrip() == "".join(candidate.strings).rstrip():
                 inner = inners.pop(ix)
                 break
         else:

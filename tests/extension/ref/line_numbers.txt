@@ -1,0 +1,15 @@
+test_project
+test_project.bar
+asdf
+# split
+# split
+Test project
+============
+
+.. code-block:: python
+   :linenos:
+
+   import test_project
+   test_project.bar()
+
+.. automodule:: test_project
