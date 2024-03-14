@@ -83,7 +83,7 @@ def locate_type(cursor: Cursor, components: Tuple[str, ...], inventory) -> Curso
                 pass
 
         if isclass(previous.value) and cursor.location not in inventory:
-            for val in previous.value.mro():
+            for val in previous.value.__mro__:
                 name = fully_qualified_name(val)
                 if name + "." + component in inventory:
                     previous.location = name

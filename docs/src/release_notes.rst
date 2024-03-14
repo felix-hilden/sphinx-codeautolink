@@ -11,6 +11,7 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Fix linking blocks with line numbers (:issue:`137`)
+- Use safer version of ``mro`` to support ``type`` (:issue:`120`)
 
 0.15.0 (2023-02-05)
 -------------------
