@@ -1,3 +1,5 @@
+_autosummary/qux.html
+# split
 test_project.bar
 Foo
 # split
