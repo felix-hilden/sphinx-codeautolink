@@ -31,6 +31,17 @@ def bar() -> Foo:
     """bar test function."""
 
 
+def qux() -> Foo:
+    """
+    qux test function
+
+    .. code:: python
+
+       test_project.bar()
+       Foo
+    """
+
+
 def optional() -> Optional[Foo]:
     """Return optional type."""
 

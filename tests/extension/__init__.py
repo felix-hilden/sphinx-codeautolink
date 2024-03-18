@@ -78,6 +78,42 @@ def test_references(file: Path, tmp_path: Path):
     assert check_link_targets(result_dir) == len(links)
 
 
+ref_autosummary_tests = list(Path(__file__).with_name("autosummary").glob("*.txt"))
+
+
+@pytest.mark.parametrize("file", ref_autosummary_tests)
+def test_references_autosummary(file: Path, tmp_path: Path):
+    """
+    Basic extension tests for reference building using the autosummary directive.
+
+    The tests are structured as .txt files, parsed and executed here.
+    The structure of the file is::
+
+        html file
+        # split
+        expected
+        autolink
+        link.targets
+        # split
+        lines to add to the default conf.py
+        # split
+        index.html content
+    """
+    if ref_xfails.get(file.name, False):
+        pytest.xfail("Expected to fail.")
+
+    html_file, links, conf, index = file.read_text("utf-8").split("# split")
+    links = links.strip().split("\n")
+    if len(links) == 1 and not links[0]:
+        links = []
+
+    files = {"conf.py": default_conf + conf, "index.rst": index}
+    result_dir = _sphinx_build(tmp_path, "html", files)
+
+    assert_links(result_dir / html_file, links)
+    assert check_link_targets(result_dir) == len(links)
+
+
 table_tests = list(Path(__file__).with_name("table").glob("*.txt"))
 
 
