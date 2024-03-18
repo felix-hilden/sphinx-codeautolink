@@ -1,0 +1,13 @@
+test_project.bar
+Foo
+# split
+extensions = ["sphinx.ext.autosummary"] + extensions
+# split
+Test project
+============
+
+.. autosummary::
+    :toctree: _autosummary
+    :recursive:
+
+    test_project
