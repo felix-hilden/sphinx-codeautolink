@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.15.1 (2024-04-17)
+-------------------
 - Fix linking blocks with line numbers (:issue:`137`)
 - Use safer version of ``mro`` to support ``type`` (:issue:`120`)
 
