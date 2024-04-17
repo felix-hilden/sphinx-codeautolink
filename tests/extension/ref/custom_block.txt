@@ -5,6 +5,7 @@ def clean(s):
     return s, s.replace("-*-", "")
 
 codeautolink_custom_blocks = {"python": clean}
+suppress_warnings = ["config.cache"]
 # split
 Test project
 ============

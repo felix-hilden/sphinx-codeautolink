@@ -28,7 +28,7 @@ codeautolink_warn_on_failed_resolve = True
 """
 
 any_whitespace = re.compile(r"\s*")
-ref_tests = list(Path(__file__).with_name("ref").glob("*.txt"))
+ref_tests = [(p.name, p) for p in Path(__file__).with_name("ref").glob("*.txt")]
 ref_xfails = {
     "ref_fluent_attrs.txt": sys.version_info < (3, 8),
     "ref_fluent_call.txt": sys.version_info < (3, 8),
@@ -47,8 +47,8 @@ def assert_links(file: Path, links: list):
         assert s == link
 
 
-@pytest.mark.parametrize("file", ref_tests)
-def test_references(file: Path, tmp_path: Path):
+@pytest.mark.parametrize(("name", "file"), ref_tests)
+def test_references(name: str, file: Path, tmp_path: Path):
     """
     Basic extension tests for reference building.
 
@@ -72,6 +72,7 @@ def test_references(file: Path, tmp_path: Path):
         links = []
 
     files = {"conf.py": default_conf + conf, "index.rst": index}
+    print(f"Building file {name}.")
     result_dir = _sphinx_build(tmp_path, "html", files)
 
     assert_links(result_dir / "index.html", links)

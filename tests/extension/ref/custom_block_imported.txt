@@ -2,6 +2,7 @@ test_project
 test_project.bar
 # split
 codeautolink_custom_blocks = {"python": "parser_func.clean"}
+suppress_warnings = ["config.cache"]
 # split
 Test project
 ============

@@ -36,6 +36,7 @@ python_use_unqualified_type_names = True
 # Extension options
 codeautolink_autodoc_inject = True
 codeautolink_custom_blocks = {"python3": None, "pycon3": clean_pycon}
+suppress_warnings = ["config.cache"]
 
 autodoc_default_options = {"members": True, "undoc-members": True}
 autodoc_typehints = "description"

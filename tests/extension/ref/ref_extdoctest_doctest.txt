@@ -7,6 +7,7 @@ test_project.Foo
 from sphinx_codeautolink.extension.block import clean_pycon
 extensions.append("sphinx.ext.doctest")
 codeautolink_custom_blocks = {"pycon3": clean_pycon}
+suppress_warnings = ["config.cache"]
 # split
 Test project
 ============
