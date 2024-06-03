@@ -381,7 +381,9 @@ import_prere = (
 from_prere = r'(<span class="kn">from</span>\s+)'
 
 no_dot_postre = r'(?!(<span class="o">\.)|(</a>))'
-import_postre = r'(?=($)|(\s+)|(<span class="[op]">,</span>)|(<span class="p">\)))(?!</a>)'
+import_postre = (
+    r'(?=($)|(\s+)|(<span class="[op]">,</span>)|(<span class="p">\)))(?!</a>)'
+)
 from_postre = r'(?=\s*<span class="kn">import</span>)'
 
 
