@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.15.2 (2024-06-03)
+-------------------
 - Fix matching of ``import a, b`` (:issue:`142`)
 
 0.15.1 (2024-04-17)
