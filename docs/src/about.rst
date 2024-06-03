@@ -51,6 +51,13 @@ Caveats
 
 Sphinx semantics
 ----------------
+Warnings
+********
+For an easier time with debugging, we recommend enabling all warnings,
+treating them as errors with ``-W`` and only ignoring specific warning types
+with :confval:`suppress_warnings`. This is also easier if
+:confval:`show_warning_types` is set.
+
 Clean build
 ***********
 For correct partial builds, code reference information is saved to a file
@@ -64,6 +71,7 @@ Sphinx cache
 A function specified in :confval:`codeautolink_custom_blocks` prevents Sphinx
 from caching documentation results. Consider using an importable instead.
 For more information, see the discussion in :issue:`76`.
+You can also suppress the warning.
 
 Parallel build and custom parsers
 *********************************

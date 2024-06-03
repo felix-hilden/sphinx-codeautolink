@@ -32,6 +32,7 @@ extensions = [
 # Builtin options
 html_theme = "sphinx_rtd_theme"
 python_use_unqualified_type_names = True
+show_warning_types = True
 
 # Extension options
 codeautolink_autodoc_inject = True
