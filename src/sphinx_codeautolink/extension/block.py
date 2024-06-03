@@ -376,12 +376,12 @@ no_dot_prere = r'(?<!<span class="o">\.</span>)()'
 call_dot_prere = r'(\)</span>\s*<span class="o">\.</span>\s*)'
 import_prere = (
     r'((<span class="kn">import</span>\s+(<span class="p">\(</span>\s*)?)'
-    r'|(<span class="p">,</span>\s*))'
+    r'|(<span class="[op]">,</span>\s*))'
 )
 from_prere = r'(<span class="kn">from</span>\s+)'
 
 no_dot_postre = r'(?!(<span class="o">\.)|(</a>))'
-import_postre = r'(?=($)|(\s+)|(<span class="p">,</span>)|(<span class="p">\)))(?!</a>)'
+import_postre = r'(?=($)|(\s+)|(<span class="[op]">,</span>)|(<span class="p">\)))(?!</a>)'
 from_postre = r'(?=\s*<span class="kn">import</span>)'
 
 

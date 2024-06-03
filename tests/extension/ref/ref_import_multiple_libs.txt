@@ -1,0 +1,17 @@
+json
+math
+# split
+extensions = [
+    "sphinx.ext.intersphinx",
+    "sphinx_codeautolink",
+]
+intersphinx_mapping = {"python": ('https://docs.python.org/3/', None)}
+# split
+Test project
+============
+
+.. code:: python
+
+   import json, math
+
+.. automodule:: test_project

@@ -6,6 +6,7 @@ __pycache__/
 __pypackages__/
 
 # Distribution / packaging
+.pypirc
 .Python
 /build/
 /develop-eggs/
