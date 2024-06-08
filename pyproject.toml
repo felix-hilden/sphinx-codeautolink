@@ -9,7 +9,7 @@ readme = "readme_pypi.rst"
 license = {file = "LICENSE"}
 dynamic = ["version"]
 
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "sphinx>=3.2.0",
     "beautifulsoup4>=4.8.1",
@@ -26,11 +26,11 @@ classifiers = [
     "Framework :: Sphinx :: Extension",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Documentation",
     "Topic :: Documentation :: Sphinx",
     "Topic :: Software Development :: Documentation",
