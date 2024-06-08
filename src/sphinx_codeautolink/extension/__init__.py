@@ -184,7 +184,7 @@ class SphinxCodeAutoLink:
                         transform.example
                     )
         if skipped and self.warn_missing_inventory:
-            tops = sorted(set(s.split(".")[0] for s in skipped))
+            tops = sorted({s.split(".")[0] for s in skipped})
             msg = (
                 f"Cannot locate modules: {str(tops)[1:-1]}"
                 "\n  because of missing intersphinx or documentation entries"
