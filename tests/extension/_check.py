@@ -39,4 +39,4 @@ def check_link_targets(root: Path) -> int:
 
 def gather_ids(soup: BeautifulSoup) -> set:
     """Gather all HTML IDs from a given page."""
-    return set(tag["id"] for tag in soup.find_all(id=True))
+    return {tag["id"] for tag in soup.find_all(id=True)}
