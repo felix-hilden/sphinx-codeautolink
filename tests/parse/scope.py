@@ -1,6 +1,6 @@
 import pytest
 
-from ._util import refs_equal, skip_type_union, skip_walrus
+from ._util import refs_equal, skip_type_union
 
 
 class TestFunction:
@@ -258,7 +258,6 @@ class TestComprehension:
         refs = [("a", "a"), ("a", "a")]
         return s, refs
 
-    @skip_walrus
     @pytest.mark.xfail(reason='Assignments are not tracked outside of a "scope".')
     @refs_equal
     def test_comp_leaks_walrus(self):

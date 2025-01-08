@@ -107,11 +107,8 @@ outermost ``div`` tag. For example:
    codeautolink_search_css_classes = ["highlight-default"]
 
 Secondly, matching can fail on a specific line or range of lines.
-This is often a bug, but the known expected failure cases are presented here:
-
-- Multiline statements cannot be matched on Python versions before 3.8.
-  This is because the builtin AST parser does not supply the necessary line
-  number information to construct the proper search range.
+This is often a bug, but the known expected failure cases are presented here
+(none currently).
 
 Debugging missing links
 -----------------------

@@ -12,7 +12,6 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from .warn import logger, warn_type
 
-HAS_WALRUS = sys.version_info >= (3, 8)
 HAS_MATCH = sys.version_info >= (3, 10)
 
 
@@ -277,9 +276,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self._parents = old
 
     # Nodes that are excempt from resetting parents in default visit
-    track_nodes = (ast.Name, ast.Attribute, ast.Call)
-    if HAS_WALRUS:
-        track_nodes += (ast.NamedExpr,)
+    track_nodes = (ast.Name, ast.Attribute, ast.Call, ast.NamedExpr)
     if HAS_MATCH:
         track_nodes += (ast.MatchAs,)
 

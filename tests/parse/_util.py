@@ -5,10 +5,6 @@ import pytest
 
 from sphinx_codeautolink.parse import parse_names
 
-skip_walrus = pytest.mark.skipif(
-    sys.version_info < (3, 8), reason="Walrus introduced in Python 3.8."
-)
-
 skip_type_union = pytest.mark.skipif(
     sys.version_info < (3, 10), reason="Type union introduced in Python 3.10."
 )
