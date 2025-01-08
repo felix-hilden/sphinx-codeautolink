@@ -1,6 +1,6 @@
 import pytest
 
-from ._util import refs_equal, skip_walrus
+from ._util import refs_equal
 
 
 class TestAssign:
@@ -164,35 +164,30 @@ class TestAssign:
         refs = [("a", "a")]
         return s, refs
 
-    @skip_walrus
     @refs_equal
     def test_walrus_uses_imported(self):
         s = "import a\n(a := 1)\na"
         refs = [("a", "a")]
         return s, refs
 
-    @skip_walrus
     @refs_equal
     def test_walrus_uses_and_assigns_imported(self):
         s = "import a\n(a := a)\na"
         refs = [("a", "a"), ("a", "a"), ("a", "a"), ("a", "a")]
         return s, refs
 
-    @skip_walrus
     @refs_equal
     def test_walrus_uses_and_assigns_modified_imported(self):
         s = "import a\n(a := a + 1)\na"
         refs = [("a", "a"), ("a", "a")]
         return s, refs
 
-    @skip_walrus
     @refs_equal
     def test_nested_walrus_statements(self):
         s = "import a\n(c := (b := a))"
         refs = [("a", "a"), ("a", "a"), ("a", "b"), ("a", "c")]
         return s, refs
 
-    @skip_walrus
     @refs_equal
     def test_walrus_result_assigned(self):
         s = "import a\nc = (b := a)"

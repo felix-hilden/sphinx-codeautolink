@@ -8,6 +8,11 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Declare support for Python 3.12 and 3.13 (:issue:`150`)
+- Remove support for Python 3.7 and 3.8 (:issue:`150`)
+
 0.15.2 (2024-06-03)
 -------------------
 - Fix matching of ``import a, b`` (:issue:`142`)
