@@ -375,20 +375,21 @@ no_dot_prere = r'(?<!<span class="o">\.</span>)()'
 # Potentially instead assert an initial closing parenthesis followed by a dot.
 call_dot_prere = r'(\)</span>\s*<span class="o">\.</span>\s*)'
 import_prere = (
-    r'((<span class="kn">import</span>\s+(<span class="p">\(</span>\s*)?)'
+    r'((<span class="kn">import</span>(<span class="w">\s+</span>)|(/s+)(<span class="p">\(</span>\s*)?)'
     r'|(<span class="[op]">,</span>\s*))'
 )
-from_prere = r'(<span class="kn">from</span>\s+)'
+from_prere = r'(<span class="kn">from</span><span class="w">\s+</span>)'
 
 no_dot_postre = r'(?!(<span class="o">\.)|(</a>))'
 import_postre = (
-    r'(?=($)|(\s+)|(<span class="[op]">,</span>)|(<span class="p">\)))(?!</a>)'
+    r'(?=($)|(\s+)|(<span class="w">)|(<span class="[op]">,</span>)|(<span class="p">\)))(?!</a>)'
 )
-from_postre = r'(?=\s*<span class="kn">import</span>)'
+from_postre = r'(?=<span class="w">\s*</span><span class="kn">import</span>)'
 
 
 def construct_name_pattern(name: Name) -> str:
     """Construct a regex pattern for searching a name in HTML."""
+    print(name)
     if name.context == LinkContext.none:
         parts = name.code_str.split(".")
         pattern = period.join(
