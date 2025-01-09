@@ -374,22 +374,23 @@ import_from_pattern = '<span class="nn">{name}</span>'
 no_dot_prere = r'(?<!<span class="o">\.</span>)()'
 # Potentially instead assert an initial closing parenthesis followed by a dot.
 call_dot_prere = r'(\)</span>\s*<span class="o">\.</span>\s*)'
+# Pygments 2.19 changed import whitespace highlighting
+# so we need to support both for now (see #152)
 import_prere = (
     r'((<span class="kn">import</span>(<span class="w">\s+</span>)|(/s+)(<span class="p">\(</span>\s*)?)'
-    r'|(<span class="[op]">,</span>\s*))'
+    r'|(<span class="[op]">,</span>(<span class="w">\s*</span>)|(\s*)))'
 )
-from_prere = r'(<span class="kn">from</span><span class="w">\s+</span>)'
+from_prere = r'(<span class="kn">from</span>(<span class="w">\s+</span>)|(\s+))'
 
 no_dot_postre = r'(?!(<span class="o">\.)|(</a>))'
 import_postre = (
     r'(?=($)|(\s+)|(<span class="w">)|(<span class="[op]">,</span>)|(<span class="p">\)))(?!</a>)'
 )
-from_postre = r'(?=<span class="w">\s*</span><span class="kn">import</span>)'
+from_postre = r'(?=(<span class="w">\s*</span>)|(\s*)<span class="kn">import</span>)'
 
 
 def construct_name_pattern(name: Name) -> str:
     """Construct a regex pattern for searching a name in HTML."""
-    print(name)
     if name.context == LinkContext.none:
         parts = name.code_str.split(".")
         pattern = period.join(
