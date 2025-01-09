@@ -13,7 +13,6 @@ requires-python = ">=3.9"
 dependencies = [
     "sphinx>=3.2.0",
     "beautifulsoup4>=4.8.1",
-    "pygments<2.19",
 ]
 # Keep extras in sync with requirements manually
 optional-dependencies = {ipython = ["ipython!=8.7.0"]}

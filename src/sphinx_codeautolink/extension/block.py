@@ -371,20 +371,22 @@ import_from_pattern = '<span class="nn">{name}</span>'
 
 # The builtin re doesn't support variable-width lookbehind,
 # so instead we use a match groups in all pre patterns to remove the non-content.
-no_dot_prere = r'(?<!<span class="o">\.</span>)()'
+no_dot_pre = r'(?<!<span class="o">\.</span>)()'
 # Potentially instead assert an initial closing parenthesis followed by a dot.
-call_dot_prere = r'(\)</span>\s*<span class="o">\.</span>\s*)'
-import_prere = (
-    r'((<span class="kn">import</span>\s+(<span class="p">\(</span>\s*)?)'
-    r'|(<span class="[op]">,</span>\s*))'
-)
-from_prere = r'(<span class="kn">from</span>\s+)'
+call_dot_pre = r'(\)</span>\s*<span class="o">\.</span>\s*)'
+no_dot_post = r'(?!(<span class="o">\.)|(</a>))'
 
-no_dot_postre = r'(?!(<span class="o">\.)|(</a>))'
-import_postre = (
-    r'(?=($)|(\s+)|(<span class="[op]">,</span>)|(<span class="p">\)))(?!</a>)'
+# Pygments 2.19 changed import whitespace highlighting so we need to support both
+# with "w" class and raw whitespace for now (see #152)
+whitespace = r'(<span class="w">\s*</span>)|(\s*)'
+import_pre = (
+    rf'((<span class="kn">import</span>{whitespace}(<span class="p">\(</span>\s*)?)'
+    rf'|(<span class="[op]">,</span>{whitespace}))'
 )
-from_postre = r'(?=\s*<span class="kn">import</span>)'
+import_post = r'(?=($)|(\s+)|(<span class="[opw]">))(?!</a>)'
+
+from_pre = rf'(<span class="kn">from</span>{whitespace})'
+from_post = rf'(?={whitespace}<span class="kn">import</span>)'
 
 
 def construct_name_pattern(name: Name) -> str:
@@ -395,17 +397,17 @@ def construct_name_pattern(name: Name) -> str:
             [first_name_pattern.format(name=parts[0])]
             + [name_pattern.format(name=p) for p in parts[1:]]
         )
-        return no_dot_prere + pattern + no_dot_postre
+        return no_dot_pre + pattern + no_dot_post
     elif name.context == LinkContext.after_call:
         parts = name.code_str.split(".")
         pattern = period.join(
             [first_name_pattern.format(name=parts[0])]
             + [name_pattern.format(name=p) for p in parts[1:]]
         )
-        return call_dot_prere + pattern + no_dot_postre
+        return call_dot_pre + pattern + no_dot_post
     elif name.context == LinkContext.import_from:
         pattern = import_from_pattern.format(name=name.code_str)
-        return from_prere + pattern + from_postre
+        return from_pre + pattern + from_post
     elif name.context == LinkContext.import_target:
         pattern = import_target_pattern.format(name=name.code_str)
-        return import_prere + pattern + import_postre
+        return import_pre + pattern + import_post
