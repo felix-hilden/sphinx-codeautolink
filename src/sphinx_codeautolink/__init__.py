@@ -3,7 +3,7 @@
 from sphinx.application import Sphinx
 
 from .extension import SphinxCodeAutoLink, backref, directive
-from .extension.block import clean_ipython, clean_pycon  # NOQA
+from .extension.block import clean_ipython, clean_pycon
 
 __version__ = "0.15.2"
 
@@ -13,17 +13,35 @@ def setup(app: Sphinx):
     state = SphinxCodeAutoLink()
     app.setup_extension("sphinx.ext.autodoc")
     app.add_css_file("sphinx-codeautolink.css")
-    app.add_config_value("codeautolink_autodoc_inject", False, "html", types=[bool])
-    app.add_config_value("codeautolink_global_preface", "", "html", types=[str])
-    app.add_config_value("codeautolink_custom_blocks", {}, "html", types=[dict])
-    app.add_config_value("codeautolink_concat_default", False, "html", types=[bool])
-    app.add_config_value("codeautolink_search_css_classes", [], "html", types=[list])
-    app.add_config_value("codeautolink_inventory_map", {}, "html", types=[dict])
     app.add_config_value(
-        "codeautolink_warn_on_missing_inventory", False, "html", types=[bool]
+        "codeautolink_autodoc_inject", default=False, rebuild="html", types=[bool]
     )
     app.add_config_value(
-        "codeautolink_warn_on_failed_resolve", False, "html", types=[bool]
+        "codeautolink_global_preface", default="", rebuild="html", types=[str]
+    )
+    app.add_config_value(
+        "codeautolink_custom_blocks", default={}, rebuild="html", types=[dict]
+    )
+    app.add_config_value(
+        "codeautolink_concat_default", default=False, rebuild="html", types=[bool]
+    )
+    app.add_config_value(
+        "codeautolink_search_css_classes", default=[], rebuild="html", types=[list]
+    )
+    app.add_config_value(
+        "codeautolink_inventory_map", default={}, rebuild="html", types=[dict]
+    )
+    app.add_config_value(
+        "codeautolink_warn_on_missing_inventory",
+        default=False,
+        rebuild="html",
+        types=[bool],
+    )
+    app.add_config_value(
+        "codeautolink_warn_on_failed_resolve",
+        default=False,
+        rebuild="html",
+        types=[bool],
     )
 
     app.add_directive("autolink-concat", directive.Concat)

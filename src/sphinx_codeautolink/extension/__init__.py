@@ -1,16 +1,18 @@
 """Sphinx extension implementation."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from functools import wraps
 from pathlib import Path
 from traceback import print_exc
-from typing import Dict, List, Optional, Set
 
 from sphinx.ext.intersphinx import InventoryAdapter
 from sphinx.util import import_object
 
-from ..parse import Name
-from ..warn import logger, warn_type
+from sphinx_codeautolink.parse import Name
+from sphinx_codeautolink.warn import logger, warn_type
+
 from .backref import CodeExample, CodeRefsVisitor
 from .block import CodeBlockAnalyser, SourceTransform, link_html
 from .cache import DataCache
@@ -27,7 +29,7 @@ class DocumentedObject:
     return_type: str = None
 
 
-def print_exceptions(append_source: bool = False):
+def print_exceptions(*, append_source: bool = False):
     """
     Print the traceback of uncaught and unexpected exceptions.
 
@@ -62,27 +64,27 @@ def print_exceptions(append_source: bool = False):
 class SphinxCodeAutoLink:
     """Provide functionality and manage state between events."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Configuration
         self.do_nothing = False
-        self.global_preface: List[str] = []
+        self.global_preface: list[str] = []
         self.custom_blocks = None
         self.concat_default = None
         self.search_css_classes = None
-        self.inventory_map: Dict[str, str] = {}
+        self.inventory_map: dict[str, str] = {}
         self.warn_missing_inventory = None
         self.warn_failed_resolve = None
 
         # Populated once
-        self.outdated_docs: Set[str] = set()
+        self.outdated_docs: set[str] = set()
         self.inventory = {}
-        self.code_refs: Dict[str, List[CodeExample]] = {}
+        self.code_refs: dict[str, list[CodeExample]] = {}
 
         # Changing state
-        self.cache: Optional[DataCache] = None
+        self.cache: DataCache | None = None
 
     @print_exceptions()
-    def build_inited(self, app):
+    def build_inited(self, app) -> None:
         """Handle initial setup."""
         if app.builder.name != "html":
             self.do_nothing = True
@@ -112,7 +114,7 @@ class SphinxCodeAutoLink:
             self.global_preface = preface.split("\n")
 
     @print_exceptions()
-    def autodoc_process_docstring(self, app, what, name, obj, options, lines):
+    def autodoc_process_docstring(self, app, what, name, obj, options, lines) -> None:
         """Handle autodoc-process-docstring event."""
         if self.do_nothing:
             return
@@ -123,7 +125,7 @@ class SphinxCodeAutoLink:
             lines.append("   :collapse:")
 
     @print_exceptions(append_source=True)
-    def parse_blocks(self, app, doctree):
+    def parse_blocks(self, app, doctree) -> None:
         """Parse code blocks for later link substitution."""
         if self.do_nothing:
             return
@@ -138,14 +140,14 @@ class SphinxCodeAutoLink:
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms
 
-    def merge_environments(self, app, env, docnames, other):
+    def merge_environments(self, app, env, docnames, other) -> None:
         """Merge transform information."""
         if self.do_nothing:
             return
 
         env.sphinx_codeautolink_transforms.update(other.sphinx_codeautolink_transforms)
 
-    def purge_doc_from_environment(self, app, env, docname):
+    def purge_doc_from_environment(self, app, env, docname) -> None:
         """Remove transforms from cache."""
         if self.cache:
             self.cache.transforms.pop(docname, None)
@@ -169,7 +171,7 @@ class SphinxCodeAutoLink:
         return transposed
 
     @print_exceptions()
-    def create_references(self, app, env):
+    def create_references(self, app, env) -> None:
         """Clean source transforms and create code references."""
         if self.do_nothing:
             return
@@ -184,7 +186,7 @@ class SphinxCodeAutoLink:
                         transform.example
                     )
         if skipped and self.warn_missing_inventory:
-            tops = sorted(set(s.split(".")[0] for s in skipped))
+            tops = sorted({s.split(".")[0] for s in skipped})
             msg = (
                 f"Cannot locate modules: {str(tops)[1:-1]}"
                 "\n  because of missing intersphinx or documentation entries"
@@ -192,8 +194,8 @@ class SphinxCodeAutoLink:
             logger.warning(msg, type=warn_type, subtype="missing_inventory")
 
     def filter_and_resolve(
-        self, transforms: List[SourceTransform], skipped: Set[str], doc: str
-    ):
+        self, transforms: list[SourceTransform], skipped: set[str], doc: str
+    ) -> None:
         """Try to link name chains to objects."""
         for transform in transforms:
             filtered = []
@@ -207,7 +209,7 @@ class SphinxCodeAutoLink:
                         path = ".".join(name.import_components).replace(".()", "()")
                         msg = (
                             f"Could not resolve {self._resolve_msg(name)}"
-                            f" using path `{path}`.\n{str(e)}"
+                            f" using path `{path}`.\n{e!s}"
                         )
                         logger.warning(
                             msg,
@@ -238,7 +240,7 @@ class SphinxCodeAutoLink:
             transform.names = filtered
 
     @staticmethod
-    def _resolve_msg(name: Name):
+    def _resolve_msg(name: Name) -> str:
         if name.lineno == name.end_lineno:
             line = f"line {name.lineno}"
         else:
@@ -255,9 +257,10 @@ class SphinxCodeAutoLink:
 
         visitor = CodeRefsVisitor(doctree, code_refs=self.code_refs)
         doctree.walk(visitor)
+        return None
 
     @print_exceptions()
-    def apply_links(self, app, exception):
+    def apply_links(self, app, exception) -> None:
         """Apply links to HTML output and write refs file."""
         if self.do_nothing or exception is not None:
             return
@@ -277,7 +280,7 @@ class SphinxCodeAutoLink:
         self.cache.write()
 
 
-def transpose_inventory(inv: dict, relative_to: str):
+def transpose_inventory(inv: dict, relative_to: str) -> dict[str, str]:
     """
     Transpose Sphinx inventory from {type: {name: (..., location)}} to {name: location}.
 

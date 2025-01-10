@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import re
 import sys
 from pathlib import Path
-from typing import Dict
 from unittest.mock import patch
 
 import pytest
@@ -235,11 +236,12 @@ Test project
 """
     files = {"conf.py": default_conf, "index.rst": index}
 
-    def raise_msg(*args, **kwargs):
-        raise ValueError("ValueError")
+    def raise_msg(*_, **__):
+        msg = "ValueError"
+        raise ValueError(msg)
 
-    def raise_nomsg(*args, **kwargs):
-        raise ValueError()
+    def raise_nomsg(*_, **__):
+        raise ValueError
 
     target = "sphinx_codeautolink.extension.CodeBlockAnalyser"
     with pytest.raises(RuntimeError), patch(target, raise_msg):
@@ -269,9 +271,9 @@ Test project
     n_subfiles = 20
     subfiles = {
         name: template.format(header=name)
-        for name in map(lambda x: f"F{x}", range(n_subfiles))
+        for name in (f"F{x}" for x in range(n_subfiles))
     }
-    index = index + "\n   ".join([""] + list(subfiles))
+    index = index + "\n   ".join(["", *list(subfiles)])
     files = {"conf.py": default_conf, "index.rst": index}
     files.update({k + ".rst": v for k, v in subfiles.items()})
     result_dir = _sphinx_build(tmp_path, "html", files, n_processes=4)
@@ -282,7 +284,7 @@ Test project
 
 
 def _sphinx_build(
-    folder: Path, builder: str, files: Dict[str, str], n_processes: int = None
+    folder: Path, builder: str, files: dict[str, str], n_processes: int | None = None
 ) -> Path:
     """Build Sphinx documentation and return result folder."""
     src_dir = folder / "src"
@@ -296,5 +298,6 @@ def _sphinx_build(
         args.extend(["-j", str(n_processes)])
     ret_val = sphinx_main(args)
     if ret_val:
-        raise RuntimeError("Sphinx build failed!")
+        msg = "Sphinx build failed!"
+        raise RuntimeError(msg)
     return build_dir / builder

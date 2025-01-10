@@ -1,16 +1,19 @@
 """Code block processing."""
 
+from __future__ import annotations
+
 import re
 from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Callable
 
 from bs4 import BeautifulSoup
 from docutils import nodes
 
-from ..parse import LinkContext, Name, parse_names
-from ..warn import logger, warn_type
+from sphinx_codeautolink.parse import LinkContext, Name, parse_names
+from sphinx_codeautolink.warn import logger, warn_type
+
 from .backref import CodeExample
 from .directive import ConcatMarker, PrefaceMarker, SkipMarker
 
@@ -22,12 +25,12 @@ class SourceTransform:
     """Transforms on source code."""
 
     source: str
-    names: List[Name]
+    names: list[Name]
     example: CodeExample
     doc_lineno: int
 
 
-def clean_pycon(source: str) -> Tuple[str, str]:
+def clean_pycon(source: str) -> tuple[str, str]:
     """Clean up Python console syntax to pure Python."""
     in_statement = False
     source = re.sub(r"^\s*<BLANKLINE>", "", source, flags=re.MULTILINE)
@@ -72,7 +75,7 @@ def _exclude_ipython_output(source: str) -> str:
     return "\n".join(clean_lines)
 
 
-def clean_ipython(source: str) -> Tuple[str, str]:
+def clean_ipython(source: str) -> tuple[str, str]:
     """Clean up IPython magics and console syntax to pure Python."""
     from IPython.core.inputtransformer2 import TransformerManager
 
@@ -97,13 +100,13 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self,
         *args,
         source_dir: str,
-        global_preface: List[str],
-        custom_blocks: Dict[str, Callable[[str], str]],
+        global_preface: list[str],
+        custom_blocks: dict[str, Callable[[str], str]],
         concat_default: bool,
         **kwargs,
-    ):
+    ) -> None:
         super().__init__(*args, **kwargs)
-        self.source_transforms: List[SourceTransform] = []
+        self.source_transforms: list[SourceTransform] = []
         relative_path = Path(self.document["source"]).relative_to(source_dir)
         self.current_document = str(relative_path.with_suffix(""))
         self.global_preface = global_preface
@@ -118,7 +121,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.concat_sources = []
         self.skip = None
 
-    def unknown_visit(self, node):
+    def unknown_visit(self, node) -> None:
         """Handle and delete custom directives, ignore others."""
         if isinstance(node, ConcatMarker):
             if node.mode not in ("off", "section", "on"):
@@ -146,10 +149,10 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             self.skip = node.level if node.level != "off" else None
             node.parent.remove(node)
 
-    def unknown_departure(self, node):
+    def unknown_departure(self, node) -> None:
         """Ignore unknown nodes."""
 
-    def visit_title(self, node):
+    def visit_title(self, node) -> None:
         """Track section names and break concatenation and skipping."""
         self.title_stack.append(node.astext())
         if self.concat_section:
@@ -158,11 +161,11 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if self.skip == "section":
             self.skip = None
 
-    def visit_section(self, node):
+    def visit_section(self, node) -> None:
         """Record first section ID."""
         self.current_refid = node["ids"][0]
 
-    def depart_section(self, node):
+    def depart_section(self, node) -> None:
         """Pop latest title."""
         self.title_stack.pop()
 
@@ -175,10 +178,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         return self.parse_source(node, node.get("language", None))
 
     def parse_source(
-        self,
-        node: Union[nodes.literal_block, nodes.doctest_block],
-        language: Optional[str],
-    ):
+        self, node: nodes.literal_block | nodes.doctest_block, language: str | None
+    ) -> None:
         """Analyse Python code blocks."""
         prefaces = self.prefaces
         self.prefaces = []
@@ -235,16 +236,16 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 name.end_lineno -= hidden_len
 
         if self.concat_section or self.concat_global:
-            self.concat_sources.extend(prefaces + [clean_source])
+            self.concat_sources.extend([*prefaces, clean_source])
 
         # Remove transforms from concatenated sources
         transform.names.extend([n for n in names if n.lineno > 0])
 
     @staticmethod
     def _format_source_for_error(
-        global_preface: List[str],
-        concat_sources: List[str],
-        prefaces: List[str],
+        global_preface: list[str],
+        concat_sources: list[str],
+        prefaces: list[str],
         source: str,
     ) -> str:
         lines = global_preface + concat_sources + prefaces + source.split("\n")
@@ -277,11 +278,11 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 def link_html(
     document: str,
     out_dir: str,
-    transforms: List[SourceTransform],
+    transforms: list[SourceTransform],
     inventory: dict,
     custom_blocks: dict,
     search_css_classes: list,
-):
+) -> None:
     """Inject links to code blocks on disk."""
     html_file = Path(out_dir) / (document + ".html")
     text = html_file.read_text("utf-8")
@@ -398,16 +399,17 @@ def construct_name_pattern(name: Name) -> str:
             + [name_pattern.format(name=p) for p in parts[1:]]
         )
         return no_dot_pre + pattern + no_dot_post
-    elif name.context == LinkContext.after_call:
+    if name.context == LinkContext.after_call:
         parts = name.code_str.split(".")
         pattern = period.join(
             [first_name_pattern.format(name=parts[0])]
             + [name_pattern.format(name=p) for p in parts[1:]]
         )
         return call_dot_pre + pattern + no_dot_post
-    elif name.context == LinkContext.import_from:
+    if name.context == LinkContext.import_from:
         pattern = import_from_pattern.format(name=name.code_str)
         return from_pre + pattern + from_post
-    elif name.context == LinkContext.import_target:
+    if name.context == LinkContext.import_target:
         pattern = import_target_pattern.format(name=name.code_str)
         return import_pre + pattern + import_post
+    return None

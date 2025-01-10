@@ -2,7 +2,7 @@
 
 from typing import Optional, Union
 
-from .sub import SubBar, subfoo  # NOQA
+from .sub import SubBar, subfoo  # noqa: F401
 
 
 class Baz:
@@ -28,7 +28,7 @@ class Foo:
 
 
 def bar() -> Foo:
-    """bar test function."""
+    """Bar test function."""
 
 
 def optional() -> Optional[Foo]:
@@ -43,7 +43,7 @@ def optional_counter() -> Union[Foo, Baz]:
     """Failing case for incorrect optional type handling."""
 
 
-def compile():
+def compile():  # noqa: A001
     """Shadows built in compile function."""
 
 
