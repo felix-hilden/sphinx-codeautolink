@@ -1,9 +1,6 @@
-from typing import List
-
-
 class Knight:
     limbs: int = 4
-    taunts: List[str] = [
+    taunts: list[str] = [
         "None shall pass!",
         "'Tis but a scratch!",
         "It's just a flesh wound... Chicken!",
@@ -26,6 +23,6 @@ class Shrubbery:
     looks_nice: bool
     too_expensive: bool
 
-    def __init__(self, looks_nice: bool, too_expensive: bool):
+    def __init__(self, looks_nice: bool, too_expensive: bool) -> None:
         self.looks_nice = looks_nice
         self.too_expensive = too_expensive

@@ -3,7 +3,6 @@
 import json
 from dataclasses import asdict
 from pathlib import Path
-from typing import Dict, List
 
 from .block import CodeExample, Name, SourceTransform
 
@@ -13,12 +12,12 @@ class DataCache:
 
     cache_filename = "codeautolink-cache.json"
 
-    def __init__(self, cache_dir: str, src_dir: str):
+    def __init__(self, cache_dir: str, src_dir: str) -> None:
         self.cache_dir: Path = Path(cache_dir)
         self.src_dir: Path = Path(src_dir)
-        self.transforms: Dict[str, List[SourceTransform]] = {}
+        self.transforms: dict[str, list[SourceTransform]] = {}
 
-    def read(self):
+    def read(self) -> None:
         """Read from cache."""
         cache = self.cache_dir / self.cache_filename
         if not cache.exists():
@@ -33,7 +32,7 @@ class DataCache:
                 transform["names"] = [Name(**n) for n in transform["names"]]
             self.transforms[file] = [SourceTransform(**t) for t in transforms]
 
-    def write(self):
+    def write(self) -> None:
         """Write to cache."""
         cache = self.cache_dir / self.cache_filename
         transforms_dict = {}

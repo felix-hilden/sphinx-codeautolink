@@ -1,5 +1,9 @@
 """Directive implementations."""
 
+from __future__ import annotations
+
+from typing import ClassVar
+
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx import addnodes
@@ -8,7 +12,7 @@ from sphinx import addnodes
 class DeferredExamples(nodes.Element):
     """Deferred node for substitution later when references are known."""
 
-    def __init__(self, ref: str, collapse: bool):
+    def __init__(self, ref: str, collapse: bool) -> None:  # noqa: FBT001
         super().__init__()
         self.ref = ref
         self.collapse = collapse
@@ -24,7 +28,7 @@ class Examples(Directive):
     has_content = False
     required_arguments = 1
     optional_arguments = 0
-    option_spec = {"collapse": directives.flag, "type": directives.unchanged}
+    option_spec: ClassVar = {"collapse": directives.flag, "type": directives.unchanged}
 
     def run(self):
         """Run directive to insert a :class:`DeferredExamples`."""
@@ -48,7 +52,7 @@ class Examples(Directive):
 class ConcatMarker(nodes.Element):
     """Marker for :class:`Concat`."""
 
-    def __init__(self, mode: str = None):
+    def __init__(self, mode: str | None = None) -> None:
         super().__init__()
         self.mode = mode
 
@@ -73,7 +77,7 @@ class Concat(Directive):
 class PrefaceMarker(nodes.Element):
     """Marker for :class:`Preface`."""
 
-    def __init__(self, content: str):
+    def __init__(self, content: str) -> None:
         super().__init__()
         self.content = content
 
@@ -99,7 +103,7 @@ class Preface(Directive):
 class SkipMarker(nodes.Element):
     """Marker for :class:`Skip`."""
 
-    def __init__(self, level: str):
+    def __init__(self, level: str) -> None:
         super().__init__()
         self.level = level
 
@@ -124,14 +128,13 @@ class Skip(Directive):
 class RemoveExtensionVisitor(nodes.SparseNodeVisitor):
     """Silently remove all codeautolink directives."""
 
-    def unknown_departure(self, node):
+    def unknown_departure(self, node) -> None:
         """Ignore unknown nodes."""
 
-    def unknown_visit(self, node):
+    def unknown_visit(self, node) -> None:
         """Remove nodes."""
         if isinstance(node, DeferredExamples):
             # Remove surrounding paragraph too
             node.parent.parent.remove(node.parent)
-            return
-        elif isinstance(node, (ConcatMarker, PrefaceMarker, SkipMarker)):
+        if isinstance(node, (ConcatMarker, PrefaceMarker, SkipMarker)):
             node.parent.remove(node)

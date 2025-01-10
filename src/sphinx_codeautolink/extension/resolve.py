@@ -1,12 +1,15 @@
 """Resolve import locations and type hints."""
 
+from __future__ import annotations
+
+from contextlib import suppress
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import cache
 from importlib import import_module
 from inspect import isclass, isroutine
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable, Union
 
-from ..parse import Name, NameBreak
+from sphinx_codeautolink.parse import Name, NameBreak
 
 
 def resolve_location(chain: Name, inventory) -> str:
@@ -36,7 +39,7 @@ def resolve_location(chain: Name, inventory) -> str:
     return cursor.location if cursor is not None else None
 
 
-class CouldNotResolve(Exception):
+class CouldNotResolve(Exception):  # noqa: N818
     """Could not resolve type to inventory."""
 
 
@@ -49,14 +52,14 @@ class Cursor:
     instance: bool
 
 
-def make_cursor(components: List[str]) -> Tuple[List[str], Cursor]:
+def make_cursor(components: list[str]) -> tuple[list[str], Cursor]:
     """Divide components into module and rest, create cursor for following the rest."""
     value, index = closest_module(tuple(components))
     location = ".".join(components[:index])
-    return components[index:], Cursor(location, value, False)
+    return components[index:], Cursor(location, value, instance=False)
 
 
-def locate_type(cursor: Cursor, components: Tuple[str, ...], inventory) -> Cursor:
+def locate_type(cursor: Cursor, components: tuple[str, ...], inventory) -> Cursor:
     """Find type hint and resolve to new location."""
     previous = cursor
     for i, component in enumerate(components):
@@ -67,7 +70,8 @@ def locate_type(cursor: Cursor, components: Tuple[str, ...], inventory) -> Curso
         )
 
         if cursor.value is None:
-            raise CouldNotResolve(f"{cursor.location} does not exist.")
+            msg = f"{cursor.location} does not exist."
+            raise CouldNotResolve(msg)
 
         if isclass(cursor.value):
             cursor.instance = False
@@ -76,11 +80,9 @@ def locate_type(cursor: Cursor, components: Tuple[str, ...], inventory) -> Curso
             isroutine(cursor.value) and cursor.location not in inventory
         ):
             # Normalise location of type or imported function
-            try:
+            # If odd construct encountered: don't try to be clever but continue
+            with suppress(AttributeError, TypeError):
                 cursor.location = fully_qualified_name(cursor.value)
-            except (AttributeError, TypeError):
-                # Odd construct encountered: don't try to be clever but continue
-                pass
 
         if isclass(previous.value) and cursor.location not in inventory:
             for val in previous.value.__mro__:
@@ -94,7 +96,7 @@ def locate_type(cursor: Cursor, components: Tuple[str, ...], inventory) -> Curso
     return cursor
 
 
-def call_value(cursor: Cursor):
+def call_value(cursor: Cursor) -> None:
     """Call class, instance or function."""
     if isclass(cursor.value) and not cursor.instance:
         # class definition: "instantiate" class
@@ -105,14 +107,14 @@ def call_value(cursor: Cursor):
         # callable class instance
         cursor.value = cursor.value.__call__
     elif not isroutine(cursor.value):
-        raise CouldNotResolve()  # not a function either
+        raise CouldNotResolve  # not a function either
 
     cursor.value = get_return_annotation(cursor.value)
     cursor.location = fully_qualified_name(cursor.value)
     cursor.instance = True
 
 
-def get_return_annotation(func: Callable) -> Optional[type]:
+def get_return_annotation(func: Callable) -> type | None:
     """Determine the target of a function return type hint."""
     annotations = getattr(func, "__annotations__", {})
     ret_annotation = annotations.get("return", None)
@@ -120,7 +122,7 @@ def get_return_annotation(func: Callable) -> Optional[type]:
     # Inner type from typing.Optional or Union[None, T]
     origin = getattr(ret_annotation, "__origin__", None)
     args = getattr(ret_annotation, "__args__", None)
-    if origin is Union and len(args) == 2:
+    if origin is Union and len(args) == 2:  # noqa: PLR2004
         nonetype = type(None)
         if args[0] is nonetype:
             ret_annotation = args[1]
@@ -138,19 +140,18 @@ def get_return_annotation(func: Callable) -> Optional[type]:
         or not isinstance(ret_annotation, type)
         or hasattr(ret_annotation, "__origin__")
     ):
-        raise CouldNotResolve(
-            f"Unable to follow return annotation of {get_name_for_debugging(func)}."
-        )
+        msg = f"Unable to follow return annotation of {get_name_for_debugging(func)}."
+        raise CouldNotResolve(msg)
 
     return ret_annotation
 
 
-def fully_qualified_name(thing: Union[type, Callable]) -> str:
+def fully_qualified_name(thing: type | Callable) -> str:
     """Construct the fully qualified name of a type."""
     return thing.__module__ + "." + thing.__qualname__
 
 
-def get_name_for_debugging(thing: Union[type, Callable]) -> str:
+def get_name_for_debugging(thing: type | Callable) -> str:
     """Construct the fully qualified name or some readable information of a type."""
     try:
         return fully_qualified_name(thing)
@@ -158,18 +159,19 @@ def get_name_for_debugging(thing: Union[type, Callable]) -> str:
         return repr(thing)
 
 
-@lru_cache(maxsize=None)
-def closest_module(components: Tuple[str, ...]) -> Tuple[Any, int]:
+@cache
+def closest_module(components: tuple[str, ...]) -> tuple[Any, int]:
     """Find closest importable module."""
     try:
         mod = import_module(components[0])
     except ImportError as e:
-        raise CouldNotResolve(f"Could not import {components[0]}.") from e
+        msg = f"Could not import {components[0]}."
+        raise CouldNotResolve(msg) from e
 
     for i in range(1, len(components)):
         try:
             mod = import_module(".".join(components[: i + 1]))
-        except ImportError:
+        except ImportError:  # noqa: PERF203
             # import failed, exclude previously added item
             return mod, i
     # imports succeeded, include all items

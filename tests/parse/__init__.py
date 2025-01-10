@@ -7,7 +7,7 @@ from ._util import refs_equal
 
 class TestUnit:
     def test_component_from_unrecognised_ast(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid AST"):
             Component.from_ast("not ast")
 
 

@@ -1,7 +1,6 @@
 """Backreference tables implementation."""
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 from docutils import nodes
 
@@ -14,7 +13,7 @@ class CodeExample:
 
     document: str
     ref_id: str
-    headings: List[str]
+    headings: list[str]
 
 
 class DetailsNode(nodes.Element):
@@ -25,12 +24,12 @@ class DetailsNode(nodes.Element):
         return self.__class__()
 
 
-def visit_details(self, node: DetailsNode):
+def visit_details(self, node: DetailsNode) -> None:
     """Insert a details tag."""
     self.body.append("<details>")
 
 
-def depart_details(self, node: DetailsNode):
+def depart_details(self, node: DetailsNode) -> None:
     """Close a details tag."""
     self.body.append("</details>")
 
@@ -43,12 +42,12 @@ class SummaryNode(nodes.TextElement):
         return self.__class__()
 
 
-def visit_summary(self, node: SummaryNode):
+def visit_summary(self, node: SummaryNode) -> None:
     """Insert a summary tag."""
     self.body.append("<summary>")
 
 
-def depart_summary(self, node: SummaryNode):
+def depart_summary(self, node: SummaryNode) -> None:
     """Close a summary tag."""
     self.body.append("</summary>")
 
@@ -56,14 +55,16 @@ def depart_summary(self, node: SummaryNode):
 class CodeRefsVisitor(nodes.SparseNodeVisitor):
     """Replace :class:`DeferredCodeReferences` with table of concrete references."""
 
-    def __init__(self, *args, code_refs: Dict[str, List[CodeExample]], **kwargs):
+    def __init__(
+        self, *args, code_refs: dict[str, list[CodeExample]], **kwargs
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.code_refs = code_refs
 
-    def unknown_departure(self, node):
+    def unknown_departure(self, node) -> None:
         """Ignore unknown nodes."""
 
-    def unknown_visit(self, node):
+    def unknown_visit(self, node) -> None:
         """Insert table in :class:`DeferredExamples`."""
         if not isinstance(node, DeferredExamples):
             return

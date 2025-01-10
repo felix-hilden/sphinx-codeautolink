@@ -60,14 +60,38 @@ precision = 1
 show_missing = true
 skip_covered = true
 
-[tool.pydocstyle]
-ignore = "D107,D203,D212,D413,D416"
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ANN", # annotations - too oppressive
+    "TC", # type checking - too much hassle
+]
+extend-ignore = [
+    "ARG001", # unused args needed in interfaces
+    "ARG002", # unused args needed in interfaces
+    "D107", # docstring missing is fine
+    "D203", # recommended by ruff format
+    "D212", # docstring format clash
+    "D413", # empty docstring ending line
+    "COM812", # recommended by ruff format
+    "ISC001", # recommended by ruff format
+    "PLR0913", # many arguments is fine
+]
+extend-unsafe-fixes = ["F401"]
+isort.split-on-trailing-comma = false
 
-[tool.black]
+[tool.ruff.lint.extend-per-file-ignores]
+"src/*/__init__.py" = ["F401"]
+"src/sphinx_codeautolink/parse.py" = ["N802"]
+"docs/*" = ["ALL"]
+"tests/*" = [
+    "D", # docstring
+    "ANN", # annotations
+    "S101", # assertions - necessary in tests
+    "T201", # print - helpful in tests
+]
+# TODO: support future annotated hints properly
+"tests/extension/src/test_project/__init__.py" = ["FA100"]
+
+[tool.ruff.format]
 skip-magic-trailing-comma = true
-
-[tool.isort]
-atomic = true
-profile = "black"
-line_length = 88
-skip_gitignore = true
