@@ -30,11 +30,7 @@ codeautolink_warn_on_failed_resolve = True
 
 any_whitespace = re.compile(r"\s*")
 ref_tests = [(p.name, p) for p in Path(__file__).with_name("ref").glob("*.txt")]
-ref_xfails = {
-    "ref_fluent_attrs.txt": sys.version_info < (3, 8),
-    "ref_fluent_call.txt": sys.version_info < (3, 8),
-    "ref_import_from_complex.txt": sys.version_info < (3, 8),
-}
+ref_xfails = {}
 
 
 def assert_links(file: Path, links: list):
@@ -44,7 +40,7 @@ def assert_links(file: Path, links: list):
     strings = [any_whitespace.sub("", "".join(b.strings)) for b in blocks]
 
     assert len(strings) == len(links)
-    for s, link in zip(strings, links):
+    for s, link in zip(strings, links, strict=False):
         assert s == link
 
 
@@ -119,7 +115,7 @@ def test_tables(file: Path, tmp_path: Path):
     strings = [any_whitespace.sub("", "".join(b.strings)) for b in blocks]
 
     assert len(strings) == len(links)
-    for s, link in zip(strings, links):
+    for s, link in zip(strings, links, strict=False):
         assert s == link
 
 
