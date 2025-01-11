@@ -3,6 +3,10 @@ Foo
 arg
 Foo
 Foo
+test_project
+arg
+test_project.Foo
+test_project.Foo
 # split
 # split
 Test project
@@ -13,6 +17,11 @@ Test project
    from test_project import Foo
 
    def f(arg: Foo = Foo()):
+       pass
+
+   import test_project
+
+   def f(arg: test_project.Foo = test_project.Foo()):
        pass
 
 .. automodule:: test_project
