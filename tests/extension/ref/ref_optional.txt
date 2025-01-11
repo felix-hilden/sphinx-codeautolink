@@ -1,6 +1,8 @@
 test_project
 test_project.optional
 attr
+test_project.optional_manual
+attr
 # split
 # split
 Test project
@@ -10,5 +12,6 @@ Test project
 
    import test_project
    test_project.optional().attr
+   test_project.optional_manual().attr
 
 .. automodule:: test_project

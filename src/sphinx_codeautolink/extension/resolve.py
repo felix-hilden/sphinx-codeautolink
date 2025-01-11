@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from functools import cache
 from importlib import import_module
 from inspect import isclass, isroutine
-from typing import Any, Callable, Union
+from types import UnionType
+from typing import Any, Callable, Union, get_type_hints
 
 from sphinx_codeautolink.parse import Name, NameBreak
 
@@ -116,34 +117,27 @@ def call_value(cursor: Cursor) -> None:
 
 def get_return_annotation(func: Callable) -> type | None:
     """Determine the target of a function return type hint."""
-    annotations = getattr(func, "__annotations__", {})
-    ret_annotation = annotations.get("return", None)
+    annotation = get_type_hints(func).get("return")
 
     # Inner type from typing.Optional or Union[None, T]
-    origin = getattr(ret_annotation, "__origin__", None)
-    args = getattr(ret_annotation, "__args__", None)
-    if origin is Union and len(args) == 2:  # noqa: PLR2004
+    origin = getattr(annotation, "__origin__", None)
+    args = getattr(annotation, "__args__", None)
+    if (origin is Union or isinstance(annotation, UnionType)) and len(args) == 2:  # noqa: PLR2004
         nonetype = type(None)
         if args[0] is nonetype:
-            ret_annotation = args[1]
+            annotation = args[1]
         elif args[1] is nonetype:
-            ret_annotation = args[0]
-
-    # Try to resolve a string annotation in the module scope
-    if isinstance(ret_annotation, str):
-        location = fully_qualified_name(func)
-        mod, _ = closest_module(tuple(location.split(".")))
-        ret_annotation = getattr(mod, ret_annotation, ret_annotation)
+            annotation = args[0]
 
     if (
-        not ret_annotation
-        or not isinstance(ret_annotation, type)
-        or hasattr(ret_annotation, "__origin__")
+        not annotation
+        or not isinstance(annotation, type)
+        or hasattr(annotation, "__origin__")
     ):
         msg = f"Unable to follow return annotation of {get_name_for_debugging(func)}."
         raise CouldNotResolve(msg)
 
-    return ret_annotation
+    return annotation
 
 
 def fully_qualified_name(thing: type | Callable) -> str:
