@@ -11,8 +11,9 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Declare support for Python 3.12 and 3.13 (:issue:`150`)
-- Remove support for Python 3.7 and 3.8 (:issue:`150`)
+- Remove support for Python 3.7-3.9 (:issue:`150`, :issue:`157`)
 - Fix changed whitespace handling in Pygments 2.19 (:issue:`152`)
+- Improve support for future and string annotations (:issue:`155`)
 
 0.15.2 (2024-06-03)
 -------------------

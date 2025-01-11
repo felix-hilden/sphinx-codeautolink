@@ -432,7 +432,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         if prefix:
             self.save_access(Access(LinkContext.import_from, [], prefix_components))
 
-        for import_name, alias in zip(import_names, aliases):
+        for import_name, alias in zip(import_names, aliases, strict=True):
             if not import_star:
                 components = [
                     Component(n, *linenos(node), "load") for n in import_name.split(".")
@@ -561,7 +561,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                 accesses.append(access)
 
         assigns = []
-        for attr, pattern in zip(node.kwd_attrs, node.kwd_patterns):
+        for attr, pattern in zip(node.kwd_attrs, node.kwd_patterns, strict=True):
             target = self.visit(pattern)
             attr_comps = [
                 Component(NameBreak.call, *linenos(node), "load"),

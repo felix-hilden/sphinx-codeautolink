@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
 
 from bs4 import BeautifulSoup
 from docutils import nodes
@@ -263,7 +263,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         guides[ix] = "block source:"
         pad = max(len(i) + 1 for i in guides)
         guides = [g.ljust(pad) for g in guides]
-        return "\n".join([g + s for g, s in zip(guides, lines)])
+        return "\n".join([g + s for g, s in zip(guides, lines, strict=True)])
 
     def _parsing_error_msg(self, error: Exception, language: str, source: str) -> str:
         return "\n".join(
