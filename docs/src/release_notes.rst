@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.16.0 (2025-01-11)
+-------------------
 - Declare support for Python 3.12 and 3.13 (:issue:`150`)
 - Remove support for Python 3.7-3.9 (:issue:`150`, :issue:`157`)
 - Fix changed whitespace handling in Pygments 2.19 (:issue:`152`)

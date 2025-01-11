@@ -5,7 +5,7 @@ from sphinx.application import Sphinx
 from .extension import SphinxCodeAutoLink, backref, directive
 from .extension.block import clean_ipython, clean_pycon
 
-__version__ = "0.15.2"
+__version__ = "0.16.0"
 
 
 def setup(app: Sphinx):
