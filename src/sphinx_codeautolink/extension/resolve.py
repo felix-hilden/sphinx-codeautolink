@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass
 from functools import cache
 from importlib import import_module
 from inspect import isclass, isroutine
 from types import UnionType
-from typing import Any, Callable, Union, get_type_hints
+from typing import Any, Union, get_type_hints
 
 from sphinx_codeautolink.parse import Name, NameBreak
 

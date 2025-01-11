@@ -136,5 +136,5 @@ class RemoveExtensionVisitor(nodes.SparseNodeVisitor):
         if isinstance(node, DeferredExamples):
             # Remove surrounding paragraph too
             node.parent.parent.remove(node.parent)
-        if isinstance(node, (ConcatMarker, PrefaceMarker, SkipMarker)):
+        if isinstance(node, ConcatMarker | PrefaceMarker | SkipMarker):
             node.parent.remove(node)
