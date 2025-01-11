@@ -1,8 +1,8 @@
 test_project
-bar
-target
-bar
-target
+Foo
+arg
+Foo
+Foo
 # split
 # split
 Test project
@@ -10,9 +10,9 @@ Test project
 
 .. code:: python
 
-   from test_project import bar
+   from test_project import Foo
 
-   target = bar()
-   target
+   def f(arg: Foo = Foo()):
+       pass
 
 .. automodule:: test_project
