@@ -16,3 +16,7 @@ def optional() -> Optional[Foo]:  # noqa: UP007
 
 def optional_manual() -> None | Foo:
     """Return manually constructed optional type."""
+
+
+def invalid_ref() -> NotAClass:  # noqa: F821
+    """Reference to a nonexistent class."""

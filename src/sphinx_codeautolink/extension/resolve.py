@@ -118,7 +118,11 @@ def call_value(cursor: Cursor) -> None:
 
 def get_return_annotation(func: Callable) -> type | None:
     """Determine the target of a function return type hint."""
-    annotation = get_type_hints(func).get("return")
+    try:
+        annotation = get_type_hints(func).get("return")
+    except NameError as e:
+        msg = f"Unable to follow return annotation of {get_name_for_debugging(func)}."
+        raise CouldNotResolve(msg) from e
 
     # Inner type from typing.Optional or Union[None, T]
     origin = getattr(annotation, "__origin__", None)

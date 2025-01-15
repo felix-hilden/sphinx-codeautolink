@@ -1,0 +1,14 @@
+future_project
+future_project.invalid_ref
+# split
+codeautolink_warn_on_failed_resolve = False
+# split
+Test project
+============
+
+.. code:: python
+
+   import future_project
+   future_project.invalid_ref().whatever
+
+.. automodule:: future_project

@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Fix regression in not handling invalid return type hints (:issue:`158`)
+
 0.16.0 (2025-01-11)
 -------------------
 - Declare support for Python 3.12 and 3.13 (:issue:`150`)
