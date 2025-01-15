@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.16.1 (2025-01-15)
+-------------------
 - Fix regression in not handling invalid return type hints (:issue:`158`)
 
 0.16.0 (2025-01-11)
