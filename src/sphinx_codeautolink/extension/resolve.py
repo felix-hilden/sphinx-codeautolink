@@ -120,7 +120,7 @@ def get_return_annotation(func: Callable) -> type | None:
     """Determine the target of a function return type hint."""
     try:
         annotation = get_type_hints(func).get("return")
-    except NameError as e:
+    except (NameError, TypeError) as e:
         msg = f"Unable to follow return annotation of {get_name_for_debugging(func)}."
         raise CouldNotResolve(msg) from e
 
