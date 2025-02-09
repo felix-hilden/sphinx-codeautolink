@@ -65,6 +65,13 @@ Configuration
    Type: ``bool``. Issue warning when failing to resolve the canonical location
    of an object that a code element references. Defaults to :code:`False`.
 
+.. confval:: codeautolink_warn_on_no_backreference
+
+   Type: ``bool``. Issue warning when no backreference could be found
+   from reference documentation using the :rst:dir:`autolink-examples` table.
+   This highlights objects for which no tutorial, example or how-to exists.
+   Defaults to :code:`False`.
+
 Directives
 ----------
 .. rst:directive:: .. autolink-examples:: object

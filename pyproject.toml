@@ -75,6 +75,7 @@ extend-ignore = [
     "COM812", # recommended by ruff format
     "ISC001", # recommended by ruff format
     "PLR0913", # many arguments is fine
+    "PLR0915", # many statements is fine
 ]
 extend-unsafe-fixes = ["F401"]
 isort.split-on-trailing-comma = false

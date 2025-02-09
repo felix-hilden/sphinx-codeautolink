@@ -4,6 +4,8 @@ from dataclasses import dataclass
 
 from docutils import nodes
 
+from sphinx_codeautolink.warn import logger, warn_type
+
 from .directive import DeferredExamples
 
 
@@ -56,10 +58,15 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
     """Replace :class:`DeferredCodeReferences` with table of concrete references."""
 
     def __init__(
-        self, *args, code_refs: dict[str, list[CodeExample]], **kwargs
+        self,
+        *args,
+        code_refs: dict[str, list[CodeExample]],
+        warn_no_backreference: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
         self.code_refs = code_refs
+        self.warn_no_backreference = warn_no_backreference
 
     def unknown_departure(self, node) -> None:
         """Ignore unknown nodes."""
@@ -79,6 +86,11 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
         items = sorted(set(items))
 
         if not items:
+            if self.warn_no_backreference:
+                msg = f"No backreference for: '{node.ref}'"
+                logger.warning(
+                    msg, type=warn_type, subtype="no_backreference", location=node
+                )
             # Remove surrounding paragraph too
             node.parent.parent.remove(node.parent)
             return

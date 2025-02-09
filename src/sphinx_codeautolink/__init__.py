@@ -43,6 +43,12 @@ def setup(app: Sphinx):
         rebuild="html",
         types=[bool],
     )
+    app.add_config_value(
+        "codeautolink_warn_on_no_backreference",
+        default=False,
+        rebuild="html",
+        types=[bool],
+    )
 
     app.add_directive("autolink-concat", directive.Concat)
     app.add_directive("autolink-examples", directive.Examples)

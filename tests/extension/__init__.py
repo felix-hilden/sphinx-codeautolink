@@ -26,6 +26,7 @@ autodoc_default_options = {
 }
 codeautolink_warn_on_missing_inventory = True
 codeautolink_warn_on_failed_resolve = True
+codeautolink_warn_on_no_backreference = False
 """
 
 any_whitespace = re.compile(r"\s*")
