@@ -17,7 +17,17 @@ from sphinx_codeautolink.warn import logger, warn_type
 from .backref import CodeExample
 from .directive import ConcatMarker, PrefaceMarker, SkipMarker
 
-BUILTIN_BLOCKS = {"python": None, "py": None}
+# list from https://pygments.org/docs/lexers/#pygments.lexers.python.PythonLexer
+BUILTIN_BLOCKS = {
+    "python": None,
+    "python3": None,
+    "py": None,
+    "py3": None,
+    "pyi": None,
+    "sage": None,
+    "bazel": None,
+    "starlark": None,
+}
 
 
 @dataclass

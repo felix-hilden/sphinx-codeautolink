@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+0.16.3 (unreleased)
+-------------------
+- Add more Pygments lexer aliases in code blocks (:issue:`160`)
+
 0.16.2 (2025-01-16)
 -------------------
 - Fix regression in not handling malformed return types (:issue:`159`)
