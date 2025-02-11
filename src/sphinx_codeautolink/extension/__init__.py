@@ -74,6 +74,7 @@ class SphinxCodeAutoLink:
         self.inventory_map: dict[str, str] = {}
         self.warn_missing_inventory = None
         self.warn_failed_resolve = None
+        self.warn_no_backreference = None
 
         # Populated once
         self.outdated_docs: set[str] = set()
@@ -103,6 +104,7 @@ class SphinxCodeAutoLink:
         self.inventory_map = app.config.codeautolink_inventory_map
         self.warn_missing_inventory = app.config.codeautolink_warn_on_missing_inventory
         self.warn_failed_resolve = app.config.codeautolink_warn_on_failed_resolve
+        self.warn_no_backreference = app.config.codeautolink_warn_on_no_backreference
 
         # Append static resources path so references in setup() are valid
         app.config.html_static_path.append(
@@ -255,7 +257,11 @@ class SphinxCodeAutoLink:
             rm_vis = RemoveExtensionVisitor(doctree)
             return doctree.walkabout(rm_vis)
 
-        visitor = CodeRefsVisitor(doctree, code_refs=self.code_refs)
+        visitor = CodeRefsVisitor(
+            doctree,
+            code_refs=self.code_refs,
+            warn_no_backreference=self.warn_no_backreference,
+        )
         doctree.walk(visitor)
         return None
 

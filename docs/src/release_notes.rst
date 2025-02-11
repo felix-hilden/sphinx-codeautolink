@@ -8,8 +8,11 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-0.16.3 (unreleased)
+0.17.0 (unreleased)
 -------------------
+- Introduce :confval:`codeautolink_warn_on_no_backreference` to highlight
+  where reference documentation does not appear to have
+  a corresponding tutorial or how-to (:issue:`161`)
 - Add more Pygments lexer aliases in code blocks (:issue:`160`)
 
 0.16.2 (2025-01-16)
