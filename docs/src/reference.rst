@@ -96,7 +96,7 @@ Directives
 
 .. rst:directive:: .. autolink-concat:: [mode]
 
-   Toggle literal block concatenation.
+   Toggle block concatenation.
    Concatenated code blocks are treated as a continuous source,
    so that imports and statements in previous blocks affect later blocks.
    Concatenation is begun at the directive, not applied retroactively.

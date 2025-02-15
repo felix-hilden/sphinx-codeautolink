@@ -62,7 +62,7 @@ class ConcatMarker(nodes.Element):
 
 
 class Concat(Directive):
-    """Toggle and cut literal block concatenation in a document."""
+    """Toggle and cut block concatenation in a document."""
 
     has_content = False
     required_arguments = 0

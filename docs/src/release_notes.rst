@@ -15,6 +15,8 @@ sphinx-codeautolink adheres to
   a corresponding tutorial or how-to (:issue:`161`)
 - Add more Pygments lexer aliases in code blocks (:issue:`160`)
 - Fix undocumented class attribute leading to a crash (:issue:`165`)
+- Support the ``default`` lexer, literal blocks, ``.. highlight::`` directive
+  and ``highlight_language`` configuration (:issue:`166`)
 
 0.16.2 (2025-01-16)
 -------------------
