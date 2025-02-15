@@ -3,6 +3,8 @@
 Examples
 ========
 
+.. highlight:: none
+
 Short examples about how to achieve certain tasks with sphinx-codeautolink.
 
 Basic use
@@ -21,10 +23,16 @@ be analysed and linked to known reference documentation entries.
 
 Different import styles are supported, along with all Python syntax.
 Star imports might be particularly handy in code examples.
-`Doctest <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html
-#doctest-blocks>`_ and console blocks using :code:`.. code:: pycon` work too.
-Including code via :rst:dir:`literalinclude` requires using one of the
-`Python Lexers <https://pygments.org/docs/lexers/#pygments.lexers.python.PythonLexer>`_.
+
+A number of other types of blocks are also supported
+along with standard Sphinx configuration, like:
+
+- Literal blocks, the ``.. highlight::`` directive
+  and ``highlight_language`` configuration
+- `Doctest blocks <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#doctest-blocks>`_
+- Console blocks using :code:`.. code:: pycon`
+- Including code via :rst:dir:`literalinclude`, but requires using one of the
+  `Python Lexers <https://pygments.org/docs/lexers/#pygments.lexers.python.PythonLexer>`_
 
 .. code:: pycon
 
