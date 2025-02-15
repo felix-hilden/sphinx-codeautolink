@@ -1,0 +1,15 @@
+class_mro_fix
+Parameter
+# split
+codeautolink_warn_on_missing_inventory = False
+# split
+Test project
+============
+
+.. code:: python
+
+   from class_mro_fix import Parameter
+
+   Parameter.empty
+
+.. automodule:: class_mro_fix

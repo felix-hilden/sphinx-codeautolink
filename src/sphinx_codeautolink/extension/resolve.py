@@ -86,8 +86,9 @@ def locate_type(cursor: Cursor, components: tuple[str, ...], inventory) -> Curso
             with suppress(AttributeError, TypeError):
                 cursor.location = fully_qualified_name(cursor.value)
 
+        # Check bases if member not found in current class
         if isclass(previous.value) and cursor.location not in inventory:
-            for val in previous.value.__mro__:
+            for val in previous.value.__mro__[1:]:
                 name = fully_qualified_name(val)
                 if name + "." + component in inventory:
                     previous.location = name

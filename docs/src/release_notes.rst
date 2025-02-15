@@ -14,6 +14,7 @@ sphinx-codeautolink adheres to
   where reference documentation does not appear to have
   a corresponding tutorial or how-to (:issue:`161`)
 - Add more Pygments lexer aliases in code blocks (:issue:`160`)
+- Fix undocumented class attribute leading to a crash (:issue:`165`)
 
 0.16.2 (2025-01-16)
 -------------------
