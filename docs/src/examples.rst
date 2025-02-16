@@ -1,5 +1,7 @@
 .. _examples:
 
+.. highlight:: python
+
 Examples
 ========
 
@@ -45,7 +47,9 @@ particularly in the reference documentation itself:
 
 .. autolink-examples:: lib.Knight
 
-Such a table is generated with :rst:dir:`autolink-examples`::
+Such a table is generated with :rst:dir:`autolink-examples`:
+
+.. code-block:: rst
 
    .. autolink-examples:: lib.Knight
 
@@ -60,14 +64,18 @@ The import can be hidden instead.
 
   lib.Knight().taunt()
 
-The previous block is produced with :rst:dir:`autolink-preface`::
+The previous block is produced with :rst:dir:`autolink-preface`:
+
+.. code-block:: rst
 
    .. autolink-preface:: import lib
    .. code:: python
 
         lib.Knight().taunt()
 
-A multiline preface can be written in the content portion of the directive::
+A multiline preface can be written in the content portion of the directive:
+
+.. code-block:: rst
 
    .. autolink-preface::
 
@@ -96,7 +104,9 @@ the previous left off.
        print(knight.taunt())
        knight.scratch()
 
-This was achieved with :rst:dir:`autolink-concat`::
+This was achieved with :rst:dir:`autolink-concat`:
+
+.. code-block:: rst
 
    .. autolink-concat:: section
    .. code:: python
@@ -124,7 +134,9 @@ and preventing it from being included in further sources with concatenation.
    import lib
    lib.Knight()
 
-Which is done via :rst:dir:`autolink-skip`::
+Which is done via :rst:dir:`autolink-skip`:
+
+.. code-block:: rst
 
    .. autolink-skip::
    .. code:: python
@@ -134,6 +146,27 @@ Which is done via :rst:dir:`autolink-skip`::
 
 Skipping is supported for single blocks, sections and entire files.
 See :rst:dir:`autolink-skip` for more information and options.
+
+
+Skipping literal blocks
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The following example is using a literal block (``::``)
+which does *not* have :rst:dir:`autolink-skip` set
+and thus has linking::
+
+   import lib
+   k1 = lib.Knight()
+
+.. autolink-skip::
+
+The following example is using a literal block (``::``)
+which *does* have :rst:dir:`autolink-skip` set
+in the paragraph before it and thus has no linking::
+
+   import lib
+   k2 = lib.Knight()
+
 
 Autodoc integration
 -------------------
@@ -196,7 +229,9 @@ Reference tables across intersphinx work too:
 It seems that the reference type information is more important
 for Sphinx when dealing with external modules,
 likely because the references cannot be resolved dynamically.
-Please specify a ``type`` in :rst:dir:`autolink-examples`::
+Please specify a ``type`` in :rst:dir:`autolink-examples`:
+
+.. code-block:: rst
 
    .. autolink-examples:: numpy.linspace
       :type: func
