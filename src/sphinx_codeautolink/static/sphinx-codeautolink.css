@@ -1,16 +1,10 @@
-.sphinx-codeautolink-a:link{
-    color: inherit;
-    text-decoration: none;
-}
-.sphinx-codeautolink-a:active{
-    color: inherit;
+.sphinx-codeautolink-a{
+    color: unset;
     text-decoration: none;
 }
 .sphinx-codeautolink-a:visited{
-    color: inherit;
-    text-decoration: none;
+    color: unset;
 }
 .sphinx-codeautolink-a:hover{
     color: rgb(0, 139, 139);
-    text-decoration: none;
 }
