@@ -82,6 +82,7 @@ def setup(app: Sphinx):
     )
     return {"version": __version__, "env_version": 1, "parallel_read_safe": True}
 
+
 def _copy_styles(app, exc):
     if app.builder.format == "html" and not exc:
         css_file = Path(__file__).parent / "static" / "sphinx-codeautolink.css"
