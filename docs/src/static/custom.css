@@ -7,3 +7,6 @@
 .sphinx-codeautolink-a:visited{
     color: unset;
 }
+.sphinx-codeautolink-a:hover {
+    color: rgb(0, 139, 139);
+}
