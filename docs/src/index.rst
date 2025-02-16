@@ -70,7 +70,7 @@ Caveats
 For a more thorough explanation, see :ref:`about`.
 
 - Only works with HTML documentation
-- Only processes literal blocks, not inline code
+- Only processes blocks, not inline code
 - Doesn't run example code
 - Parsing and type hint resolving is incomplete
 

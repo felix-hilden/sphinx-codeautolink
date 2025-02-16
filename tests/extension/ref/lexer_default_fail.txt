@@ -5,8 +5,6 @@ Test project
 
 .. code::
 
-   import test_project
-
-   test_project.bar()
+   invalid python in a default block should not crash
 
 .. automodule:: test_project

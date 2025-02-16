@@ -18,7 +18,7 @@ Caveats
 -------
 - **Only works with HTML documentation**, disabled otherwise. If the extension
   is off, it silently removes directives that would produce output.
-- **Only processes literal blocks, not inline code**. Sphinx has great tools
+- **Only processes blocks, not inline code**. Sphinx has great tools
   for linking definitions inline, and longer code should be in a block anyway.
 - **Doesn't run example code**. Therefore all possible resolvable types are not
   found, and the runtime correctness of code cannot be validated.

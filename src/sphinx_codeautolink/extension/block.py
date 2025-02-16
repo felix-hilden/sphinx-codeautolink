@@ -19,6 +19,7 @@ from .directive import ConcatMarker, PrefaceMarker, SkipMarker
 
 # list from https://pygments.org/docs/lexers/#pygments.lexers.python.PythonLexer
 BUILTIN_BLOCKS = {
+    "default": None,
     "python": None,
     "python3": None,
     "py": None,
@@ -104,7 +105,7 @@ else:
 
 
 class CodeBlockAnalyser(nodes.SparseNodeVisitor):
-    """Transform literal blocks of Python with links to reference documentation."""
+    """Transform blocks of Python with links to reference documentation."""
 
     def __init__(
         self,
@@ -113,6 +114,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         global_preface: list[str],
         custom_blocks: dict[str, Callable[[str], str]],
         concat_default: bool,
+        default_highlight_lang: str | None,
+        warn_default_parse_fail: bool,
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
@@ -130,6 +133,8 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.concat_section = False
         self.concat_sources = []
         self.skip = None
+        self.highlight_lang = default_highlight_lang
+        self.warn_default_parse_fail = warn_default_parse_fail
 
     def unknown_visit(self, node) -> None:
         """Handle and delete custom directives, ignore others."""
@@ -162,6 +167,10 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     def unknown_departure(self, node) -> None:
         """Ignore unknown nodes."""
 
+    def visit_highlightlang(self, node) -> None:
+        """Set expected highlight language."""
+        self.highlight_lang = node["lang"]
+
     def visit_title(self, node) -> None:
         """Track section names and break concatenation and skipping."""
         self.title_stack.append(node.astext())
@@ -185,7 +194,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
 
     def visit_literal_block(self, node: nodes.literal_block):
         """Visit a generic literal block."""
-        return self.parse_source(node, node.get("language", None))
+        return self.parse_source(node, node.get("language", self.highlight_lang))
 
     def parse_source(
         self, node: nodes.literal_block | nodes.doctest_block, language: str | None
@@ -231,6 +240,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         try:
             names = parse_names(modified_source, node)
         except SyntaxError as e:
+            if language == "default" and not self.warn_default_parse_fail:
+                return
+
             show_source = self._format_source_for_error(
                 self.global_preface, self.concat_sources, prefaces, source
             )

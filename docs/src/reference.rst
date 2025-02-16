@@ -57,20 +57,26 @@ Configuration
 
 .. confval:: codeautolink_warn_on_missing_inventory
 
-   Type: ``bool``. Issue warning when an object cannot be found in
+   Type: ``bool``. Warn when an object cannot be found in
    the inventory (autodoc or intersphinx). Defaults to :code:`False`.
 
 .. confval:: codeautolink_warn_on_failed_resolve
 
-   Type: ``bool``. Issue warning when failing to resolve the canonical location
+   Type: ``bool``. Warn when failing to resolve the canonical location
    of an object that a code element references. Defaults to :code:`False`.
 
 .. confval:: codeautolink_warn_on_no_backreference
 
-   Type: ``bool``. Issue warning when no backreference could be found
+   Type: ``bool``. Warn when no backreference could be found
    from reference documentation using the :rst:dir:`autolink-examples` table.
    This highlights objects for which no tutorial, example or how-to exists.
    Defaults to :code:`False`.
+
+.. confval:: codeautolink_warn_on_default_parse_fail
+
+   Type: ``bool``. Warn when a code block using the ``default`` lexer
+   cannot be parsed as Python. By default these cases are ignored by the
+   syntax highlighter, so we match the behavior. Defaults to :code:`False`.
 
 Directives
 ----------
@@ -96,7 +102,7 @@ Directives
 
 .. rst:directive:: .. autolink-concat:: [mode]
 
-   Toggle literal block concatenation.
+   Toggle block concatenation.
    Concatenated code blocks are treated as a continuous source,
    so that imports and statements in previous blocks affect later blocks.
    Concatenation is begun at the directive, not applied retroactively.

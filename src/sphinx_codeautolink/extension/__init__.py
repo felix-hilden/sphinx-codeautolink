@@ -75,6 +75,8 @@ class SphinxCodeAutoLink:
         self.warn_missing_inventory = None
         self.warn_failed_resolve = None
         self.warn_no_backreference = None
+        self.warn_default_parse_fail = None
+        self.highlight_lang = None
 
         # Populated once
         self.outdated_docs: set[str] = set()
@@ -105,6 +107,10 @@ class SphinxCodeAutoLink:
         self.warn_missing_inventory = app.config.codeautolink_warn_on_missing_inventory
         self.warn_failed_resolve = app.config.codeautolink_warn_on_failed_resolve
         self.warn_no_backreference = app.config.codeautolink_warn_on_no_backreference
+        self.warn_default_parse_fail = (
+            app.config.codeautolink_warn_on_default_parse_fail
+        )
+        self.highlight_lang = app.config.highlight_language
 
         # Append static resources path so references in setup() are valid
         app.config.html_static_path.append(
@@ -138,6 +144,8 @@ class SphinxCodeAutoLink:
             global_preface=self.global_preface,
             custom_blocks=self.custom_blocks,
             concat_default=self.concat_default,
+            default_highlight_lang=self.highlight_lang,
+            warn_default_parse_fail=self.warn_default_parse_fail,
         )
         doctree.walkabout(visitor)
         self.cache.transforms[visitor.current_document] = visitor.source_transforms

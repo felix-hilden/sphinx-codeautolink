@@ -1,15 +1,13 @@
+test_project
+test_project.bar
 # split
 # split
 Test project
 ============
 
-.. autolink-preface:: import test_project
-.. code:: c
+Here's an example::
 
+   import test_project
    test_project.bar()
-
-.. code:: python
-
-   test_project.Foo
 
 .. automodule:: test_project

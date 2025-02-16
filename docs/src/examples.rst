@@ -21,15 +21,16 @@ be analysed and linked to known reference documentation entries.
 
 Different import styles are supported, along with all Python syntax.
 Star imports might be particularly handy in code examples.
-`Doctest <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html
-#doctest-blocks>`_ and console blocks using :code:`.. code:: pycon` work too.
-Including code via :rst:dir:`literalinclude` requires using one of the following parameters:
-:code:`:language: python`, :code:`:language: python3`,
-:code:`:language: py`, :code:`:language: py3`, :code:`:language: pyi`,
-:code:`:language: sage`, :code:`:language: bazel`, :code:`:language: starlark`
-(i.e., the list of
-`Pygments Lexers <https://pygments.org/docs/lexers/#pygments.lexers.python.PythonLexer>`_).
 
+A number of other types of blocks are also supported
+along with standard Sphinx configuration, like:
+
+- Literal blocks, the ``.. highlight::`` directive
+  and ``highlight_language`` configuration
+- `Doctest blocks <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#doctest-blocks>`_
+- Console blocks using :code:`.. code:: pycon`
+- Including code via :rst:dir:`literalinclude`, but requires using one of the
+  `Python Lexers <https://pygments.org/docs/lexers/#pygments.lexers.python.PythonLexer>`_
 
 .. code:: pycon
 

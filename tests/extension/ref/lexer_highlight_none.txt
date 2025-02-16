@@ -1,0 +1,13 @@
+# split
+# split
+Test project
+============
+
+.. highlight:: none
+
+Here's an example::
+
+   import test_project
+   test_project.bar()
+
+.. automodule:: test_project
