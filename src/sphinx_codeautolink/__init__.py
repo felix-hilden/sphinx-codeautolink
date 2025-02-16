@@ -1,5 +1,7 @@
 """Sphinx extension for linking code examples to reference documentation."""
 
+from pathlib import Path
+
 from sphinx.application import Sphinx
 
 from .extension import SphinxCodeAutoLink, backref, directive
@@ -12,7 +14,8 @@ def setup(app: Sphinx):
     """Set up extension, directives and events."""
     state = SphinxCodeAutoLink()
     app.setup_extension("sphinx.ext.autodoc")
-    app.add_css_file("sphinx-codeautolink.css")
+    css_file = Path(__file__).parent / "static" / "sphinx-codeautolink.css"
+    app.add_css_file(str(css_file))
     app.add_config_value(
         "codeautolink_autodoc_inject", default=False, rebuild="html", types=[bool]
     )
