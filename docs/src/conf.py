@@ -56,7 +56,8 @@ plot_formats = [("png", 90)]
 plot_html_show_formats = False
 plot_html_show_source_link = False
 
-html_static_path = ['static']
+html_static_path = ["static"]
+
 
 def setup(app) -> None:
     app.add_object_type(
@@ -65,8 +66,9 @@ def setup(app) -> None:
         objname="configuration value",
         indextemplate="pair: %s; configuration value",
     )
-    app.connect('html-page-context', html_page_context_handler)
+    app.connect("html-page-context", html_page_context_handler)
+
 
 def html_page_context_handler(app, pagename, templatename, context, doctree):
-    if pagename == 'index':
-        app.add_css_file('custom.css')
+    if pagename == "index":
+        app.add_css_file("custom.css")

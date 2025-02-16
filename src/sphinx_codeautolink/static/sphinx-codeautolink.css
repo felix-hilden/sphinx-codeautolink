@@ -2,6 +2,9 @@
     color: unset;
     text-decoration: none;
 }
+.sphinx-codeautolink-a:link{
+    color: unset;
+}
 .sphinx-codeautolink-a:visited{
     color: unset;
 }
