@@ -8,6 +8,9 @@
 .sphinx-codeautolink-a:visited{
     color: unset;
 }
+.sphinx-codeautolink-a:active{
+    color: rgb(0, 185, 185);
+}
 .sphinx-codeautolink-a:hover{
     color: rgb(0, 139, 139);
 }
