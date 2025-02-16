@@ -1,0 +1,10 @@
+# split
+# split
+Test project
+============
+
+.. code::
+
+   invalid python in a default block should not crash
+
+.. automodule:: test_project

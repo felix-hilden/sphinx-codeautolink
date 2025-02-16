@@ -115,6 +115,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         custom_blocks: dict[str, Callable[[str], str]],
         concat_default: bool,
         default_highlight_lang: str | None,
+        warn_default_parse_fail: bool,
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
@@ -133,6 +134,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.concat_sources = []
         self.skip = None
         self.highlight_lang = default_highlight_lang
+        self.warn_default_parse_fail = warn_default_parse_fail
 
     def unknown_visit(self, node) -> None:
         """Handle and delete custom directives, ignore others."""
@@ -238,6 +240,9 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         try:
             names = parse_names(modified_source, node)
         except SyntaxError as e:
+            if language == "default" and not self.warn_default_parse_fail:
+                return
+
             show_source = self._format_source_for_error(
                 self.global_preface, self.concat_sources, prefaces, source
             )

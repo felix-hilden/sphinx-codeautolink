@@ -3,8 +3,6 @@
 Examples
 ========
 
-.. highlight:: none
-
 Short examples about how to achieve certain tasks with sphinx-codeautolink.
 
 Basic use
