@@ -141,6 +141,19 @@ Directives
 CSS class
 ---------
 The CSS class used in all code block links is ``sphinx-codeautolink-a``.
+An example of more obvious links is on the :ref:`landing page <index>`.
+The styles can be configured for all pages by defining ``html_static_path``
+and ``html_css_files`` to include in the documentation.
+To include only in specific documents, see the ``html-page-context`` event
+and the :meth:`Sphinx.add_css_file` function.
+
+.. code:: css
+
+   .sphinx-codeautolink-a{
+       border-bottom-color: #aaa;
+       border-bottom-style: dotted;
+       border-bottom-width: 2px;
+   }
 
 Cleanup functions
 -----------------

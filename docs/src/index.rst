@@ -1,3 +1,5 @@
+.. _index:
+
 sphinx-codeautolink
 ===================
 |license|
@@ -15,6 +17,9 @@ Click any names in the example below for a demonstration:
    while knight.limbs >= 0:
        print(knight.taunt())
        knight.scratch()
+
+The link styles in this document have been modified to be obvious.
+The rest of this documentation uses the more subtle default style.
 
 A directive to create a table of references from code examples to a single
 definition is also provided, which can also be integrated with autodoc entries.
