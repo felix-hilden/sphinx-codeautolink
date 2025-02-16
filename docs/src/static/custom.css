@@ -4,9 +4,6 @@
     border-bottom-style: dotted;
     border-bottom-width: 2px;
 }
-.sphinx-codeautolink-a:visited{
-    color: unset;
-}
 .sphinx-codeautolink-a:hover {
     color: rgb(0, 139, 139);
 }
