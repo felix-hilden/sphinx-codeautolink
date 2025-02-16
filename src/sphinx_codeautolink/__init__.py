@@ -15,8 +15,7 @@ def setup(app: Sphinx):
     """Set up extension, directives and events."""
     state = SphinxCodeAutoLink()
     app.setup_extension("sphinx.ext.autodoc")
-    css_file = Path(__file__).parent / "static" / "sphinx-codeautolink.css"
-    app.add_css_file(str(css_file))
+    app.add_css_file("sphinx-codeautolink.css")
     app.connect("build-finished", _copy_styles)
     app.add_config_value(
         "codeautolink_autodoc_inject", default=False, rebuild="html", types=[bool]
