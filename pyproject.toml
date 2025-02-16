@@ -45,6 +45,9 @@ documentation = "https://sphinx-codeautolink.rtfd.org"
 [tool.setuptools.dynamic]
 version = {attr = "sphinx_codeautolink.__version__"}
 
+[tool.setuptools.package-data]
+sphinx_codeautolink = ["*.css"]
+
 [tool.pytest.ini_options]
 python_files = "*.py"
 testpaths = ["tests"]
