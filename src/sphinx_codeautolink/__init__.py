@@ -1,6 +1,6 @@
 """Sphinx extension for linking code examples to reference documentation."""
 
-from pathlib import Path
+from importlib.resources import files
 from shutil import copyfile
 
 from sphinx.application import Sphinx
@@ -85,5 +85,6 @@ def setup(app: Sphinx):
 
 def _copy_styles(app, exc):
     if app.builder.format == "html" and not exc:
-        css_file = Path(__file__).parent / "static" / "sphinx-codeautolink.css"
-        copyfile(css_file, app.outdir / "_static" / "sphinx-codeautolink.css")
+        css_name = "sphinx-codeautolink.css"
+        css_file = files("sphinx_codeautolink.static").joinpath(css_name)
+        copyfile(css_file, app.outdir / "_static" / css_name)
