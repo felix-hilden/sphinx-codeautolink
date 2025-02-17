@@ -16,7 +16,6 @@ def setup(app: Sphinx):
     state = SphinxCodeAutoLink()
     app.setup_extension("sphinx.ext.autodoc")
     app.add_css_file("sphinx-codeautolink.css")
-    app.connect("build-finished", _copy_styles)
     app.add_config_value(
         "codeautolink_autodoc_inject", default=False, rebuild="html", types=[bool]
     )
@@ -81,10 +80,3 @@ def setup(app: Sphinx):
         backref.SummaryNode, html=(backref.visit_summary, backref.depart_summary)
     )
     return {"version": __version__, "env_version": 1, "parallel_read_safe": True}
-
-
-def _copy_styles(app, exc):
-    if app.builder.format == "html" and not exc:
-        css_name = "sphinx-codeautolink.css"
-        css_file = files("sphinx_codeautolink.static").joinpath(css_name)
-        copyfile(css_file, app.outdir / "_static" / css_name)
