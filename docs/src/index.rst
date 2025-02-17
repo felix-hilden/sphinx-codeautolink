@@ -5,7 +5,7 @@ sphinx-codeautolink
 sphinx-codeautolink makes code examples clickable by inserting links
 from individual code elements to the corresponding reference documentation.
 We aim for a minimal setup assuming your examples are already valid Python.
-Click any names in the example below for a demonstration:
+Click any undelined name in the example below for a demonstration:
 
 .. code:: python
 
@@ -42,7 +42,6 @@ sphinx-codeautolink can be installed from the following sources:
 .. code:: sh
 
     $ pip install sphinx-codeautolink
-    # or, alternatively:
     $ conda install -c conda-forge sphinx-codeautolink
 
 To enable sphinx-codeautolink, modify the extension list in ``conf.py``.

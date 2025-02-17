@@ -315,15 +315,15 @@ you may add your own CSS file to the Sphinx build.
 
 To include only in specific documents, see the ``html-page-context`` event
 and the :meth:`Sphinx.add_css_file` function.
-For example, you can add similar dotted lines as this documentation
+For example, you can add similar underlines as this documentation
 and change the hover colour:
 
 .. code:: css
 
    /* static/custom.css */
    .sphinx-codeautolink-a{
-       border-bottom-color: #aaa;
-       border-bottom-style: dotted;
+       border-bottom-color: #ccc;
+       border-bottom-style: solid;
        border-bottom-width: 1px;
    }
    .sphinx-codeautolink-a:hover{

@@ -16,7 +16,6 @@ sphinx-codeautolink can be installed from the following sources:
 .. code:: sh
 
     $ pip install sphinx-codeautolink
-    # or, alternatively:
     $ conda install -c conda-forge sphinx-codeautolink
 
 Note that the library is in early development, so version pinning is advised.
@@ -31,9 +30,9 @@ Note that the extension name uses an underscore rather than a hyphen.
    ]
 
 That's it! Now your code examples are linked.
-For ways of concatenating multiple examples
-and setting default import statements among other things,
-have a look at the online documentation.
+For ways of concatenating examples, setting default import statements,
+or customising link style among other things,
+see the `online documentation <https://sphinx-codeautolink.rtfd.org>`_.
 
 .. |pyversions| image:: https://img.shields.io/pypi/pyversions/sphinx-codeautolink
    :alt: Python versions
