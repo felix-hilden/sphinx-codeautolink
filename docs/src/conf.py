@@ -56,6 +56,9 @@ plot_formats = [("png", 90)]
 plot_html_show_formats = False
 plot_html_show_source_link = False
 
+html_static_path = ["static"]
+html_css_files = ["custom.css"]
+
 
 def setup(app) -> None:
     app.add_object_type(

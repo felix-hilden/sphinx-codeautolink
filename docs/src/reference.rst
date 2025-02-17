@@ -141,6 +141,9 @@ Directives
 CSS class
 ---------
 The CSS class used in all code block links is ``sphinx-codeautolink-a``.
+By default, the links only have a light blue hover colour.
+The style has been made more obvious in the documentation for demonstration.
+See :ref:`examples-css` for more information.
 
 Cleanup functions
 -----------------
