@@ -1,6 +1,9 @@
 .sphinx-codeautolink-a{
     color: unset;
     text-decoration: none;
+    border-bottom-color: #aaa;
+    border-bottom-style: dotted;
+    border-bottom-width: 1px;
 }
 .sphinx-codeautolink-a:link{
     color: unset;
