@@ -1,15 +1,12 @@
 .sphinx-codeautolink-a{
-    color: unset;
+    color: inherit;
     text-decoration: none;
-    border-bottom-color: #aaa;
-    border-bottom-style: dotted;
-    border-bottom-width: 1px;
 }
 .sphinx-codeautolink-a:link{
-    color: unset;
+    color: inherit;
 }
 .sphinx-codeautolink-a:visited{
-    color: unset;
+    color: inherit;
 }
 .sphinx-codeautolink-a:hover{
     color: rgb(0, 139, 139);

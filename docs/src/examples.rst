@@ -300,12 +300,12 @@ For example, a transformer could be implemented as follows:
 Sometimes links with third-party code blocks are broken.
 See :ref:`about` for a potential solution.
 
+.. _examples-css:
+
 Custom link styles
 ------------------
 If you want a specific style to be applied to code block links,
 you may add your own CSS file to the Sphinx build.
-All code block links use the ``sphinx-codeautolink-a`` class.
-For example, you can add dotted lines to all links and change the hover colour:
 
 .. code:: python
 
@@ -313,11 +313,16 @@ For example, you can add dotted lines to all links and change the hover colour:
    html_static_path = ['static']
    html_css_files = ['custom.css']
 
+To include only in specific documents, see the ``html-page-context`` event
+and the :meth:`Sphinx.add_css_file` function.
+For example, you can add similar dotted lines as this documentation
+and change the hover colour:
+
 .. code:: css
 
    /* static/custom.css */
    .sphinx-codeautolink-a{
-       border-bottom-color: rgb(0, 0, 0);
+       border-bottom-color: #aaa;
        border-bottom-style: dotted;
        border-bottom-width: 1px;
    }

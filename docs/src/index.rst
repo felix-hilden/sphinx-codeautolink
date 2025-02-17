@@ -1,5 +1,3 @@
-.. _index:
-
 sphinx-codeautolink
 ===================
 |license|
@@ -17,9 +15,6 @@ Click any names in the example below for a demonstration:
    while knight.limbs >= 0:
        print(knight.taunt())
        knight.scratch()
-
-The link styles in this document have been modified to be obvious.
-The rest of this documentation uses the more subtle default style.
 
 A directive to create a table of references from code examples to a single
 definition is also provided, which can also be integrated with autodoc entries.
@@ -61,8 +56,8 @@ Note that the extension name uses an underscore rather than a hyphen.
    ]
 
 That's it! Now your code examples are linked.
-For ways of concatenating multiple examples
-and setting default import statements among other things,
+For ways of concatenating examples, setting default import statements,
+or customising link style among other things,
 have a look at the :ref:`reference` documentation.
 
 sphinx-codeautolink elsewhere:

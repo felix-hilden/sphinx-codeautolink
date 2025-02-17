@@ -57,6 +57,7 @@ plot_html_show_formats = False
 plot_html_show_source_link = False
 
 html_static_path = ["static"]
+html_css_files = ["custom.css"]
 
 
 def setup(app) -> None:
@@ -66,9 +67,3 @@ def setup(app) -> None:
         objname="configuration value",
         indextemplate="pair: %s; configuration value",
     )
-    app.connect("html-page-context", html_page_context_handler)
-
-
-def html_page_context_handler(app, pagename, templatename, context, doctree):
-    if pagename == "index":
-        app.add_css_file("custom.css")
