@@ -1,8 +1,5 @@
 """Sphinx extension for linking code examples to reference documentation."""
 
-from importlib.resources import files
-from shutil import copyfile
-
 from sphinx.application import Sphinx
 
 from .extension import SphinxCodeAutoLink, backref, directive
