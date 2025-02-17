@@ -148,11 +148,11 @@ Skipping is supported for single blocks, sections and entire files.
 See :rst:dir:`autolink-skip` for more information and options.
 
 
-Skipping literal blocks
-^^^^^^^^^^^^^^^^^^^^^^^
+Skipping implicit literal blocks
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following example is using a literal block (``::``)
-which does *not* have :rst:dir:`autolink-skip` set
+The following example is using an implicit literal block (``::``).
+It does *not* have :rst:dir:`autolink-skip` set
 and thus has linking::
 
    import lib
@@ -160,9 +160,9 @@ and thus has linking::
 
 .. autolink-skip::
 
-The following example is using a literal block (``::``)
-which *does* have :rst:dir:`autolink-skip` set
-in the paragraph before it and thus has no linking::
+The following example is also using an implicit literal block (``::``).
+It *does* have :rst:dir:`autolink-skip` set before the paragraph
+you are reading now and thus the code example has no linking::
 
    import lib
    k2 = lib.Knight()
