@@ -128,7 +128,7 @@ Directives
    Skip sphinx-codeautolink functionality.
    ``level``, if specified, must be one of:
 
-   - "next" - next block (default)
+   - "next" - next encountered block (default)
    - "section" - blocks until the next title
    - "file" - all blocks in the current file
    - "off" - turn skipping off
@@ -137,6 +137,9 @@ Directives
    it is not processed (e.g. non-Python blocks) to avoid placement confusion.
    Skipped blocks are ignored in block concatenation as well, and concatenation
    is resumed without breaks after skipping is over.
+   "Next" doesn't need to be specified right before the block that would consume
+   it. For e.g. literal blocks the skip directive would be inserted before the
+   preceding paragraph.
 
 CSS class
 ---------
