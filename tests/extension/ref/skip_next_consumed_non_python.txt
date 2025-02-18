@@ -6,7 +6,7 @@ Test project
 ============
 
 .. autolink-skip::
-.. code::
+.. code:: c
 
    import test_project
    test_project.bar()

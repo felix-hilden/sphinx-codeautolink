@@ -19,6 +19,7 @@ sphinx-codeautolink adheres to
   and ``highlight_language`` configuration (:issue:`166`)
 - Add :confval:`codeautolink_warn_on_default_parse_fail` to warn about
   failing to link code blocks without a language parameter (:issue:`166`)
+- Fix skipping blocks with identical content to linked ones (:issue:`172`)
 
 0.16.2 (2025-01-16)
 -------------------

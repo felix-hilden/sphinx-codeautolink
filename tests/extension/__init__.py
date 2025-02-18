@@ -280,6 +280,37 @@ Test project
     assert check_link_targets(result_dir) == n_subfiles * len(links)
 
 
+def test_skip_identical_code(tmp_path: Path):
+    """Code skipped and then linked in an identical block after."""
+    index = """
+Test project
+============
+
+.. autolink-skip::
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. automodule:: test_project
+"""
+    files = {"conf.py": default_conf, "index.rst": index}
+    result_dir = _sphinx_build(tmp_path, "html", files)
+
+    index_html = result_dir / "index.html"
+    text = index_html.read_text("utf-8")
+    soup = BeautifulSoup(text, "html.parser")
+    blocks = list(soup.select(".highlight-python"))
+    assert len(blocks) == 2
+    assert "sphinx-codeautolink-a" not in str(blocks[0])
+    assert "sphinx-codeautolink-a" in str(blocks[1])
+
+
 def _sphinx_build(
     folder: Path, builder: str, files: dict[str, str], n_processes: int | None = None
 ) -> Path:

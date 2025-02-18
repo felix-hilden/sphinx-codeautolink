@@ -196,7 +196,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         """Visit a generic literal block."""
         return self.parse_source(node, node.get("language", self.highlight_lang))
 
-    def parse_source(
+    def parse_source(  # noqa: C901
         self, node: nodes.literal_block | nodes.doctest_block, language: str | None
     ) -> None:
         """Analyse Python code blocks."""
@@ -208,14 +208,22 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             self.skip = None
 
         if (
-            skip
-            or len(node.children) != 1
+            len(node.children) != 1
             or not isinstance(node.children[0], nodes.Text)
             or language not in self.valid_blocks
         ):
             return
 
         source = node.children[0].astext()
+        example = CodeExample(
+            self.current_document, self.current_refid, list(self.title_stack)
+        )
+        transform = SourceTransform(source, [], example, node.line)
+        self.source_transforms.append(transform)
+
+        if skip:
+            return
+
         transformer = self.transformers[language]
         if transformer:
             try:
@@ -228,11 +236,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 return
         else:
             clean_source = source
-        example = CodeExample(
-            self.current_document, self.current_refid, list(self.title_stack)
-        )
-        transform = SourceTransform(source, [], example, node.line)
-        self.source_transforms.append(transform)
+        transform.source = source
 
         modified_source = "\n".join(
             self.global_preface + self.concat_sources + prefaces + [clean_source]
@@ -244,7 +248,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 return
 
             show_source = self._format_source_for_error(
-                self.global_preface, self.concat_sources, prefaces, source
+                self.global_preface, self.concat_sources, prefaces, transform.source
             )
             msg = self._parsing_error_msg(e, language, show_source)
             logger.warning(msg, type=warn_type, subtype="parse_block", location=node)
