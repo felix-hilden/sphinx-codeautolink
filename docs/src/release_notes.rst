@@ -8,19 +8,24 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-0.17.0 (unreleased)
+0.17.0 (2025-02-18)
 -------------------
+Added
+*****
+- Add more Pygments lexer aliases in code blocks (:issue:`160`)
 - Introduce :confval:`codeautolink_warn_on_no_backreference` to highlight
   where reference documentation does not appear to have
   a corresponding tutorial or how-to (:issue:`161`)
-- Add more Pygments lexer aliases in code blocks (:issue:`160`)
-- Fix undocumented class attribute leading to a crash (:issue:`165`)
 - Support the ``default`` lexer, literal blocks, ``.. highlight::`` directive
   and ``highlight_language`` configuration (:issue:`166`)
 - Add :confval:`codeautolink_warn_on_default_parse_fail` to warn about
   failing to link code blocks without a language parameter (:issue:`166`)
 - Detect and implicitly use ``pycon`` lexer for blocks that look like
   console code (:issue:`168`)
+
+Fixed
+*****
+- Fix undocumented class attribute leading to a crash (:issue:`165`)
 - Fix skipping blocks with identical content to linked ones (:issue:`172`)
 
 0.16.2 (2025-01-16)
