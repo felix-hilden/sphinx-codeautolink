@@ -224,6 +224,11 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         if skip:
             return
 
+        # Sphinx uses a similar trick to use pycon implicitly (#168)
+        pycon_candidates = ("py", "python", "py3", "python3", "default", "pycon3")
+        if source.startswith(">>>") and language in pycon_candidates:
+            language = "pycon"
+
         transformer = self.transformers[language]
         if transformer:
             try:

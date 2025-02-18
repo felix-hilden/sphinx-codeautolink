@@ -4,7 +4,7 @@ Test project
 
 .. code:: python
 
-   >>> import test_project
-   >>> test_project.bar()
+   In[1]: import test_project
+      ... test_project.bar()
 
 .. automodule:: test_project

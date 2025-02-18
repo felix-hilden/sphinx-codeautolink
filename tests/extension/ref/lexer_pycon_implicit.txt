@@ -1,0 +1,24 @@
+test_project
+test_project.bar
+attr
+test_project.Foo
+test_project.Foo
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   >>> import test_project
+   >>> test_project.bar().attr
+   >>> def foo():
+   ...     test_project.Foo
+   this is an output line
+   test_project.Baz
+   <BLANKLINE>
+   ... test_project.Baz
+   >>> test_project.Foo
+   <BLANKLINE>
+
+.. automodule:: test_project

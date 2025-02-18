@@ -89,6 +89,7 @@ isort.split-on-trailing-comma = false
     "ANN", # annotations
     "S101", # assertions - necessary in tests
     "T201", # print - helpful in tests
+    "PLR2004", # magic number
 ]
 # TODO: support future annotated hints properly
 "tests/extension/src/test_project/__init__.py" = ["FA100"]
