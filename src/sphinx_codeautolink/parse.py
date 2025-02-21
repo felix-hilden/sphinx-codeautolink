@@ -160,8 +160,7 @@ class Access:
     @property
     def code_str(self) -> str:
         """Code representation of components."""
-        break_on = set(NameBreak)
-        breaks = [i for i, c in enumerate(self.components) if c.name in break_on]
+        breaks = [i for i, c in enumerate(self.components) if c.name in NameBreak]
         start_ix = breaks[-1] + 1 if breaks else 0
         return ".".join(c.name for c in self.components[start_ix:])
 
@@ -214,12 +213,8 @@ class Access:
         return [self.to_name(i) for i in items]
 
 
-def track_parents(func):
-    """
-    Track a stack of nodes to determine the position of the current node.
-
-    Uses and increments the surrounding classes :attr:`_parents`.
-    """
+def maybe_resolve_result(func):
+    """Track a stack of nodes to determine the position of the current node."""
 
     @wraps(func)
     def wrapper(self: ImportTrackerVisitor, *args, **kwargs):
@@ -227,7 +222,7 @@ def track_parents(func):
         result = func(self, *args, **kwargs)
         self._parents -= 1
         if not self._parents:
-            self.dispatch_result(result)
+            self._resolve_assign_or_pending_access(result)
         return result
 
     return wrapper
@@ -259,7 +254,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         # Holds references to the values of previous nesting levels.
         self.outer_scopes_stack: list[dict[str, list[Component]]] = []
 
-    def save_access(self, access: Access) -> None:
+    def save_accessed_names(self, access: Access) -> None:
         """Convert Access to Names to store in the visitor for aggregation."""
         names = access.split() if not self._no_split else [Access.to_name(access)]
         self.accessed.extend(names)
@@ -272,7 +267,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self._no_split = old
 
     @contextmanager
-    def reset_parents(self) -> Generator[None, None, None]:
+    def track_independently(self) -> Generator[None, None, None]:
         """Reset parents state for the duration of the context."""
         self._parents, old = (0, self._parents)
         yield
@@ -288,7 +283,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         if isinstance(node, self.track_nodes):
             return super().visit(node)
 
-        with self.reset_parents():
+        with self.track_independently():
             return super().visit(node)
 
     def overwrite_name(self, name: str) -> None:
@@ -307,7 +302,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self.overwrite_name(name)
         self.pseudo_scopes_stack[-1][name] = components
 
-    def create_access(
+    def _create_access(
         self, scope_key: str, new_components: list[Component]
     ) -> Access | None:
         """Create access from scope."""
@@ -316,7 +311,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             return None
 
         access = Access(LinkContext.none, prior, new_components)
-        self.save_access(access)
+        self.save_accessed_names(access)
         return access
 
     def resolve_pending_access(self, pending: PendingAccess) -> Access | None:
@@ -328,14 +323,14 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             self.overwrite_name(components[0].name)
             return None
 
-        access = self.create_access(components[0].name, components)
+        access = self._create_access(components[0].name, components)
         if context == "del":
             self.overwrite_name(components[0].name)
         return access
 
     def resolve_assignment(self, assignment: Assignment) -> Access | None:
         """Resolve access for assignment values and targets."""
-        access = self.dispatch_result(assignment.value)
+        access = self._resolve_assign_or_pending_access(assignment.value)
         self._resolve_assign_targets(assignment, access)
         return access
 
@@ -348,9 +343,9 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             value = access if len(assign.elements) <= 1 else None
 
             for target in assign.elements:
-                self._resolve_assign_target(target, value)
+                self._resolve_single_assign_target(target, value)
 
-    def _resolve_assign_target(
+    def _resolve_single_assign_target(
         self, target: PendingAccess | None, value: Access | None
     ) -> None:
         if target is None:
@@ -362,16 +357,16 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                 self.overwrite_name(comp.name)
             else:
                 self.assign_name(comp.name, value.full_components)
-                self.create_access(comp.name, target.components)
+                self._create_access(comp.name, target.components)
         else:
             self.resolve_pending_access(target)
 
     def create_simple_access(self, name: str, lineno: int) -> None:
         """Create single-component access to scope."""
         component = Component(name, lineno, lineno, "load")
-        self.create_access(component.name, [component])
+        self._create_access(component.name, [component])
 
-    def dispatch_result(
+    def _resolve_assign_or_pending_access(
         self, result: PendingAccess | Assignment | None
     ) -> Access | None:
         """Determine the appropriate processing after tracking an access chain."""
@@ -430,14 +425,14 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         prefix_parts = prefix.rstrip(".").split(".") if prefix else []
         prefix_components = [Component(n, *linenos(node), "load") for n in prefix_parts]
         if prefix:
-            self.save_access(Access(LinkContext.import_from, [], prefix_components))
+            self.save_accessed_names(Access(LinkContext.import_from, [], prefix_components))
 
         for import_name, alias in zip(import_names, aliases, strict=True):
             if not import_star:
                 components = [
                     Component(n, *linenos(node), "load") for n in import_name.split(".")
                 ]
-                self.save_access(
+                self.save_accessed_names(
                     Access(LinkContext.import_target, [], components, prefix_components)
                 )
 
@@ -460,26 +455,26 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         else:
             self.visit_Import(node, prefix=node.module + ".")
 
-    @track_parents
+    @maybe_resolve_result
     def visit_Name(self, node: ast.Name) -> PendingAccess:
-        """Visit a Name node."""
+        """Create the initial pending access chain."""
         return PendingAccess([Component.from_ast(node)])
 
-    @track_parents
+    @maybe_resolve_result
     def visit_Attribute(self, node: ast.Attribute) -> PendingAccess | None:
-        """Visit an Attribute node."""
+        """Add attribute access to an existing access chain."""
         inner: PendingAccess | None = self.visit(node.value)
         if inner is not None:
             inner.components.append(Component.from_ast(node))
         return inner
 
-    @track_parents
+    @maybe_resolve_result
     def visit_Call(self, node: ast.Call) -> PendingAccess | None:
-        """Visit a Call node."""
+        """Add call to an existing access chain and separately visit args."""
         inner: PendingAccess | None = self.visit(node.func)
         if inner is not None:
             inner.components.append(Component.from_ast(node))
-        with self.reset_parents():
+        with self.track_independently():
             for arg in node.args + node.keywords:
                 self.visit(arg)
             if hasattr(node, "starargs"):
@@ -488,7 +483,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                 self.visit(node.kwargs)
         return inner
 
-    @track_parents
+    @maybe_resolve_result
     def visit_Tuple(self, node: ast.Tuple) -> list[PendingAccess] | None:
         """Visit a Tuple node."""
         if isinstance(node.ctx, ast.Store):
@@ -500,12 +495,12 @@ class ImportTrackerVisitor(ast.NodeVisitor):
                 else:
                     accesses.extend(ret)
             return accesses
-        with self.reset_parents():
+        with self.track_independently():
             for element in node.elts:
                 self.visit(element)
         return None
 
-    @track_parents
+    @maybe_resolve_result
     def visit_Assign(self, node: ast.Assign) -> Assignment:
         """Visit an Assign node."""
         value = self.visit(node.value)
@@ -517,7 +512,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             targets.append(AssignTarget(target))
         return Assignment(targets, value)
 
-    @track_parents
+    @maybe_resolve_result
     def visit_AnnAssign(self, node: ast.AnnAssign) -> Assignment:
         """Visit an AnnAssign node."""
         value = self.visit(node.value) if node.value is not None else None
@@ -541,17 +536,17 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self.visit(node.target)
         self.in_augassign = temp
 
-    @track_parents
+    @maybe_resolve_result
     def visit_NamedExpr(self, node: ast.NamedExpr) -> Assignment:
         """Visit a NamedExpr node."""
         value = self.visit(node.value)
         target = self.visit(node.target)
         return Assignment([AssignTarget([target])], value)
 
-    @track_parents
+    @maybe_resolve_result
     def visit_MatchClass(self, node: ast.AST) -> None:
         """Visit a match case class as a series of assignments."""
-        with self.reset_parents():
+        with self.track_independently():
             cls = self.visit(node.cls)
 
         accesses = []
@@ -577,7 +572,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             for assign in assigns:
                 self.resolve_assignment(assign)
 
-    @track_parents
+    @maybe_resolve_result
     def visit_MatchAs(self, node: ast.AST) -> PendingAccess:
         """Track match alias names."""
         return PendingAccess([Component.from_ast(node)])
@@ -645,7 +640,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             inner.visit(n)
         self.accessed.extend(inner.accessed)
 
-    @track_parents
+    @maybe_resolve_result
     def visit_arg(self, arg: ast.arg) -> Assignment:
         """Handle function argument and its annotation."""
         target = PendingAccess([Component.from_ast(arg)])

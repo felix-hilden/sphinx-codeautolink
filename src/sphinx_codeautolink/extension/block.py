@@ -308,6 +308,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 str(error) + f" in document {self.current_document!r}",
                 f"Parsed source in `{language}` block:",
                 source,
+                ""
             ]
         )
 
