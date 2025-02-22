@@ -25,7 +25,11 @@ def refs_equal(func):
         for components, code_str in expected:
             print(f"components={components}, code_str={code_str}")
         print("\nParsed names:")
-        [print(n) for n in names]
+        for n in names:
+            print(
+                f"components={'.'.join(n.import_components)}, code_str={n.code_str},"
+                f"lines=({n.lineno}, {n.end_lineno})"
+            )
         for n, e in zip(names, expected, strict=True):
             s = ".".join(c for c in n.import_components)
             assert s == e[0], f"Wrong import! Expected\n{e}\ngot\n{n}"

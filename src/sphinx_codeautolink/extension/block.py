@@ -196,7 +196,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         """Visit a generic literal block."""
         return self.parse_source(node, node.get("language", self.highlight_lang))
 
-    def parse_source(  # noqa: C901
+    def parse_source(  # noqa: C901,PLR0912
         self, node: nodes.literal_block | nodes.doctest_block, language: str | None
     ) -> None:
         """Analyse Python code blocks."""
@@ -258,6 +258,12 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             msg = self._parsing_error_msg(e, language, show_source)
             logger.warning(msg, type=warn_type, subtype="parse_block", location=node)
             return
+        except Exception as e:
+            show_source = self._format_source_for_error(
+                self.global_preface, self.concat_sources, prefaces, transform.source
+            )
+            msg = self._parsing_error_msg(e, language, show_source)
+            raise type(e)(msg) from e
 
         if prefaces or self.concat_sources or self.global_preface:
             concat_lens = [s.count("\n") + 1 for s in self.concat_sources]
@@ -302,6 +308,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 str(error) + f" in document {self.current_document!r}",
                 f"Parsed source in `{language}` block:",
                 source,
+                "",
             ]
         )
 

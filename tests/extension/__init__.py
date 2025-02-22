@@ -192,6 +192,7 @@ But edited.
 
 
 def test_build_twice_and_delete_one_file(tmp_path: Path):
+    conf = default_conf + "\nsuppress_warnings = ['toc.not_readable']"
     index = """
 Test project
 ------------
@@ -213,7 +214,7 @@ Another
 .. autolink-examples:: test_project.bar
 """
 
-    files = {"conf.py": default_conf, "index.rst": index, "another.rst": another}
+    files = {"conf.py": conf, "index.rst": index, "another.rst": another}
     _sphinx_build(tmp_path, "html", files)
     (tmp_path / "src" / "another.rst").unlink()
     _sphinx_build(tmp_path, "html", {})
@@ -240,7 +241,7 @@ Test project
     def raise_nomsg(*_, **__):
         raise ValueError
 
-    target = "sphinx_codeautolink.extension.CodeBlockAnalyser"
+    target = "sphinx_codeautolink.parse.ImportTrackerVisitor"
     with pytest.raises(RuntimeError), patch(target, raise_msg):
         _sphinx_build(tmp_path, "html", files)
 

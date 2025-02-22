@@ -136,6 +136,12 @@ class TestSimple:
         return s, refs
 
     @refs_equal
+    def test_dotted_import_then_call_attrib(self):
+        s = "import a.b\na.b().c"
+        refs = [("a.b", "a.b"), ("a.b", "a.b"), ("a.b.().c", "c")]
+        return s, refs
+
+    @refs_equal
     def test_relative_import_is_noop(self):
         s = "from .a import b\nb"
         refs = []
