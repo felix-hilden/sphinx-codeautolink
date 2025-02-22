@@ -156,7 +156,7 @@ class Access:
             if c.name not in (NameBreak.import_from, NameBreak.namedexpr)
         ]
 
-        breaks = [i for i, c in enumerate(self.components) if c.name in NameBreak]
+        breaks = [i for i, c in enumerate(self.components) if c.name in list(NameBreak)]
         start_ix = breaks[-1] + 1 if breaks else 0
         code_str = ".".join(c.name for c in self.components[start_ix:])
 
