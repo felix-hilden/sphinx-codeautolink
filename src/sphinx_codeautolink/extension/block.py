@@ -196,7 +196,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         """Visit a generic literal block."""
         return self.parse_source(node, node.get("language", self.highlight_lang))
 
-    def parse_source(  # noqa: C901
+    def parse_source(  # noqa: C901,PLR0912
         self, node: nodes.literal_block | nodes.doctest_block, language: str | None
     ) -> None:
         """Analyse Python code blocks."""
@@ -308,7 +308,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 str(error) + f" in document {self.current_document!r}",
                 f"Parsed source in `{language}` block:",
                 source,
-                ""
+                "",
             ]
         )
 

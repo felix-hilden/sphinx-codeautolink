@@ -195,6 +195,18 @@ class TestAssign:
         return s, refs
 
     @refs_equal
+    def test_walrus_expr_used_in_attribute(self):
+        s = "import a\n(b := a).c"
+        refs = [("a", "a"), ("a", "a"), ("a", "b"), ("a.c", "c")]
+        return s, refs
+
+    @refs_equal
+    def test_walrus_expr_used_in_call(self):
+        s = "import a\n(b := a)().c"
+        refs = [("a", "a"), ("a", "a"), ("a", "b"), ("a.().c", "c")]
+        return s, refs
+
+    @refs_equal
     def test_dotted_import_overwrites_all_components(self):
         s = "class a:\n  b = 1\nimport a.b\na.b"
         refs = [("a.b", "a.b"), ("a.b", "a.b")]
@@ -213,6 +225,12 @@ class TestFollowAssignment:
     def test_follow_simple_assign(self):
         s = "import a\nb = a\nb"
         refs = [("a", "a"), ("a", "a"), ("a", "b"), ("a", "b")]
+        return s, refs
+
+    @refs_equal
+    def test_follow_double_assign(self):
+        s = "import a\nb = a\nc = b\nc"
+        refs = [("a", "a"), ("a", "a"), ("a", "b"), ("a", "b"), ("a", "c"), ("a", "c")]
         return s, refs
 
     @refs_equal

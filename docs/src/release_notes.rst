@@ -8,6 +8,11 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Fix attribute and call after walrus leading parser error (:issue:`174`)
+- Improve error message on uncaught parsing errors (:issue:`177`)
+
 0.17.0 (2025-02-18)
 -------------------
 Added
