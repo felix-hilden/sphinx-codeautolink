@@ -7,6 +7,7 @@ from docutils import nodes
 from sphinx_codeautolink.warn import logger, warn_type
 
 from .directive import DeferredExamples
+from .translation import tr
 
 
 @dataclass
@@ -112,7 +113,7 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
             entry = nodes.entry()
             row += entry
             title = nodes.paragraph()
-            title += nodes.Text("References to ")
+            title += nodes.Text(tr("References to") + " ")
             title += orig_ref
             entry += title
 
@@ -132,7 +133,7 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
         if node.collapse:
             details = DetailsNode()
             summary = SummaryNode()
-            summary += nodes.Text("Expand for references to ")
+            summary += nodes.Text(tr("Expand for references to") + " ")
             summary += orig_ref
             details += summary
             details += table

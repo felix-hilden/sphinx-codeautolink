@@ -85,6 +85,18 @@ upload manually to `TestPyPI <https://test.pypi.org>`_ instead.
     $ twine upload --repository testpypi dist/*
     $ pip install --index-url https://test.pypi.org/simple/ sphinx-codeautolink
 
+Translations
+------------
+You are also welcome to contribute translations!
+Use the following Babel commands to add new translations and locales.
+
+.. code:: sh
+
+    $ cd src/sphinx_codeautolink
+    $ pybabel init --input-file=locale/sphinx-codeautolink.pot --domain=sphinx-codeautolink --output-dir=locale --locale=fi_FI
+    $ pybabel update --input-file=locale/sphinx-codeautolink.pot --domain=sphinx-codeautolink --output-dir=locale
+    $ pybabel compile --directory=locale --domain=sphinx-codeautolink
+
 .. |issue_resolution| image:: http://isitmaintained.com/badge/resolution/felix-hilden/sphinx-codeautolink.svg
    :target: https://isitmaintained.com/project/felix-hilden/sphinx-codeautolink
    :alt: issue resolution time

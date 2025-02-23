@@ -1,9 +1,12 @@
 """Sphinx extension for linking code examples to reference documentation."""
 
+from pathlib import Path
+
 from sphinx.application import Sphinx
 
 from .extension import SphinxCodeAutoLink, backref, directive
 from .extension.block import clean_ipython, clean_pycon
+from .extension.translation import MESSAGE_CATALOG_NAME
 
 __version__ = "0.17.0"
 
@@ -76,4 +79,8 @@ def setup(app: Sphinx):
     app.add_node(
         backref.SummaryNode, html=(backref.visit_summary, backref.depart_summary)
     )
+
+    locale_dir = Path(__file__).resolve().parent / "locale"
+    app.add_message_catalog(MESSAGE_CATALOG_NAME, locale_dir)
+
     return {"version": __version__, "env_version": 1, "parallel_read_safe": True}
