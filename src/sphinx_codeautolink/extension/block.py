@@ -50,7 +50,7 @@ def clean_pycon(source: str) -> tuple[str, str]:
         if line.startswith(">>> "):
             in_statement = True
             clean_lines.append(line[4:])
-        elif in_statement and line.startswith("... "):
+        elif in_statement and line.startswith("..."):
             clean_lines.append(line[4:])
         else:
             in_statement = False

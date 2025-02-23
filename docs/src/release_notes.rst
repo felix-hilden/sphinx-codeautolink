@@ -11,6 +11,7 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Fix attribute and call after walrus leading parser error (:issue:`174`)
+- Fix parsing error in doctest blocks with empty lines (:issue:`176`)
 - Improve error message on uncaught parsing errors (:issue:`177`)
 
 0.17.0 (2025-02-18)

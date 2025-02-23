@@ -1,0 +1,15 @@
+# split
+# split
+Test project
+============
+
+>>> ast.dump(ast.parse("""\
+... for a in b:
+...     if a > 5:
+...         break
+...     else:
+...         continue
+...
+... """), indent=4)
+
+.. automodule:: test_project
