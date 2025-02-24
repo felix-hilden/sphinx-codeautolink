@@ -1,0 +1,8 @@
+# split
+Test project
+============
+
+.. autolink-preface:: import lib
+   :level: whatevs
+
+.. automodule:: test_project

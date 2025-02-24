@@ -1,4 +1,6 @@
-codeautolink_global_preface = "import test_project"
+test_project.Foo
+test_project.bar
+# split
 # split
 Test project
 ============
@@ -6,14 +8,19 @@ Test project
 .. autolink-preface:: import test_project
    :level: file
 
-.. autolink-concat::
+.. code:: python
+
+   test_project.Foo()
+
 .. code:: python
 
    test_project.bar()
 
-.. autolink-preface:: test_project.Foo()
+.. autolink-preface::
+   :level: file
+
 .. code:: python
 
-   this is not python though
+   test_project.baz()
 
 .. automodule:: test_project

@@ -123,12 +123,13 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         relative_path = Path(self.document["source"]).relative_to(source_dir)
         self.current_document = str(relative_path.with_suffix(""))
         self.global_preface = global_preface
+        self.file_preface = []
+        self.prefaces = []
         self.transformers = BUILTIN_BLOCKS.copy()
         self.transformers.update(custom_blocks)
         self.valid_blocks = self.transformers.keys()
         self.title_stack = []
         self.current_refid = None
-        self.prefaces = []
         self.concat_global = concat_default
         self.concat_section = False
         self.concat_sources = []
@@ -153,7 +154,16 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
                 self.concat_global = node.mode == "on"
             node.parent.remove(node)
         elif isinstance(node, PrefaceMarker):
-            self.prefaces.extend(node.content.split("\n"))
+            lines = node.content.split("\n") or []
+            if node.level == "next":
+                self.prefaces.extend(lines)
+            elif node.level == "file":
+                self.file_preface = lines
+            else:
+                msg = f"Invalid preface argument: `{node.level}`"
+                logger.error(
+                    msg, type=warn_type, subtype="invalid_argument", location=node
+                )
             node.parent.remove(node)
         elif isinstance(node, SkipMarker):
             if node.level not in ("next", "section", "file", "off"):
@@ -243,31 +253,45 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
             clean_source = source
         transform.source = source
 
-        modified_source = "\n".join(
-            self.global_preface + self.concat_sources + prefaces + [clean_source]
+        full_source = "\n".join(
+            self.global_preface
+            + self.file_preface
+            + self.concat_sources
+            + prefaces
+            + [clean_source]
         )
         try:
-            names = parse_names(modified_source, node)
+            names = parse_names(full_source, node)
         except SyntaxError as e:
             if language == "default" and not self.warn_default_parse_fail:
                 return
 
             show_source = self._format_source_for_error(
-                self.global_preface, self.concat_sources, prefaces, transform.source
+                self.global_preface,
+                self.file_preface,
+                self.concat_sources,
+                prefaces,
+                transform.source,
             )
             msg = self._parsing_error_msg(e, language, show_source)
             logger.warning(msg, type=warn_type, subtype="parse_block", location=node)
             return
         except Exception as e:
             show_source = self._format_source_for_error(
-                self.global_preface, self.concat_sources, prefaces, transform.source
+                self.global_preface,
+                self.file_preface,
+                self.concat_sources,
+                prefaces,
+                transform.source,
             )
             msg = self._parsing_error_msg(e, language, show_source)
             raise type(e)(msg) from e
 
-        if prefaces or self.concat_sources or self.global_preface:
+        if prefaces or self.concat_sources or self.global_preface or self.file_preface:
             concat_lens = [s.count("\n") + 1 for s in self.concat_sources]
-            hidden_len = len(prefaces) + sum(concat_lens) + len(self.global_preface)
+            hidden_len = len(prefaces + self.global_preface + self.file_preface) + sum(
+                concat_lens
+            )
             for name in names:
                 name.lineno -= hidden_len
                 name.end_lineno -= hidden_len
@@ -281,16 +305,26 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
     @staticmethod
     def _format_source_for_error(
         global_preface: list[str],
+        file_preface: list[str],
         concat_sources: list[str],
         prefaces: list[str],
         source: str,
     ) -> str:
-        lines = global_preface + concat_sources + prefaces + source.split("\n")
+        lines = (
+            global_preface
+            + file_preface
+            + concat_sources
+            + prefaces
+            + source.split("\n")
+        )
         guides = [""] * len(lines)
         ix = 0
         if global_preface:
-            guides[0] = "global preface:"
+            guides[ix] = "global preface:"
             ix += len(global_preface)
+        if file_preface:
+            guides[ix] = "file preface:"
+            ix += len(concat_sources)
         if concat_sources:
             guides[ix] = "concatenations:"
             ix += len(concat_sources)

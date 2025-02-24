@@ -14,12 +14,12 @@ Configuration
 -------------
 .. confval:: codeautolink_autodoc_inject
 
-   Type: ``bool``. Inject a :rst:dir:`autolink-examples` table
+   Type: ``bool``. Inject an :rst:dir:`autolink-examples` table
    to the end of all autodoc definitions. Defaults to :code:`False`.
 
 .. confval:: codeautolink_global_preface
 
-   Type: ``str``. Include a :rst:dir:`autolink-preface` before all blocks.
+   Type: ``str``. Include an :rst:dir:`autolink-preface` before all blocks.
    When other prefaces or concatenated sources are used in a block,
    the global preface is included first and only once.
 
@@ -117,11 +117,25 @@ Directives
 
 .. rst:directive:: .. autolink-preface:: [code]
 
-   Include a hidden preface in the next code block.
-   The next block consumes this directive even if it is not
-   processed (e.g. non-Python blocks) to avoid placement confusion.
+   Include a hidden preface before a code block.
    A multiline preface can be written in the content portion of the directive.
-   Prefaces are included in block concatenation.
+   Prefaces are preserved in block concatenation, and are added to the source
+   in the following order: :confval:`codeautolink_global_preface` > file preface
+   > :rst:dir:`autolink-concat` sources (with their block prefaces)
+   > block prefaces > block source.
+
+   .. rubric:: Options
+
+   .. rst:directive:option:: level
+      :type: preface level
+
+      - "next" - add preface only to the next block (default).
+        Multiple prefaces are combined, and the next block consumes this
+        directive even if it's not processed (e.g. non-Python blocks)
+        to avoid placement confusion.
+      - "file" - set a preface for all blocks in the current file, placed
+        after  but before block-level
+        prefaces.
 
 .. rst:directive:: .. autolink-skip:: [level]
 

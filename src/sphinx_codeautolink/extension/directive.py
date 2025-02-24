@@ -77,9 +77,10 @@ class Concat(Directive):
 class PrefaceMarker(nodes.Element):
     """Marker for :class:`Preface`."""
 
-    def __init__(self, content: str) -> None:
+    def __init__(self, content: str, level: str) -> None:
         super().__init__()
         self.content = content
+        self.level = level
 
     def copy(self):
         """Copy element."""
@@ -93,11 +94,13 @@ class Preface(Directive):
     required_arguments = 0
     optional_arguments = 1
     final_argument_whitespace = True
+    option_spec: ClassVar = {"level": directives.unchanged}
 
     def run(self):
         """Insert :class:`PrefaceMarker`."""
         lines = list(self.arguments) + list(self.content)
-        return [PrefaceMarker("\n".join(lines))]
+        level = self.options.get("level", "next")
+        return [PrefaceMarker("\n".join(lines), level)]
 
 
 class SkipMarker(nodes.Element):
