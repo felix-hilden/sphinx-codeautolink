@@ -1,4 +1,4 @@
-# Finnish (Finland) translations for sphinx-codeautolink.
+# Spanish translations for sphinx-codeautolink.
 # Copyright (C) 2025 ORGANIZATION
 # This file is distributed under the same license as the sphinx-codeautolink project.
 # Felix Hildén <felix.hilden@gmail.com>, 2025.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: 1\n"
 "Report-Msgid-Bugs-To: felix.hilden@gmail.com\n"
 "POT-Creation-Date: 2025-02-23 17:30+0200\n"
-"PO-Revision-Date: 2025-02-23 17:32+0200\n"
+"PO-Revision-Date: 2025-02-23 18:05+0200\n"
 "Last-Translator: Felix Hildén <felix.hilden@gmail.com>\n"
-"Language: fi_FI\n"
+"Language: es\n"
 "Language-Team: Felix Hildén <felix.hilden@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 
 msgid "References to"
-msgstr "Viitteet kohteeseen"
+msgstr "Referencias a"
 
 msgid "Expand for references to"
-msgstr "Avaa nähdäksesi viitteet kohteeseen"
+msgstr "Amplíe para referencias a"
