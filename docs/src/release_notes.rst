@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.17.1 (2025-02-24)
+-------------------
 - Add translations via i18n (:issue:`164`)
 - Fix attribute and call after walrus leading parser error (:issue:`174`)
 - Fix parsing error in doctest blocks with empty lines (:issue:`176`)
