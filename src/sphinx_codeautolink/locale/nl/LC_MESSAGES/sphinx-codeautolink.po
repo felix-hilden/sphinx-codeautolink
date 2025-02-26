@@ -1,0 +1,27 @@
+# Dutch (Netherlands) translations for sphinx-codeautolink.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the sphinx-codeautolink
+# project.
+# Trevor James Smith <smith.trevorj@ouranos.ca>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version:  1\n"
+"Report-Msgid-Bugs-To: smith.trevorj@ouranos.ca\n"
+"POT-Creation-Date: 2025-02-23 17:30+0200\n"
+"PO-Revision-Date: 2025-02-26 09:04-0500\n"
+"Last-Translator: Trevor James Smith <smith.trevorj@ouranos.ca>\n"
+"Language: nl\n"
+"Language-Team: Trevor James Smith <smith.trevorj@ouranos.ca>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+msgid "References to"
+msgstr "Referenties naar"
+
+msgid "Expand for references to"
+msgstr "Uitklappen voor referenties naar"
+
