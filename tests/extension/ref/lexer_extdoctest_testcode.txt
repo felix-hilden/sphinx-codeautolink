@@ -5,7 +5,6 @@ test_project.Foo
 test_project.Foo
 # split
 extensions.append("sphinx.ext.doctest")
-codeautolink_custom_blocks = {"python3": None}
 # split
 Test project
 ============

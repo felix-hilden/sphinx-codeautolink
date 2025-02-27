@@ -215,21 +215,13 @@ Please specify a ``type`` in :rst:dir:`autolink-examples`:
 
 Doctest code blocks
 -------------------
-Using the ``sphinx.ext.doctest`` extension for code examples requires
-setting up :confval:`codeautolink_custom_blocks`.
-To help in that, :func:`clean_pycon <sphinx_codeautolink.clean_pycon>`
-is provided as a ready-made transformer.
-
-.. code:: python
+Using the ``sphinx.ext.doctest`` extension for code examples only requires
+activating the extension::
 
    extensions = [
        ...,
        "sphinx.ext.doctest",
    ]
-   codeautolink_custom_blocks = {
-       "python3": None,
-       "pycon3": "sphinx_codeautolink.clean_pycon",
-   }
 
 ``doctest`` and ``testcode`` blocks now work as expected.
 However, any test setup and teardown code is not taken into account.
