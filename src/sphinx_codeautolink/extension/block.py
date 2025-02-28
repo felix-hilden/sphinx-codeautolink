@@ -125,6 +125,7 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         self.global_preface = global_preface
         self.file_preface = []
         self.prefaces = []
+        self.doctest_preface: dict[str, list[str]] = {}
         self.transformers = BUILTIN_BLOCKS.copy()
         self.transformers.update(custom_blocks)
         self.valid_blocks = self.transformers.keys()
@@ -198,9 +199,20 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         """Pop latest title."""
         self.title_stack.pop()
 
-    def visit_doctest_block(self, node):
+    def visit_doctest_block(self, node: nodes.doctest_block):
         """Visit a Python doctest block."""
         return self.parse_source(node, "pycon")
+
+    def visit_comment(self, node: nodes.comment):
+        """Visit an ext.doctest setup block."""
+        if node.get("testnodetype") == "testsetup":
+            groups = node["groups"]
+            lines = [ln for c in node.children for ln in c.astext().split("\n")]
+            for g in groups:
+                if g == "*":
+                    self.doctest_preface = {"*": lines}
+                else:
+                    self.doctest_preface[g] = lines
 
     def visit_literal_block(self, node: nodes.literal_block):
         """Visit a generic literal block."""
@@ -212,6 +224,15 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         """Analyse Python code blocks."""
         prefaces = self.prefaces
         self.prefaces = []
+
+        if node.get("testnodetype") == "doctest":
+            groups = node["groups"]
+            doctest_prefaces = [
+                ln
+                for g in groups
+                for ln in self.doctest_preface.get(g, self.doctest_preface.get("*", []))
+            ]
+            prefaces = doctest_prefaces + prefaces
 
         skip = self.skip
         if skip == "next":

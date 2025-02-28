@@ -66,7 +66,7 @@ def setup(app: Sphinx):
 
     app.connect("builder-inited", state.build_inited)
     app.connect("autodoc-process-docstring", state.autodoc_process_docstring)
-    app.connect("doctree-read", state.parse_blocks)
+    app.connect("doctree-read", state.parse_blocks, priority=490)
     app.connect("env-merge-info", state.merge_environments)
     app.connect("env-purge-doc", state.purge_doc_from_environment)
     app.connect("env-updated", state.create_references)

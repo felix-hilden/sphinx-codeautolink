@@ -79,6 +79,12 @@ Locally defined custom block parsers in :confval:`codeautolink_custom_blocks`
 cannot be passed to Pickle, which prevents parallel Sphinx builds.
 Please consider using an importable function instead.
 
+Priority
+********
+The extension parses code blocks in the ``doctree-read`` Sphinx event.
+The priority is set to 490 to catch nodes removed by ``sphinx.ext.doctest``
+(priority 500). In other cases the priority of the extension is default.
+
 Copying code blocks
 -------------------
 If you feel like code links make copying code a bit more difficult,

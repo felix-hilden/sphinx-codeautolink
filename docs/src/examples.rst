@@ -224,7 +224,9 @@ activating the extension::
    ]
 
 ``doctest`` and ``testcode`` blocks now work as expected.
-However, any test setup and teardown code is not taken into account.
+Code in :rst:dir:`testsetup` is considered to be the first block
+:rst:dir:`autolink-preface` before each matching test group.
+However, `skipif` is not supported.
 
 .. doctest::
 

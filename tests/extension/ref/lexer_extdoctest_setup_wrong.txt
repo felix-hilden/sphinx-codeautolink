@@ -1,0 +1,15 @@
+# split
+extensions.append("sphinx.ext.doctest")
+# split
+Test project
+============
+
+.. testsetup:: specificgroup
+
+    import test_project
+
+.. doctest::
+
+    >>> test_project.bar()
+
+.. automodule:: test_project
