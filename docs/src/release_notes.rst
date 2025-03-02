@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.17.2 (2025-03-02)
+-------------------
 - Support :rst:dir:`testsetup` from ``sphinx.ext.doctest`` as another
   type of preface (:issue:`186`)
 
