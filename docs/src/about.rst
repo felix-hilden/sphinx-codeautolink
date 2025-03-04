@@ -16,7 +16,7 @@ is injected after the ordinary Sphinx build is finished.
 
 Caveats
 -------
-- **Only works with HTML documentation**, disabled otherwise. If the extension
+- **Only works with HTML or DIRHTML documentation**, disabled otherwise. If the extension
   is off, it silently removes directives that would produce output.
 - **Only processes blocks, not inline code**. Sphinx has great tools
   for linking definitions inline, and longer code should be in a block anyway.

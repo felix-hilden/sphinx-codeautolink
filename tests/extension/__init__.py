@@ -289,7 +289,7 @@ Test project
             assert_links(result_dir / file / "index.html", links)
         else:
             assert_links(result_dir / (file + ".html"), links)
-            
+
     assert check_link_targets(result_dir) == n_subfiles * len(links)
 
 

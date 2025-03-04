@@ -68,7 +68,7 @@ Caveats
 -------
 For a more thorough explanation, see :ref:`about`.
 
-- Only works with HTML documentation
+- Only works with HTML or DIRHTML documentation
 - Only processes blocks, not inline code
 - Doesn't run example code
 - Parsing and type hint resolving is incomplete

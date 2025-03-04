@@ -27,10 +27,10 @@ def check_link_targets(root: Path) -> int:
                     external_site_ids[base] = gather_ids(sub_soup)
                 ids = external_site_ids[base]
             else:
-                if base == '':
+                if base == "":
                     base = str(doc)
                 elif base == "../":
-                    base = str(doc.parent.parent / 'index.html')
+                    base = str(doc.parent.parent / "index.html")
                 ids = site_ids[Path(base)]
             assert id_ in ids, (
                 f"ID {id_} not found in {base}"
