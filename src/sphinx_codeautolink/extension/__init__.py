@@ -89,7 +89,7 @@ class SphinxCodeAutoLink:
     @print_exceptions()
     def build_inited(self, app) -> None:
         """Handle initial setup."""
-        if app.builder.name != "html":
+        if app.builder.name not in ("html", "dirhtml"):
             self.do_nothing = True
             return
 
@@ -289,6 +289,7 @@ class SphinxCodeAutoLink:
                 self.inventory,
                 self.custom_blocks,
                 self.search_css_classes,
+                builder_name=app.builder.name,
             )
 
         self.cache.write()
