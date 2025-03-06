@@ -8,7 +8,7 @@ from .extension import SphinxCodeAutoLink, backref, directive
 from .extension.block import clean_ipython, clean_pycon
 from .extension.translation import MESSAGE_CATALOG_NAME
 
-__version__ = "0.17.2"
+__version__ = "0.17.3"
 
 
 def setup(app: Sphinx):
