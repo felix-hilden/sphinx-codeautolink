@@ -63,7 +63,7 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
         self,
         *args,
         code_refs: dict[str, list[CodeExample]],
-        builder : str,
+        builder: str,
         warn_no_backreference: bool = False,
         **kwargs,
     ) -> None:
