@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Fix backreference links using relative URIs (:issue:`190`)
+
 0.17.3 (2025-03-06)
 -------------------
 - Fix Sphinx InventoryItem deprecation warning (:issue:`173`)
