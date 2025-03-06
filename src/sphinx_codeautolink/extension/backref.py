@@ -1,9 +1,9 @@
 """Backreference tables implementation."""
 
 from dataclasses import dataclass
-from pathlib import Path
 
 from docutils import nodes
+from sphinx.builders import Builder
 
 from sphinx_codeautolink.warn import logger, warn_type
 
@@ -63,12 +63,14 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
         self,
         *args,
         code_refs: dict[str, list[CodeExample]],
-        builder: str,
+        docname: str,
+        builder: Builder,
         warn_no_backreference: bool = False,
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
         self.code_refs = code_refs
+        self.docname = docname
         self.builder = builder
         self.warn_no_backreference = warn_no_backreference
 
@@ -82,10 +84,7 @@ class CodeRefsVisitor(nodes.SparseNodeVisitor):
 
         items = []
         for ref in self.code_refs.get(node.ref, []):
-            if self.builder == "dirhtml" and Path(ref.document).name != "index":
-                link = ref.document + "/index.html"
-            else:
-                link = ref.document + ".html"
+            link = self.builder.get_relative_uri(self.docname, ref.document)
             if ref.ref_id is not None:
                 link += f"#{ref.ref_id}"
             items.append((link, " / ".join(ref.headings)))
