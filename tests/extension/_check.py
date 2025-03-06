@@ -43,6 +43,7 @@ def check_link_targets(root: Path) -> int:
             total += 1
     return total
 
+
 def check_reference_targets_exist(root: Path):
     site_docs = {
         p: BeautifulSoup(p.read_text("utf-8"), "html.parser")
@@ -60,6 +61,7 @@ def check_reference_targets_exist(root: Path):
                 f"Target path {target_path!s} not found while validating"
                 f" link for `{link.string}` in {doc.relative_to(root)!s}!"
             )
+
 
 def gather_ids(soup: BeautifulSoup) -> set:
     """Gather all HTML IDs from a given page."""
