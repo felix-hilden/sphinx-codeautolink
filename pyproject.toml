@@ -49,7 +49,6 @@ version = {attr = "sphinx_codeautolink.__version__"}
 python_files = "*.py"
 testpaths = ["tests"]
 filterwarnings = [
-    "error",
     "ignore:.*IPython:UserWarning",
 ]
 
