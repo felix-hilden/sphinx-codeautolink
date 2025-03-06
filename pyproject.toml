@@ -48,6 +48,9 @@ version = {attr = "sphinx_codeautolink.__version__"}
 [tool.pytest.ini_options]
 python_files = "*.py"
 testpaths = ["tests"]
+filterwarnings = [
+    "ignore:.*IPython:UserWarning",
+]
 
 [tool.coverage.run]
 source = ["src"]

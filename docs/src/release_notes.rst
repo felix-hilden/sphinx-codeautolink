@@ -10,6 +10,7 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+- Fix Sphinx InventoryItem deprecation warning (:issue:`173`)
 - Add support for the DIRHTML Sphinx builder (:issue:`188`)
 
 0.17.2 (2025-03-02)

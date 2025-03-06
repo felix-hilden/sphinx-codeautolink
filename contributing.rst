@@ -37,6 +37,16 @@ For tips and tricks on contributing, see `how to submit a contribution
 specifically `opening a pull request
 <https://opensource.guide/how-to-contribute/#opening-a-pull-request>`_.
 
+If you want to contribute to someone else's fork and find yourself forgetting
+how to do it every time, here's the runbook:
+
+.. code:: sh
+
+   git remote add [name] git@github.com:[name]/sphinx-codeautolink.git
+   git fetch [name]
+   git switch -c branch [name]/branch
+   git remote rm [name]
+
 Testing
 -------
 The installation can be verified, and any changes tested by running tox.

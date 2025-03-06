@@ -7,6 +7,7 @@ from functools import wraps
 from pathlib import Path
 from traceback import print_exc
 
+from sphinx import version_info as sphinx_version
 from sphinx.ext.intersphinx import InventoryAdapter
 from sphinx.util import import_object
 
@@ -177,7 +178,9 @@ class SphinxCodeAutoLink:
         }
         inter_inv = InventoryAdapter(app.env).main_inventory
         transposed = transpose_inventory(inter_inv, relative_to=app.outdir)
-        transposed.update(transpose_inventory(inventory, relative_to=app.outdir))
+        transposed.update(
+            transpose_inventory(inventory, relative_to=app.outdir, use_tuple=True)
+        )
         return transposed
 
     @print_exceptions()
@@ -296,7 +299,9 @@ class SphinxCodeAutoLink:
         self.cache.write()
 
 
-def transpose_inventory(inv: dict, relative_to: str) -> dict[str, str]:
+def transpose_inventory(
+    inv: dict, relative_to: str, *, use_tuple: bool = False
+) -> dict[str, str]:
     """
     Transpose Sphinx inventory from {type: {name: (..., location)}} to {name: location}.
 
@@ -308,13 +313,18 @@ def transpose_inventory(inv: dict, relative_to: str) -> dict[str, str]:
         Sphinx inventory
     relative_to
         if a local file is found, transform it to be relative to this dir
+    use_tuple
+        force using Sphinx inventory tuple interface,
+        TODO: move to class interface if it becomes public (#173)
     """
     transposed = {}
     for type_, items in inv.items():
         if not type_.startswith("py:"):
             continue
         for item, info in items.items():
-            location = info[2]
+            location = (
+                info.uri if not use_tuple and sphinx_version >= (8, 2) else info[2]
+            )
             if not location.startswith("http"):
                 location = str(Path(location).relative_to(relative_to))
             transposed[item] = location
