@@ -12,7 +12,7 @@ external_site_ids = {}
 def check_link_targets(root: Path) -> int:
     """Validate links in HTML site at root, return number of links found."""
     site_docs = {
-        p.relative_to(root): BeautifulSoup(p.read_text("utf-8"), "html.parser")
+        p: BeautifulSoup(p.read_text("utf-8"), "html.parser")
         for p in root.glob("**/*.html")
     }
     site_ids = {k: gather_ids(v) for k, v in site_docs.items()}
@@ -27,10 +27,18 @@ def check_link_targets(root: Path) -> int:
                     external_site_ids[base] = gather_ids(sub_soup)
                 ids = external_site_ids[base]
             else:
-                ids = site_ids[Path(base)]
+                target_path = (doc.parent / base).resolve()
+                if target_path.is_dir():
+                    target_path /= "index.html"
+                assert target_path.exists(), (
+                    f"Target path {target_path!s} not found while validating"
+                    f" link for `{link.string}` in {doc.relative_to(root)!s}!"
+                )
+                ids = site_ids[target_path]
+
             assert id_ in ids, (
-                f"ID {id_} not found in {base}"
-                f" while validating link for `{link.string}` in {doc!s}!"
+                f"ID {id_} not found in {base} while validating link"
+                f" for `{link.string}` in {doc.relative_to(root)!s}!"
             )
             total += 1
     return total

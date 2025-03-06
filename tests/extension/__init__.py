@@ -278,6 +278,7 @@ Test project
 
     for file in subfiles:
         assert_links(result_dir / (file + ".html"), links)
+
     assert check_link_targets(result_dir) == n_subfiles * len(links)
 
 
@@ -312,6 +313,60 @@ Test project
     assert "sphinx-codeautolink-a" in str(blocks[1])
 
 
+def test_dirhtml_builder(tmp_path: Path):
+    index = """
+Test project
+============
+
+.. toctree::
+   :maxdepth: 2
+
+   page1/index
+   page2
+   subdir/page3
+
+Index Page Code
+---------------
+
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. automodule:: test_project
+"""
+
+    page = """
+Page {idx}
+===========
+
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. autolink-examples:: test_project.bar
+"""
+
+    files = {
+        "conf.py": default_conf,
+        "index.rst": index,
+        "page1/index.rst": page.format(idx=1),
+        "page2.rst": page.format(idx=2),
+        "subdir/page3.rst": page.format(idx=3),
+    }
+    links = ["test_project", "test_project.bar"]
+
+    result_dir = _sphinx_build(tmp_path, "dirhtml", files)
+
+    assert_links(result_dir / "index.html", links)
+    assert_links(result_dir / "page1/index.html", links)
+    assert_links(result_dir / "page2/index.html", links)
+    assert_links(result_dir / "subdir/page3/index.html", links)
+
+    assert check_link_targets(result_dir) == len(links) * 4
+
+
 def _sphinx_build(
     folder: Path, builder: str, files: dict[str, str], n_processes: int | None = None
 ) -> Path:
@@ -319,7 +374,9 @@ def _sphinx_build(
     src_dir = folder / "src"
     src_dir.mkdir(exist_ok=True)
     for name, content in files.items():
-        (src_dir / name).write_text(content, "utf-8")
+        path = src_dir / name
+        path.parent.mkdir(exist_ok=True, parents=True)
+        path.write_text(content, "utf-8")
 
     build_dir = folder / "build"
     args = ["-M", builder, str(src_dir), str(build_dir), "-W"]

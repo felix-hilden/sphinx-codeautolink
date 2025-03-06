@@ -375,9 +375,14 @@ def link_html(
     inventory: dict,
     custom_blocks: dict,
     search_css_classes: list,
+    builder_name: str = "html",
 ) -> None:
     """Inject links to code blocks on disk."""
-    html_file = Path(out_dir) / (document + ".html")
+    if builder_name == "dirhtml" and Path(document).name != "index":
+        html_file = Path(out_dir) / document / "index.html"
+    else:
+        html_file = Path(out_dir) / (document + ".html")
+
     text = html_file.read_text("utf-8")
     soup = BeautifulSoup(text, "html.parser")
 
