@@ -268,6 +268,7 @@ class SphinxCodeAutoLink:
         visitor = CodeRefsVisitor(
             doctree,
             code_refs=self.code_refs,
+            builder=app.builder.name,
             warn_no_backreference=self.warn_no_backreference,
         )
         doctree.walk(visitor)
