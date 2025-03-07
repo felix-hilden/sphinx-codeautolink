@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.17.4 (2025-03-07)
+-------------------
 - Fix backreference links using relative URIs (:issue:`190`)
 
 0.17.3 (2025-03-06)
