@@ -9,7 +9,7 @@ import pytest
 from bs4 import BeautifulSoup
 from sphinx.cmd.build import main as sphinx_main
 
-from ._check import check_link_targets
+from ._check import check_link_targets, check_reference_targets_exist
 
 # Insert test package root to path for all tests
 sys.path.insert(0, str(Path(__file__).parent / "src"))
@@ -365,6 +365,58 @@ Page {idx}
     assert_links(result_dir / "subdir/page3/index.html", links)
 
     assert check_link_targets(result_dir) == len(links) * 4
+    check_reference_targets_exist(result_dir)
+
+
+def test_html_subdir_reference(tmp_path: Path):
+    index = """
+Test project
+============
+
+.. toctree::
+
+   subdir/page1
+   subdir/subdir2/page2
+
+Index Page
+----------
+
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. automodule:: test_project
+"""
+
+    page = """
+Page {idx}
+===========
+
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. autolink-examples:: test_project.bar
+"""
+
+    files = {
+        "conf.py": default_conf,
+        "index.rst": index,
+        "subdir/page1.rst": page.format(idx=1),
+        "subdir/subdir2/page2.rst": page.format(idx=2),
+    }
+    links = ["test_project", "test_project.bar"]
+
+    result_dir = _sphinx_build(tmp_path, "html", files)
+
+    assert_links(result_dir / "index.html", links)
+    assert_links(result_dir / "subdir/page1.html", links)
+    assert_links(result_dir / "subdir/subdir2/page2.html", links)
+
+    assert check_link_targets(result_dir) == len(links) * 3
+    check_reference_targets_exist(result_dir)
 
 
 def _sphinx_build(

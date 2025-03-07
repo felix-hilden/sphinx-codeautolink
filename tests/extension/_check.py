@@ -44,6 +44,25 @@ def check_link_targets(root: Path) -> int:
     return total
 
 
+def check_reference_targets_exist(root: Path):
+    site_docs = {
+        p: BeautifulSoup(p.read_text("utf-8"), "html.parser")
+        for p in root.glob("**/*.html")
+    }
+    for doc, soup in site_docs.items():
+        for link in soup.find_all("a", attrs={"class": "reference internal"}):
+            base = link["href"].split("#")[0]
+            if any(base.startswith(s) for s in ("http://", "https://")):
+                continue
+            target_path = doc if base == "" else (doc.parent / base).resolve()
+            if target_path.is_dir():
+                target_path /= "index.html"
+            assert target_path.exists(), (
+                f"Target path {target_path!s} not found while validating"
+                f" link for `{link.string}` in {doc.relative_to(root)!s}!"
+            )
+
+
 def gather_ids(soup: BeautifulSoup) -> set:
     """Gather all HTML IDs from a given page."""
     return {tag["id"] for tag in soup.find_all(id=True)}
