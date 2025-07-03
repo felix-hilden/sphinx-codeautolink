@@ -52,7 +52,7 @@ def print_exceptions(*, append_source: bool = False):
                     source = doctree["source"]
                     msg = f"in document `{source}`"
                     if e.args:
-                        e.args = (e.args[0] + f" ({msg})",) + e.args[1:]
+                        e.args = (e.args[0] + f" ({msg})", *e.args[1:])
                     else:
                         e.args = (f"Unexpected error {msg}",)
                 raise

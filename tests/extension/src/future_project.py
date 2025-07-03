@@ -10,7 +10,7 @@ class Foo:
     attr: str = "test"
 
 
-def optional() -> Optional[Foo]:  # noqa: UP007
+def optional() -> Optional[Foo]:  # noqa: UP045
     """Return optional type."""
 
 
