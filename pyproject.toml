@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "sphinx-codeautolink"
 description = "Automatic links from code examples to reference documentation."
 readme = "readme_pypi.rst"
-license = {file = "LICENSE"}
+license-files = ["LICENSE"]
 dynamic = ["version"]
 
 requires-python = ">=3.10"

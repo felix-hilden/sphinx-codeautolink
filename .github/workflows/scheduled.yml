@@ -1,0 +1,25 @@
+# Scheduled to verify that tests pass with latest requirements.
+
+name: scheduled
+on:
+  schedule:
+    - cron: "0 8 * * *"
+
+jobs:
+  auth-test:
+    name: Pytest suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.13"
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/dev
+          pip install .
+      - name: Run tox evironments
+        run: tox
