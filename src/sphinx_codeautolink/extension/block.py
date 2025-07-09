@@ -21,6 +21,7 @@ from .directive import ConcatMarker, PrefaceMarker, SkipMarker
 BUILTIN_BLOCKS = {
     "default": None,
     "python": None,
+    "Python": None,
     "python3": None,
     "py": None,
     "py3": None,
