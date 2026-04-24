@@ -1,0 +1,14 @@
+type_checking_project
+type_checking_project.pick
+attr
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import type_checking_project
+   type_checking_project.pick(["a"]).attr
+
+.. automodule:: type_checking_project

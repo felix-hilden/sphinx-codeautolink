@@ -211,10 +211,25 @@ def unwrap_iterable(annotation: Any) -> type | None:
     return None
 
 
-def get_return_annotation(func: Callable) -> Any:
+def resolve_type_hints(func: Callable) -> dict:
+    """
+    Resolve runtime type hints for ``func``, including those that
+    reference names imported inside an ``if TYPE_CHECKING:`` block
+    in modules using ``from __future__ import annotations``.
+    """
+    try:
+        return get_type_hints(func)
+    except NameError:
+        import collections.abc
+        import typing as typing_mod
+        fallback = {**vars(typing_mod), **vars(collections.abc)}
+        return get_type_hints(func, localns=fallback)
+
+
+def get_return_annotation(func: Callable) -> type | None:
     """Determine the target of a function return type hint."""
     try:
-        annotation = get_type_hints(func).get("return")
+        annotation = resolve_type_hints(func).get("return")
     except (NameError, TypeError) as e:
         msg = f"Unable to follow return annotation of {get_name_for_debugging(func)}."
         raise CouldNotResolve(msg) from e
