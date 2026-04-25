@@ -16,28 +16,28 @@ from sphinx_codeautolink.parse import Name, NameBreak
 
 def resolve_location(chain: Name, inventory) -> str:
     """Find the final type that a name refers to."""
-    comps = []
-    cursor = None
+    segments: list[list[str]] = [[]]
     for comp in chain.import_components:
-        if comp != NameBreak.call:
-            comps.append(comp)
-            continue
+        if comp == NameBreak.call:
+            segments.append([])
+        else:
+            segments[-1].append(comp)
 
+    cursor = None
+    last = len(segments) - 1
+    for i, segment in enumerate(segments):
+        comps = segment
         if cursor is None:
-            comps, cursor = make_cursor(comps)
-
+            try:
+                comps, cursor = make_cursor(comps)
+            except CouldNotResolve:
+                if i == last:
+                    # Last ditch effort to locate based on the string only
+                    return ".".join(comps)
+                raise
         cursor = locate_type(cursor, tuple(comps), inventory)
-        call_value(cursor)
-        comps = []
-
-    if cursor is None:
-        try:
-            comps, cursor = make_cursor(comps)
-        except CouldNotResolve:
-            # Last ditch effort to locate based on the string only
-            return ".".join(comps)
-
-    cursor = locate_type(cursor, tuple(comps), inventory)
+        if i != last:
+            call_value(cursor)
     return cursor.location if cursor is not None else None
 
 
