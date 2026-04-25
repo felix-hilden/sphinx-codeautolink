@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.18.0 (2026-04-25)
+-------------------
 - Support module attributes and class aliases (:issue:`65`)
 - Resolve for-loop iterables into targets. ``for target in lib.iterable():``
   now links ``target.method()`` in the loop body (:issue:`196`)
