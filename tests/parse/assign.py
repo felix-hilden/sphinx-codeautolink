@@ -298,7 +298,7 @@ class TestAssignLike:
         return s, refs
 
     @refs_equal
-    def test_for_uses_imported(self):
+    def test_for_uses_imported_but_target_unused(self):
         s = "import a\nfor b in a:\n  a"
         refs = [("a", "a"), ("a", "a"), ("a", "a")]
         return s, refs
@@ -312,6 +312,30 @@ class TestAssignLike:
     @refs_equal
     def test_for_uses_and_overwrites_imported(self):
         s = "import a\nfor a in a:\n  a"
+        refs = [("a", "a"), ("a", "a"), ("a.<>", "a")]
+        return s, refs
+
+    @refs_equal
+    def test_for_target_bound_to_iter_name_element(self):
+        s = "import a\nfor b in a:\n  b"
+        refs = [("a", "a"), ("a", "a"), ("a.<>", "b")]
+        return s, refs
+
+    @refs_equal
+    def test_for_target_bound_to_iter_call_element(self):
+        s = "import a\nfor b in a():\n  b"
+        refs = [("a", "a"), ("a", "a"), ("a.().<>", "b")]
+        return s, refs
+
+    @refs_equal
+    def test_for_target_bound_to_iter_attribute_element(self):
+        s = "import a\nfor b in a.x:\n  b"
+        refs = [("a", "a"), ("a.x", "a.x"), ("a.x.<>", "b")]
+        return s, refs
+
+    @refs_equal
+    def test_for_tuple_target_not_bound(self):
+        s = "import a\nfor b, c in a():\n  b"
         refs = [("a", "a"), ("a", "a")]
         return s, refs
 

@@ -1,5 +1,8 @@
 """Docstring."""
 
+from collections.abc import Iterator
+from typing import List  # noqa: UP035
+
 from .sub import SubBar, subfoo  # noqa: F401
 
 
@@ -34,9 +37,19 @@ mod_int: int = 0
 mod_type = Foo
 """Module attribute whose value is a class, not an instance."""
 
+mod_list: list[Foo] = []
+"""Module list attribute."""
+
+mod_typing_list: List[Foo] = []  # noqa: UP006
+"""Typing module list attribute."""
+
 
 def bar() -> Foo:
     """Bar test function."""
+
+
+def iter_foos() -> "Iterator[Foo]":
+    """Return an iterator of Foos."""
 
 
 def optional() -> Foo | None:

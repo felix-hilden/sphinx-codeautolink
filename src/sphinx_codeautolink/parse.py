@@ -94,6 +94,7 @@ class NameBreak(str, Enum):
     call = "()"
     namedexpr = ":="
     import_from = ">"
+    for_iter = "<>"
 
 
 class LinkContext(str, Enum):
@@ -499,9 +500,19 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self.visit_For(node)
 
     def visit_For(self, node: ast.For | ast.AsyncFor) -> None:
-        """Swap node order."""
-        self.visit(node.iter)
-        self.visit(node.target)
+        """Swap node order and resolve iterators."""
+        iter_pending = self.visit(node.iter)
+
+        if (
+            isinstance(iter_pending, PendingAccess)
+            and iter_pending.components
+            and isinstance(node.target, ast.Name)
+        ):
+            marker = Component(NameBreak.for_iter.value, *linenos(node), "load")
+            self.assign_name(node.target.id, [*iter_pending.components, marker])
+        else:
+            self.visit(node.target)
+
         for n in node.body:
             self.visit(n)
         for n in node.orelse:
