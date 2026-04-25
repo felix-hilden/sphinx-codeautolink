@@ -15,6 +15,7 @@ Unreleased
   now links ``target.method()`` in the loop body (:issue:`196`)
 - Resolve return annotations that reference names imported inside
   ``if TYPE_CHECKING:`` and similar blocks (:issue:`197`)
+- Support Python 3.14 officially (:issue:`198`)
 
 0.17.5 (2025-07-09)
 -------------------
