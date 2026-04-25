@@ -1,0 +1,15 @@
+type_checking
+type_checking.pick
+attr
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import type_checking
+   type_checking.pick(["a"]).attr
+
+.. automodule:: type_checking
+.. automodule:: type_checking.foo

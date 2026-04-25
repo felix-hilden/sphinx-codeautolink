@@ -85,6 +85,28 @@ The extension parses code blocks in the ``doctree-read`` Sphinx event.
 The priority is set to 490 to catch nodes removed by ``sphinx.ext.doctest``
 (priority 500). In other cases the priority of the extension is default.
 
+Type checking blocks
+********************
+To resolve annotations that reference names imported under
+``if TYPE_CHECKING:``, the extension re-executes the bodies of those gated
+blocks in the importing module's own namespace the first time it inspects
+that module. Without this step, ``typing.get_type_hints`` would fail with
+``NameError`` because, at runtime, ``TYPE_CHECKING`` is ``False`` and the
+gated names are never bound.
+
+A few things to be aware of:
+
+- Only top-level ``if`` blocks whose condition is ``TYPE_CHECKING`` or
+  ``MYPY`` (as a bare name or attribute access, e.g. ``typing.TYPE_CHECKING``)
+  are recognised. The condition is matched by AST shape, not evaluated.
+- The original module objects are mutated in place:
+  names that would normally only exist for type checkers become real
+  attributes on the module.
+- Bodies are executed with the equivalent of ``exec`` in the module's
+  globals. If execution fails, for example due to a cyclic import or
+  a missing optional dependency, that block is silently skipped and the rest
+  of the module continues to work.
+
 Copying code blocks
 -------------------
 If you feel like code links make copying code a bit more difficult,

@@ -13,6 +13,8 @@ Unreleased
 - Support module attributes and class aliases (:issue:`65`)
 - Resolve for-loop iterables into targets. ``for target in lib.iterable():``
   now links ``target.method()`` in the loop body (:issue:`196`)
+- Resolve return annotations that reference names imported inside
+  ``if TYPE_CHECKING:`` and similar blocks (:issue:`197`)
 
 0.17.5 (2025-07-09)
 -------------------

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import ast
+import inspect
 from collections import abc
 from collections.abc import Callable
 from contextlib import suppress
@@ -9,7 +11,7 @@ from dataclasses import dataclass
 from functools import cache
 from importlib import import_module
 from inspect import isclass, ismodule, isroutine
-from types import UnionType
+from types import ModuleType, UnionType
 from typing import Any, Union, get_type_hints
 
 from sphinx_codeautolink.parse import Name, NameBreak
@@ -245,12 +247,61 @@ def closest_module(components: tuple[str, ...]) -> tuple[Any, int]:
     except ImportError as e:
         msg = f"Could not import {components[0]}."
         raise CouldNotResolve(msg) from e
+    populate_type_checking(mod)
 
     for i in range(1, len(components)):
         try:
             mod = import_module(".".join(components[: i + 1]))
-        except ImportError:  # noqa: PERF203
+        except ImportError:
             # import failed, exclude previously added item
             return mod, i
+        populate_type_checking(mod)
     # imports succeeded, include all items
     return mod, len(components)
+
+
+populated_modules: set[int] = set()
+
+
+def populate_type_checking(mod: ModuleType) -> None:
+    """
+    Execute top-level TYPE_CHECKING blocks into ``mod.__dict__``.
+
+    At runtime TYPE_CHECKING is False, so names imported under such gates
+    are never bound on the module. ``get_type_hints`` then fails to resolve
+    annotations that reference them. Re-execute the gated bodies in the
+    module's own namespace so those names become available.
+    """
+    if id(mod) in populated_modules:
+        return
+    populated_modules.add(id(mod))
+
+    try:
+        source = inspect.getsource(mod)
+    except (OSError, TypeError):
+        return
+
+    tree = ast.parse(source)
+
+    filename = getattr(mod, "__file__", None) or "<type_checking>"
+    for node in tree.body:
+        if not isinstance(node, ast.If) or not is_type_checking_test(node.test):
+            continue
+        body = ast.Module(body=node.body, type_ignores=[])
+        # Catch e.g. optional deps and cyclic imports
+        with suppress(Exception):
+            exec(compile(body, filename, "exec"), mod.__dict__)  # noqa: S102
+
+
+def is_type_checking_test(expr: ast.expr) -> bool:
+    """
+    Determine if expr is a test for type checking.
+
+    Mirror mypy's ``infer_condition_value``: match a bare name or any
+    attribute access regardless of qualifier.
+    """
+    if isinstance(expr, ast.Name):
+        return expr.id in ("TYPE_CHECKING", "MYPY")
+    if isinstance(expr, ast.Attribute):
+        return expr.attr in ("TYPE_CHECKING", "MYPY")
+    return False
