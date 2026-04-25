@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import abc
 from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass
@@ -13,19 +14,48 @@ from typing import Any, Union, get_type_hints
 
 from sphinx_codeautolink.parse import Name, NameBreak
 
+# Containers whose first generic argument is the element type produced
+# by iteration. ``tuple`` only fits ``tuple[T, ...]``; for mixed tuples
+# like ``tuple[int, str]`` we pick the first arg, which may be wrong.
+ITERABLE_ORIGINS = frozenset(
+    {
+        abc.Iterable,
+        abc.Iterator,
+        abc.Generator,
+        abc.AsyncIterable,
+        abc.AsyncIterator,
+        abc.AsyncGenerator,
+        abc.Collection,
+        abc.Sequence,
+        abc.MutableSequence,
+        abc.Set,
+        abc.MutableSet,
+        abc.Mapping,
+        abc.MutableMapping,
+        list,
+        set,
+        frozenset,
+        tuple,
+        dict,
+    }
+)
+
 
 def resolve_location(chain: Name, inventory) -> str:
     """Find the final type that a name refers to."""
-    segments: list[list[str]] = [[]]
+    segments: list[tuple[list[str], NameBreak | None]] = []
+    current: list[str] = []
     for comp in chain.import_components:
-        if comp == NameBreak.call:
-            segments.append([])
+        if comp in (NameBreak.call, NameBreak.for_iter):
+            segments.append((current, NameBreak(comp)))
+            current = []
         else:
-            segments[-1].append(comp)
+            current.append(comp)
+    segments.append((current, None))
 
     cursor = None
     last = len(segments) - 1
-    for i, segment in enumerate(segments):
+    for i, (segment, terminator) in enumerate(segments):
         comps = segment
         if cursor is None:
             try:
@@ -36,8 +66,10 @@ def resolve_location(chain: Name, inventory) -> str:
                     return ".".join(comps)
                 raise
         cursor = locate_type(cursor, tuple(comps), inventory)
-        if i != last:
+        if terminator == NameBreak.call:
             call_value(cursor)
+        elif terminator == NameBreak.for_iter:
+            iter_value(cursor)
     return cursor.location if cursor is not None else None
 
 
@@ -47,11 +79,12 @@ class CouldNotResolve(Exception):  # noqa: N818
 
 @dataclass
 class Cursor:
-    """Cursor to follow imports, attributes and calls to the final type."""
+    """Cursor to follow a component path to the final type."""
 
     location: str
     value: Any
     instance: bool
+    annotation: Any = None
 
 
 def make_cursor(components: list[str]) -> tuple[list[str], Cursor]:
@@ -78,10 +111,14 @@ def locate_type(cursor: Cursor, components: tuple[str, ...], inventory) -> Curso
                 previous.value = type(previous.value)
                 previous.location = fully_qualified_name(previous.value)
 
+        annotation = None
+        with suppress(NameError, TypeError):
+            annotation = get_type_hints(previous.value).get(component)
         cursor = Cursor(
             previous.location + "." + component,
             getattr(previous.value, component, None),
             previous.instance,
+            annotation=annotation,
         )
 
         if cursor.value is None:
@@ -123,38 +160,68 @@ def call_value(cursor: Cursor) -> None:
     elif not isroutine(cursor.value):
         raise CouldNotResolve  # not a function either
 
-    cursor.value = get_return_annotation(cursor.value)
-    cursor.location = fully_qualified_name(cursor.value)
+    annotation = get_return_annotation(cursor.value)
+    type_ = origin_type(annotation)
+    if not isinstance(type_, type):
+        msg = f"Unable to follow return annotation of {annotation!r}."
+        raise CouldNotResolve(msg)
+    cursor.value = type_
+    cursor.location = fully_qualified_name(type_)
     cursor.instance = True
+    cursor.annotation = annotation
 
 
-def get_return_annotation(func: Callable) -> type | None:
+def iter_value(cursor: Cursor) -> None:
+    """Unwrap the iterable cursor points to into its element type."""
+    element = unwrap_iterable(strip_optional(cursor.annotation))
+    if not isinstance(element, type):
+        msg = (
+            f"Unable to unwrap iterable element type of"
+            f" {get_name_for_debugging(cursor.value)}."
+        )
+        raise CouldNotResolve(msg)
+    cursor.value = element
+    cursor.location = fully_qualified_name(element)
+    cursor.instance = True
+    cursor.annotation = None
+
+
+def strip_optional(annotation: Any) -> Any:
+    """Reduce ``Optional[T]`` / ``T | None`` to ``T``; otherwise return as-is."""
+    origin = getattr(annotation, "__origin__", None)
+    args = getattr(annotation, "__args__", None)
+    if (origin is Union or isinstance(annotation, UnionType)) and args:
+        non_none = [a for a in args if a is not type(None)]
+        if len(non_none) == 1:
+            return non_none[0]
+    return annotation
+
+
+def origin_type(annotation: Any) -> Any:
+    """Return underlying type of an annotation (e.g. ``list`` from ``list[Foo]``)."""
+    return getattr(annotation, "__origin__", None) or annotation
+
+
+def unwrap_iterable(annotation: Any) -> type | None:
+    """Return the element type of an iterable annotation, or None."""
+    origin = getattr(annotation, "__origin__", None)
+    args = getattr(annotation, "__args__", None)
+    if origin in ITERABLE_ORIGINS and args:
+        return args[0]
+    return None
+
+
+def get_return_annotation(func: Callable) -> Any:
     """Determine the target of a function return type hint."""
     try:
         annotation = get_type_hints(func).get("return")
     except (NameError, TypeError) as e:
         msg = f"Unable to follow return annotation of {get_name_for_debugging(func)}."
         raise CouldNotResolve(msg) from e
-
-    # Inner type from typing.Optional or Union[None, T]
-    origin = getattr(annotation, "__origin__", None)
-    args = getattr(annotation, "__args__", None)
-    if (origin is Union or isinstance(annotation, UnionType)) and len(args) == 2:  # noqa: PLR2004
-        nonetype = type(None)
-        if args[0] is nonetype:
-            annotation = args[1]
-        elif args[1] is nonetype:
-            annotation = args[0]
-
-    if (
-        not annotation
-        or not isinstance(annotation, type)
-        or hasattr(annotation, "__origin__")
-    ):
-        msg = f"Unable to follow return annotation of {get_name_for_debugging(func)}."
+    if not annotation:
+        msg = f"No return annotation on {get_name_for_debugging(func)}."
         raise CouldNotResolve(msg)
-
-    return annotation
+    return strip_optional(annotation)
 
 
 def fully_qualified_name(thing: type | Callable) -> str:
