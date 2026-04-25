@@ -8,6 +8,10 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Support module attributes and class aliases (:issue:`65`)
+
 0.17.5 (2025-07-09)
 -------------------
 - Add ``Python`` to default lexers (:issue:`194`)

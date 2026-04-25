@@ -25,6 +25,16 @@ class Foo:
         """Test call."""
 
 
+mod_attr: Foo = Foo()
+"""Module attribute."""
+
+mod_int: int = 0
+"""Module attribute with a builtin type."""
+
+mod_type = Foo
+"""Module attribute whose value is a class, not an instance."""
+
+
 def bar() -> Foo:
     """Bar test function."""
 

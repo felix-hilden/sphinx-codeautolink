@@ -1,0 +1,13 @@
+test_project
+# split
+codeautolink_warn_on_missing_inventory = False
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   test_project.mod_int.bit_length()
+
+.. automodule:: test_project

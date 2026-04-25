@@ -7,7 +7,7 @@ from contextlib import suppress
 from dataclasses import dataclass
 from functools import cache
 from importlib import import_module
-from inspect import isclass, isroutine
+from inspect import isclass, ismodule, isroutine
 from types import UnionType
 from typing import Any, Union, get_type_hints
 
@@ -65,10 +65,23 @@ def locate_type(cursor: Cursor, components: tuple[str, ...], inventory) -> Curso
     """Find type hint and resolve to new location."""
     previous = cursor
     for i, component in enumerate(components):
+        previous = cursor
+
+        # When descending through an instance or alias
+        # try to normalise to the original type if possible
+        if previous.value is not None and not (
+            isclass(previous.value)
+            or ismodule(previous.value)
+            or isroutine(previous.value)
+        ):
+            with suppress(AttributeError, TypeError):
+                previous.value = type(previous.value)
+                previous.location = fully_qualified_name(previous.value)
+
         cursor = Cursor(
-            cursor.location + "." + component,
-            getattr(cursor.value, component, None),
-            cursor.instance,
+            previous.location + "." + component,
+            getattr(previous.value, component, None),
+            previous.instance,
         )
 
         if cursor.value is None:
@@ -93,8 +106,6 @@ def locate_type(cursor: Cursor, components: tuple[str, ...], inventory) -> Curso
                 if name + "." + component in inventory:
                     previous.location = name
                     return locate_type(previous, components[i:], inventory)
-
-        previous = cursor
 
     return cursor
 
