@@ -1,0 +1,15 @@
+type_checking_aliased
+type_checking_aliased.pick
+attr
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import type_checking_aliased
+   type_checking_aliased.pick(["a"]).attr
+
+.. automodule:: type_checking_aliased
+.. automodule:: type_checking_aliased.foo
