@@ -11,7 +11,7 @@ sphinx-codeautolink adheres to
 Unreleased
 ----------
 - Recognize aliased ``TYPE_CHECKING`` imports such as
-  ``from typing import TYPE_CHECKING as _TYPE_CHECKING``
+  ``from typing import TYPE_CHECKING as _TYPE_CHECKING`` (:issue:`199`)
 
 0.18.0 (2026-04-25)
 -------------------
