@@ -297,11 +297,7 @@ def populate_type_checking(mod: ModuleType) -> None:
 
 
 def collect_type_checking_aliases(tree: ast.Module) -> set[str]:
-    """
-    Walk top-level imports, return names bound to ``typing.TYPE_CHECKING``,
-    including if imported as:
-    ``from typing import TYPE_CHECKING as _TYPE_CHECKING``
-    """
+    """Walk top-level imports, return names bound to ``typing.TYPE_CHECKING``."""
     aliases: set[str] = set()
     for node in tree.body:
         if isinstance(node, ast.ImportFrom) and node.module == "typing":
@@ -314,9 +310,7 @@ def collect_type_checking_aliases(tree: ast.Module) -> set[str]:
 def is_type_checking_test(
     expr: ast.expr, aliases: frozenset[str] | set[str] = frozenset()
 ) -> bool:
-    """
-    Determine if expr is a test for type checking.
-    """
+    """Determine if expr is a test for type checking."""
     if isinstance(expr, ast.Name):
         return expr.id in ("TYPE_CHECKING", "MYPY") or expr.id in aliases
     if isinstance(expr, ast.Attribute):
