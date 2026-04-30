@@ -8,6 +8,11 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Recognize aliased ``TYPE_CHECKING`` imports such as
+  ``from typing import TYPE_CHECKING as _TYPE_CHECKING`` (:issue:`199`)
+
 0.18.0 (2026-04-25)
 -------------------
 - Support module attributes and class aliases (:issue:`65`)

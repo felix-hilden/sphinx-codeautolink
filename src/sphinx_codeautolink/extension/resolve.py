@@ -282,10 +282,13 @@ def populate_type_checking(mod: ModuleType) -> None:
         return
 
     tree = ast.parse(source)
+    aliases = collect_type_checking_aliases(tree)
 
     filename = getattr(mod, "__file__", None) or "<type_checking>"
     for node in tree.body:
-        if not isinstance(node, ast.If) or not is_type_checking_test(node.test):
+        if not isinstance(node, ast.If):
+            continue
+        if not is_type_checking_test(node.test, aliases):
             continue
         body = ast.Module(body=node.body, type_ignores=[])
         # Catch e.g. optional deps and cyclic imports
@@ -293,15 +296,23 @@ def populate_type_checking(mod: ModuleType) -> None:
             exec(compile(body, filename, "exec"), mod.__dict__)  # noqa: S102
 
 
-def is_type_checking_test(expr: ast.expr) -> bool:
-    """
-    Determine if expr is a test for type checking.
+def collect_type_checking_aliases(tree: ast.Module) -> set[str]:
+    """Walk top-level imports, return names bound to ``typing.TYPE_CHECKING``."""
+    aliases: set[str] = set()
+    for node in tree.body:
+        if isinstance(node, ast.ImportFrom) and node.module == "typing":
+            for alias in node.names:
+                if alias.name in ("TYPE_CHECKING", "MYPY"):
+                    aliases.add(alias.asname or alias.name)
+    return aliases
 
-    Mirror mypy's ``infer_condition_value``: match a bare name or any
-    attribute access regardless of qualifier.
-    """
+
+def is_type_checking_test(
+    expr: ast.expr, aliases: frozenset[str] | set[str] = frozenset()
+) -> bool:
+    """Determine if expr is a test for type checking."""
     if isinstance(expr, ast.Name):
-        return expr.id in ("TYPE_CHECKING", "MYPY")
+        return expr.id in ("TYPE_CHECKING", "MYPY") or expr.id in aliases
     if isinstance(expr, ast.Attribute):
         return expr.attr in ("TYPE_CHECKING", "MYPY")
     return False
