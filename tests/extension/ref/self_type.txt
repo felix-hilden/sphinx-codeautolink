@@ -1,0 +1,17 @@
+self_type
+self_type.Derived
+make
+own
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import self_type
+
+   self_type.Derived().make().own()
+
+.. automodule:: self_type
+   :no-inherited-members:

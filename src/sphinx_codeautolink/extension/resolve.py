@@ -16,6 +16,14 @@ from typing import Any, Union, get_type_hints
 
 from sphinx_codeautolink.parse import Name, NameBreak
 
+try:
+    from typing import Self  # Python >= 3.11
+except ImportError:  # pragma: no cover
+    try:
+        from typing_extensions import Self
+    except ImportError:
+        Self = None  # type: ignore[assignment,misc]
+
 # Containers whose first generic argument is the element type produced
 # by iteration. ``tuple`` only fits ``tuple[T, ...]``; for mixed tuples
 # like ``tuple[int, str]`` we pick the first arg, which may be wrong.
@@ -87,6 +95,13 @@ class Cursor:
     value: Any
     instance: bool
     annotation: Any = None
+    # The live object/class this cursor's value was accessed on, e.g. the
+    # receiver of a bound method. Used to resolve `Self` return annotations
+    # to the accessing class rather than the (possibly different, e.g. a
+    # mixin) class the method happens to be defined on. Unlike `location`,
+    # this is never rewritten by the MRO fallback below, so it reflects the
+    # true runtime receiver even when the naive `location` doesn't resolve.
+    receiver: Any = None
 
 
 def make_cursor(components: list[str]) -> tuple[list[str], Cursor]:
@@ -121,6 +136,7 @@ def locate_type(cursor: Cursor, components: tuple[str, ...], inventory) -> Curso
             getattr(previous.value, component, None),
             previous.instance,
             annotation=annotation,
+            receiver=previous.value,
         )
 
         if cursor.value is None:
@@ -163,6 +179,21 @@ def call_value(cursor: Cursor) -> None:
         raise CouldNotResolve  # not a function either
 
     annotation = get_return_annotation(cursor.value)
+    if Self is not None and annotation is Self and cursor.receiver is not None:
+        # `Self` refers to whichever class/instance the method was accessed
+        # on, which is not necessarily the class it's defined on (e.g. a
+        # mixin). Use the receiver rather than re-deriving the owner from
+        # `cursor.location`, since that string may have been rewritten to
+        # the *defining* class by the MRO fallback above.
+        owner_value = cursor.receiver
+        if not isclass(owner_value):
+            owner_value = type(owner_value)
+        cursor.value = owner_value
+        cursor.location = fully_qualified_name(owner_value)
+        cursor.instance = True
+        cursor.annotation = annotation
+        return
+
     type_ = origin_type(annotation)
     if not isinstance(type_, type):
         msg = f"Unable to follow return annotation of {annotation!r}."
