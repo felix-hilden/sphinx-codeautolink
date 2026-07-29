@@ -8,8 +8,8 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
-Unreleased
-----------
+0.19.0 (2026-07-29)
+-------------------
 - Only add a hover title to links when the resolved location of the object
   differs from the linked code, and add
   :confval:`codeautolink_disable_link_titles`
