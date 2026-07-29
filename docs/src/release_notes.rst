@@ -8,6 +8,12 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Resolve ``typing.Self`` return annotations, respecting inheritance so a
+  ``Self``-returning method accessed through a subclass or mixin resolves to
+  the accessing class rather than the class it's defined on (:issue:`147`)
+
 0.18.1 (2026-04-30)
 -------------------
 - Recognize aliased ``TYPE_CHECKING`` imports such as
