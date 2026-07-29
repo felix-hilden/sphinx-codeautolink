@@ -1,0 +1,17 @@
+test_project
+thing
+test_project.Foo
+thing.attr
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+
+   thing = test_project.Foo()
+   thing.attr = "value"
+
+.. automodule:: test_project

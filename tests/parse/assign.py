@@ -89,6 +89,48 @@ class TestAssign:
         return s, refs
 
     @refs_equal
+    def test_assign_to_attribute_uses_once(self):
+        s = "import a\na.b = 1"
+        refs = [("a", "a"), ("a.b", "a.b")]
+        return s, refs
+
+    @refs_equal
+    def test_assign_to_nested_attribute_uses_once(self):
+        s = "import a\na.b.c = 1"
+        refs = [("a", "a"), ("a.b.c", "a.b.c")]
+        return s, refs
+
+    @refs_equal
+    def test_assign_to_attribute_of_followed_name_uses_once(self):
+        s = "import a\nb = a()\nb.c = 1"
+        refs = [("a", "a"), ("a", "a"), ("a.()", "b"), ("a.().c", "b.c")]
+        return s, refs
+
+    @refs_equal
+    def test_multitarget_assign_to_attributes_uses_once_each(self):
+        s = "import a\na.b = a.c = 1"
+        refs = [("a", "a"), ("a.c", "a.c"), ("a.b", "a.b")]
+        return s, refs
+
+    @refs_equal
+    def test_unpack_assign_to_attribute_uses_once(self):
+        s = "import a\na.b, c = 1, 2"
+        refs = [("a", "a"), ("a.b", "a.b")]
+        return s, refs
+
+    @refs_equal
+    def test_annassign_to_attribute_uses_once(self):
+        s = "import a\na.b: int = 1"
+        refs = [("a", "a"), ("int", "int"), ("a.b", "a.b")]
+        return s, refs
+
+    @refs_equal
+    def test_augassign_to_attribute_uses_once(self):
+        s = "import a\na.b += 1"
+        refs = [("a", "a"), ("a.b", "a.b")]
+        return s, refs
+
+    @refs_equal
     def test_assign_subscript_uses(self):
         s = "import a\na.b[0] = 1"
         refs = [("a", "a"), ("a.b", "a.b")]

@@ -286,15 +286,17 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         if target is None:
             return
 
-        if len(target.components) == 1:
-            comp = target.components[0]
-            if value is None:
-                self.overwrite_name(comp.name)
-            else:
-                self.assign_name(comp.name, value.components)
-                self._create_access(target.components)
+        if len(target.components) != 1:
+            # Dotted targets don't assign to the current scope, and their access
+            # was already resolved when the access chain was visited.
+            return
+
+        comp = target.components[0]
+        if value is None:
+            self.overwrite_name(comp.name)
         else:
-            self.resolve_pending_access(target)
+            self.assign_name(comp.name, value.components)
+            self._create_access(target.components)
 
     def create_simple_access(self, name: str, lineno: int) -> None:
         """Create single-component access to scope."""
