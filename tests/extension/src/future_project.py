@@ -14,7 +14,7 @@ def optional() -> Optional[Foo]:  # noqa: UP045
     """Return optional type."""
 
 
-def optional_manual() -> None | Foo:
+def optional_manual() -> None | Foo:  # noqa: RUF036
     """Return manually constructed optional type."""
 
 
