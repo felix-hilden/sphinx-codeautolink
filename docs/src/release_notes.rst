@@ -10,6 +10,10 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+- Only add a hover title to links when the resolved location of the object
+  differs from the linked code, and add
+  :confval:`codeautolink_disable_link_titles`
+  to disable the titles altogether (:issue:`200`)
 - Resolve ``typing.Self`` return annotations, respecting inheritance so a
   ``Self``-returning method accessed through a subclass or mixin resolves to
   the accessing class rather than the class it's defined on (:issue:`147`)

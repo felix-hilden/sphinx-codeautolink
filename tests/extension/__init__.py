@@ -282,6 +282,63 @@ Test project
     assert check_link_targets(result_dir) == n_subfiles * len(links)
 
 
+title_index = """
+Test project
+============
+
+.. code:: python
+
+   import test_project
+
+   test_project.bar().attr
+
+.. code:: python
+
+   import test_project
+
+   (test_project
+       .bar())
+
+.. automodule:: test_project
+"""
+
+
+def link_titles(file: Path) -> list[tuple[str, str | None]]:
+    """Return the text and title of all code links in a file."""
+    soup = BeautifulSoup(file.read_text("utf-8"), "html.parser")
+    links = soup.find_all("a", attrs={"class": "sphinx-codeautolink-a"})
+    return [(any_whitespace.sub("", "".join(a.strings)), a.get("title")) for a in links]
+
+
+def test_link_titles_show_resolved_location(tmp_path: Path):
+    """Titles are added only when they differ from the code being linked."""
+    files = {"conf.py": default_conf, "index.rst": title_index}
+    result_dir = _sphinx_build(tmp_path, "html", files)
+
+    assert link_titles(result_dir / "index.html") == [
+        ("test_project", None),
+        ("test_project.bar", None),
+        ("attr", "test_project.Foo.attr"),
+        ("test_project", None),
+        ("test_project.bar", None),
+    ]
+
+
+def test_link_titles_disabled(tmp_path: Path):
+    """No titles are added when they are turned off."""
+    conf = default_conf + "\ncodeautolink_disable_link_titles = True"
+    files = {"conf.py": conf, "index.rst": title_index}
+    result_dir = _sphinx_build(tmp_path, "html", files)
+
+    assert link_titles(result_dir / "index.html") == [
+        ("test_project", None),
+        ("test_project.bar", None),
+        ("attr", None),
+        ("test_project", None),
+        ("test_project.bar", None),
+    ]
+
+
 def test_skip_identical_code(tmp_path: Path):
     """Code skipped and then linked in an identical block after."""
     index = """

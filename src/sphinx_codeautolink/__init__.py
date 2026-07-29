@@ -35,6 +35,9 @@ def setup(app: Sphinx):
         "codeautolink_inventory_map", default={}, rebuild="html", types=[dict]
     )
     app.add_config_value(
+        "codeautolink_disable_link_titles", default=False, rebuild="html", types=[bool]
+    )
+    app.add_config_value(
         "codeautolink_warn_on_missing_inventory",
         default=False,
         rebuild="html",

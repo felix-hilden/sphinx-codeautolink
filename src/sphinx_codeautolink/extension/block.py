@@ -369,6 +369,14 @@ class CodeBlockAnalyser(nodes.SparseNodeVisitor):
         )
 
 
+def format_title(location: str, text: str) -> str:
+    """Format the title attribute of a link, empty if it wouldn't add information."""
+    code = re.sub(r"\s+", "", BeautifulSoup(text, "html.parser").get_text())
+    if code == location:
+        return ""
+    return f' title="{location}"'
+
+
 def link_html(
     document: str,
     out_dir: str,
@@ -377,6 +385,8 @@ def link_html(
     custom_blocks: dict,
     search_css_classes: list,
     builder_name: str = "html",
+    *,
+    disable_link_titles: bool,
 ) -> None:
     """Inject links to code blocks on disk."""
     if builder_name == "dirhtml" and Path(document).name != "index":
@@ -400,9 +410,7 @@ def link_html(
 
     up_lvls = len(html_file.relative_to(out_dir).parents) - 1
     local_prefix = "../" * up_lvls
-    link_pattern = (
-        '<a href="{link}" title="{title}" class="sphinx-codeautolink-a">{text}</a>'
-    )
+    link_pattern = '<a href="{link}"{title} class="sphinx-codeautolink-a">{text}</a>'
 
     for trans in transforms:
         for ix in range(len(inners)):
@@ -447,9 +455,13 @@ def link_html(
             location = inventory[name.resolved_location]
             if not any(location.startswith(s) for s in ("http://", "https://")):
                 location = local_prefix + location
-            link = link_pattern.format(
-                link=location, title=name.resolved_location, text=selection[start:end]
+            text = selection[start:end]
+            title = (
+                ""
+                if disable_link_titles
+                else format_title(name.resolved_location, text)
             )
+            link = link_pattern.format(link=location, title=title, text=text)
             transformed = selection[:start] + link + selection[end:]
             lines[begin_line : end_line + 1] = transformed.split("\n")
 

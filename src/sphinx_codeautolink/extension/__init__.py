@@ -78,6 +78,7 @@ class SphinxCodeAutoLink:
         self.warn_no_backreference = None
         self.warn_default_parse_fail = None
         self.highlight_lang = None
+        self.disable_link_titles = None
 
         # Populated once
         self.outdated_docs: set[str] = set()
@@ -112,6 +113,7 @@ class SphinxCodeAutoLink:
             app.config.codeautolink_warn_on_default_parse_fail
         )
         self.highlight_lang = app.config.highlight_language
+        self.disable_link_titles = app.config.codeautolink_disable_link_titles
 
         # Append static resources path so references in setup() are valid
         app.config.html_static_path.append(
@@ -295,6 +297,7 @@ class SphinxCodeAutoLink:
                 self.custom_blocks,
                 self.search_css_classes,
                 builder_name=app.builder.name,
+                disable_link_titles=self.disable_link_titles,
             )
 
         self.cache.write()

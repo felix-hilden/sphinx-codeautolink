@@ -55,6 +55,15 @@ Configuration
    Useful when objects are imported and documented somewhere else than their
    original location as advertised by ``__module__``.
 
+.. confval:: codeautolink_disable_link_titles
+
+   Type: ``bool``. Don't add a ``title`` attribute, shown as a tooltip on
+   hover, to code links. By default the title contains the resolved location
+   of the linked object, but only when it differs from the code that is being
+   linked: hovering over ``instance.method()`` shows ``module.Class.method``,
+   while hovering over ``module.Class`` adds no tooltip.
+   Defaults to :code:`False`.
+
 .. confval:: codeautolink_warn_on_missing_inventory
 
    Type: ``bool``. Warn when an object cannot be found in
