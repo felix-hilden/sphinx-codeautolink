@@ -8,6 +8,13 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Inject links while each page is written, instead of rewriting the HTML
+  files after the build. This makes builds faster, and fixes links missing
+  from pages that Sphinx rewrites without their source changing, such as the
+  parent of a renamed toctree entry (:issue:`205`)
+
 0.19.0 (2026-07-29)
 -------------------
 - Only add a hover title to links when the resolved location of the object
