@@ -1,0 +1,20 @@
+test_project
+test_project.optional_counter
+# split
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
+    "sphinx_codeautolink",
+]
+intersphinx_mapping = {"python": ("https://docs.python.org/3/", None)}
+codeautolink_warn_on_failed_resolve = False
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   foo = test_project.optional_counter()
+
+.. automodule:: test_project

@@ -232,7 +232,11 @@ def strip_optional(annotation: Any) -> Any:
 
 def origin_type(annotation: Any) -> Any:
     """Return underlying type of an annotation (e.g. ``list`` from ``list[Foo]``)."""
-    return getattr(annotation, "__origin__", None) or annotation
+    origin = getattr(annotation, "__origin__", None)
+    # on 3.14+ the origin of ``X | Y`` is typing.Union, which is a class
+    if origin is Union:
+        return None
+    return origin or annotation
 
 
 def unwrap_iterable(annotation: Any) -> type | None:
