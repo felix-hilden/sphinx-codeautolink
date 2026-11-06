@@ -74,7 +74,8 @@ def setup(app: Sphinx):
     app.connect("env-purge-doc", state.purge_doc_from_environment)
     app.connect("env-updated", state.create_references)
     app.connect("doctree-resolved", state.generate_backref_tables)
-    app.connect("build-finished", state.apply_links)
+    app.connect("html-page-context", state.apply_links)
+    app.connect("build-finished", state.write_cache)
 
     app.add_node(
         backref.DetailsNode, html=(backref.visit_details, backref.depart_details)

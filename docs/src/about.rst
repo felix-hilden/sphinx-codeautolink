@@ -10,7 +10,7 @@ That information is fed to the name resolver, which attempts to match a series
 of attributes and calls to the concrete type in question by following
 type hints and other information accessible via imports of the library.
 If a match is found, a link to the correct reference documentation entry
-is injected after the ordinary Sphinx build is finished.
+is injected into the HTML of the page as it is written.
 
 .. _caveats:
 

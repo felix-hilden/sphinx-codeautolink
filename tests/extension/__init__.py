@@ -191,6 +191,38 @@ But edited.
     _sphinx_build(tmp_path, "html", {"another.rst": another2})
 
 
+def test_build_twice_and_rename_toctree_entry(tmp_path: Path):
+    index = """
+Test project
+------------
+
+.. code:: python
+
+   import test_project
+   test_project.bar()
+
+.. automodule:: test_project
+
+.. toctree::
+
+   another
+"""
+    another = """
+Another
+-------
+"""
+    another2 = """
+Renamed
+-------
+"""
+    files = {"conf.py": default_conf, "index.rst": index, "another.rst": another}
+    _sphinx_build(tmp_path, "html", files)
+    # index is unchanged but rewritten, because its toctree changed
+    result_dir = _sphinx_build(tmp_path, "html", {"another.rst": another2})
+    assert "Renamed" in (result_dir / "index.html").read_text("utf-8")
+    assert_links(result_dir / "index.html", ["test_project", "test_project.bar"])
+
+
 def test_build_twice_and_delete_one_file(tmp_path: Path):
     conf = default_conf + "\nsuppress_warnings = ['toc.not_readable']"
     index = """
