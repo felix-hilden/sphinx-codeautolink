@@ -10,10 +10,13 @@ sphinx-codeautolink adheres to
 
 Unreleased
 ----------
+
 - Inject links while each page is written, instead of rewriting the HTML
   files after the build. This makes builds faster, and fixes links missing
   from pages that Sphinx rewrites without their source changing, such as the
   parent of a renamed toctree entry (:issue:`205`)
+- Don't link names assigned from a call returning a union such as
+  ``Foo | Bar`` to ``typing.Union`` on Python 3.14
 
 0.19.0 (2026-07-29)
 -------------------
