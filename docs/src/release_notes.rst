@@ -8,6 +8,11 @@ These release notes are based on
 sphinx-codeautolink adheres to
 `Semantic Versioning <https://semver.org>`_.
 
+Unreleased
+----------
+- Don't link names assigned from a call returning a union such as
+  ``Foo | Bar`` to ``typing.Union`` on Python 3.14
+
 0.19.0 (2026-07-29)
 -------------------
 - Only add a hover title to links when the resolved location of the object
