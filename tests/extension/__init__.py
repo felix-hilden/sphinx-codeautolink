@@ -33,6 +33,7 @@ any_whitespace = re.compile(r"\s*")
 ref_tests = [(p.name, p) for p in Path(__file__).with_name("ref").glob("*.txt")]
 ref_xfails = {}
 ref_min_python = {
+    "ref_type_alias.txt": (3, 12),
     "ref_comprehension_unpack.txt": (3, 15),
     "ref_lazy_import.txt": (3, 15),
 }

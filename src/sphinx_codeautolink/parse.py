@@ -438,6 +438,12 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         target = self.visit(node.target)
         return Assignment([target], value)
 
+    def visit_TypeAlias(self, node: ast.AST) -> Assignment:
+        """Visit a type alias statement like an assignment."""
+        value = self.visit(node.value)
+        target = self.visit(node.name)
+        return Assignment([target], value)
+
     def visit_AugAssign(self, node: ast.AugAssign) -> None:
         """Visit an AugAssign node."""
         self.visit(node.value)

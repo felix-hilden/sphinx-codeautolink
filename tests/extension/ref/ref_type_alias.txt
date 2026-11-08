@@ -1,0 +1,22 @@
+test_project
+Alias
+test_project.Foo
+Alias.attr
+test_project.Foo
+test_project.Foo
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+
+   type Alias = test_project.Foo
+   Alias.attr
+
+   type Union = test_project.Foo | None
+   type Generic[T] = T | test_project.Foo
+
+.. automodule:: test_project

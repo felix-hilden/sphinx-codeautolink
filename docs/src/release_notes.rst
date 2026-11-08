@@ -19,6 +19,7 @@ Unreleased
 - Support Python 3.15 officially, and remove support for 3.10 (:issue:`206`)
 - Link assignments from builtins (:issue:`207`)
 - Avoid crashing in dict comprehensions with ``**`` unpacking (:issue:`208`)
+- Track ``type`` alias statements (:issue:`210`)
 - Link comprehension targets from the iterable (:issue:`211`)
 
 0.19.0 (2026-07-29)
