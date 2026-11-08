@@ -81,7 +81,6 @@ class SphinxCodeAutoLink:
         self.disable_link_titles = None
 
         # Populated once
-        self.outdated_docs: set[str] = set()
         self.inventory = {}
         self.code_refs: dict[str, list[CodeExample]] = {}
 
@@ -98,7 +97,6 @@ class SphinxCodeAutoLink:
         self.cache = DataCache(app.doctreedir, app.srcdir)
         self.cache.read()
         app.env.sphinx_codeautolink_transforms = self.cache.transforms
-        self.outdated_docs = {str(Path(d)) for d in app.builder.get_outdated_docs()}
         self.custom_blocks = app.config.codeautolink_custom_blocks
         for k, v in self.custom_blocks.items():
             if isinstance(v, str):
@@ -281,24 +279,30 @@ class SphinxCodeAutoLink:
         return None
 
     @print_exceptions()
-    def apply_links(self, app, exception) -> None:
-        """Apply links to HTML output and write refs file."""
-        if self.do_nothing or exception is not None:
+    def apply_links(self, app, pagename, templatename, context, doctree) -> None:
+        """Apply links to the HTML body of a page before it is written."""
+        if self.do_nothing:
             return
 
-        for doc, transforms in self.cache.transforms.items():
-            if not transforms or str(Path(doc)) not in self.outdated_docs:
-                continue
-            link_html(
-                doc,
-                app.outdir,
-                transforms,
-                self.inventory,
-                self.custom_blocks,
-                self.search_css_classes,
-                builder_name=app.builder.name,
-                disable_link_titles=self.disable_link_titles,
-            )
+        transforms = self.cache.transforms.get(str(Path(pagename)))
+        if not transforms:
+            return
+        context["body"] = link_html(
+            pagename,
+            context["body"],
+            transforms,
+            self.inventory,
+            self.custom_blocks,
+            self.search_css_classes,
+            builder_name=app.builder.name,
+            disable_link_titles=self.disable_link_titles,
+        )
+
+    @print_exceptions()
+    def write_cache(self, app, exception) -> None:
+        """Write refs file."""
+        if self.do_nothing or exception is not None:
+            return
 
         self.cache.write()
 

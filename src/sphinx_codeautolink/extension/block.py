@@ -379,7 +379,7 @@ def format_title(location: str, text: str) -> str:
 
 def link_html(
     document: str,
-    out_dir: str,
+    html: str,
     transforms: list[SourceTransform],
     inventory: dict,
     custom_blocks: dict,
@@ -387,15 +387,14 @@ def link_html(
     builder_name: str = "html",
     *,
     disable_link_titles: bool,
-) -> None:
-    """Inject links to code blocks on disk."""
+) -> str:
+    """Inject links to code blocks in the HTML of a document."""
     if builder_name == "dirhtml" and Path(document).name != "index":
-        html_file = Path(out_dir) / document / "index.html"
+        html_file = Path(document) / "index.html"
     else:
-        html_file = Path(out_dir) / (document + ".html")
+        html_file = Path(document + ".html")
 
-    text = html_file.read_text("utf-8")
-    soup = BeautifulSoup(text, "html.parser")
+    soup = BeautifulSoup(html, "html.parser")
 
     block_types = BUILTIN_BLOCKS.keys() | custom_blocks.keys()
     classes = [f"highlight-{t}" for t in block_types] + ["doctest"]
@@ -408,7 +407,7 @@ def link_html(
     blocks = sorted(unique_blocks, key=lambda b: b.sourceline)
     inners = [block.select("div > pre")[0] for block in blocks]
 
-    up_lvls = len(html_file.relative_to(out_dir).parents) - 1
+    up_lvls = len(html_file.parents) - 1
     local_prefix = "../" * up_lvls
     link_pattern = '<a href="{link}"{title} class="sphinx-codeautolink-a">{text}</a>'
 
@@ -467,7 +466,7 @@ def link_html(
 
         inner.replace_with(BeautifulSoup("\n".join(lines), "html.parser"))
 
-    html_file.write_text(str(soup), "utf-8")
+    return str(soup)
 
 
 # ---------------------------------------------------------------
