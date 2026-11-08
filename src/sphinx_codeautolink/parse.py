@@ -501,8 +501,8 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         """Delegate to sync for."""
         self.visit_For(node)
 
-    def visit_For(self, node: ast.For | ast.AsyncFor) -> None:
-        """Swap node order and resolve iterators."""
+    def bind_iter_target(self, node: ast.For | ast.AsyncFor | ast.comprehension):
+        """Visit iterator and bind a simple name target to its element."""
         iter_pending = self.visit(node.iter)
 
         if (
@@ -510,10 +510,14 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             and iter_pending.components
             and isinstance(node.target, ast.Name)
         ):
-            marker = Component(NameBreak.for_iter.value, *linenos(node), "load")
+            marker = Component(NameBreak.for_iter.value, *linenos(node.target), "load")
             self.assign_name(node.target.id, [*iter_pending.components, marker])
         else:
             self.visit(node.target)
+
+    def visit_For(self, node: ast.For | ast.AsyncFor) -> None:
+        """Swap node order and resolve iterators."""
+        self.bind_iter_target(node)
 
         for n in node.body:
             self.visit(n)
@@ -619,9 +623,8 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self.visit_generic_comp([node.elt], node.generators)
 
     def visit_comprehension(self, node: ast.comprehension) -> None:
-        """Swap node order."""
-        self.visit(node.iter)
-        self.visit(node.target)
+        """Swap node order and resolve iterators."""
+        self.bind_iter_target(node)
         for f in node.ifs:
             self.visit(f)
 

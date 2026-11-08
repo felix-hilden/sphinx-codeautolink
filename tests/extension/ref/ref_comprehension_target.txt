@@ -1,0 +1,25 @@
+test_project
+a.meth
+test_project.mod_list
+b.meth
+test_project.mod_typing_list
+c.meth
+test_project.iter_foos
+d.attr
+test_project.mod_list
+d.meth
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+
+   [a.meth() for a in test_project.mod_list]
+   {b.meth() for b in test_project.mod_typing_list}
+   (c.meth() for c in test_project.iter_foos())
+   {d.attr: 1 for d in test_project.mod_list for e in d.meth()}
+
+.. automodule:: test_project
