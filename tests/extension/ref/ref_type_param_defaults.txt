@@ -1,0 +1,22 @@
+test_project
+test_project.Foo
+test_project.Foo
+test_project.Foo
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+
+   def f[T = test_project.Foo](arg: T):
+       pass
+
+   class C[T = test_project.Foo]:
+       pass
+
+   type Alias[T = test_project.Foo] = T
+
+.. automodule:: test_project

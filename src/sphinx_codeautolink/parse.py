@@ -438,9 +438,15 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         target = self.visit(node.target)
         return Assignment([target], value)
 
+    def visit_type_params(self, node: ast.AST) -> None:
+        """Visit bounds and defaults of type parameters."""
+        for param in getattr(node, "type_params", []):
+            self.visit(param)
+
     def visit_TypeAlias(self, node: ast.AST) -> Assignment:
         """Visit a type alias statement like an assignment."""
         value = self.visit(node.value)
+        self.visit_type_params(node)
         target = self.visit(node.name)
         return Assignment([target], value)
 
@@ -538,6 +544,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             self.visit(base)
         for kw in node.keywords:
             self.visit(kw)
+        self.visit_type_params(node)
 
         self.overwrite_name(node.name)
         self.pseudo_scopes_stack.append(self.pseudo_scopes_stack[0].copy())
@@ -562,6 +569,7 @@ class ImportTrackerVisitor(ast.NodeVisitor):
             if d is None:
                 continue
             self.visit(d)
+        self.visit_type_params(node)
         args = self._get_args(node.args)
         args += [node.args.vararg, node.args.kwarg]
 

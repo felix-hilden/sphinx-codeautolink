@@ -44,6 +44,9 @@ Caveats
     change after the definition and impact the function.
     Encountering this should be unlikely, because it only occurs in practice
     when a variable shadows or overwrites an imported module or its part.
+  - Type parameters of generic functions, classes and type aliases
+    (``def f[T](arg: T)``) do not shadow imported names, so an imported ``T``
+    would be linked inside the definition.
 
   These cases are subject to change when the library matures. For more details
   on the expected failures, see our `test suite on GitHub <https://github.com

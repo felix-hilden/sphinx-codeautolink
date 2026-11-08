@@ -34,6 +34,8 @@ ref_tests = [(p.name, p) for p in Path(__file__).with_name("ref").glob("*.txt")]
 ref_xfails = {}
 ref_min_python = {
     "ref_type_alias.txt": (3, 12),
+    "ref_type_params.txt": (3, 12),
+    "ref_type_param_defaults.txt": (3, 13),
     "ref_comprehension_unpack.txt": (3, 15),
     "ref_lazy_import.txt": (3, 15),
 }
