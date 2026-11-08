@@ -1,17 +1,6 @@
-import sys
 from functools import wraps
 
-import pytest
-
 from sphinx_codeautolink.parse import parse_names
-
-skip_type_union = pytest.mark.skipif(
-    sys.version_info < (3, 10), reason="Type union introduced in Python 3.10."
-)
-
-skip_match = pytest.mark.skipif(
-    sys.version_info < (3, 10), reason="Match introduced in Python 3.10."
-)
 
 
 def refs_equal(func):

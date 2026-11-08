@@ -1,6 +1,6 @@
 import pytest
 
-from ._util import refs_equal, skip_type_union
+from ._util import refs_equal
 
 
 class TestFunction:
@@ -65,7 +65,6 @@ class TestFunction:
         refs = [("a", "a"), ("a", "a")]
         return s, refs
 
-    @skip_type_union
     @refs_equal
     def test_func_annotates_union_then_uses(self):
         s = "import a\ndef f(arg: a | 1):\n  arg.b"

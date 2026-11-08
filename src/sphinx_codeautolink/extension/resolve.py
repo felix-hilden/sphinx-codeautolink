@@ -12,17 +12,9 @@ from functools import cache
 from importlib import import_module
 from inspect import isclass, ismodule, isroutine
 from types import ModuleType, UnionType
-from typing import Any, Union, get_type_hints
+from typing import Any, Self, Union, get_type_hints
 
 from sphinx_codeautolink.parse import Name, NameBreak
-
-try:
-    from typing import Self  # Python >= 3.11
-except ImportError:  # pragma: no cover
-    try:
-        from typing_extensions import Self
-    except ImportError:
-        Self = None  # type: ignore[assignment,misc]
 
 # Containers whose first generic argument is the element type produced
 # by iteration. ``tuple`` only fits ``tuple[T, ...]``; for mixed tuples

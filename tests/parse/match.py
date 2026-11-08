@@ -1,9 +1,8 @@
 import pytest
 
-from ._util import refs_equal, skip_match
+from ._util import refs_equal
 
 
-@skip_match
 class TestMatch:
     @refs_equal
     def test_match_link_nothing(self):

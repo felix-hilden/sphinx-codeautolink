@@ -1,10 +1,7 @@
 # noqa: INP001
 # Test resolving `typing.Self` return annotations, see #147 for details.
 
-try:
-    from typing import Self  # Python >= 3.11
-except ImportError:
-    from typing_extensions import Self
+from typing import Self
 
 
 class Base:

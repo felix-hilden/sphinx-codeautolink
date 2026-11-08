@@ -2,4 +2,3 @@
 
 pytest>=6
 coverage[toml]>=5
-typing-extensions>=4; python_version < "3.11"

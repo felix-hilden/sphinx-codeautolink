@@ -6,7 +6,7 @@ import ast
 import builtins
 import sys
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from importlib import import_module
 
 from .warn import logger, warn_type
@@ -83,7 +83,7 @@ class Assignment:
     value: PendingAccess | None
 
 
-class NameBreak(str, Enum):
+class NameBreak(StrEnum):
     """
     Elements that break name access chains.
 
@@ -97,7 +97,7 @@ class NameBreak(str, Enum):
     for_iter = "<>"
 
 
-class LinkContext(str, Enum):
+class LinkContext(StrEnum):
     """Context in which a link appears to help HTML matching."""
 
     none = "none"
