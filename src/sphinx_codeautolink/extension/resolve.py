@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import builtins
 import inspect
 from collections import abc
 from collections.abc import Callable
@@ -72,7 +73,9 @@ def resolve_location(chain: Name, inventory) -> str:
             call_value(cursor)
         elif terminator == NameBreak.for_iter:
             iter_value(cursor)
-    return cursor.location if cursor is not None else None
+    if cursor is None:
+        return None
+    return cursor.location.removeprefix(builtins.__name__ + ".")
 
 
 class CouldNotResolve(Exception):  # noqa: N818
@@ -98,7 +101,14 @@ class Cursor:
 
 def make_cursor(components: list[str]) -> tuple[list[str], Cursor]:
     """Divide components into module and rest, create cursor for following the rest."""
-    value, index = closest_module(tuple(components))
+    try:
+        value, index = closest_module(tuple(components))
+    except CouldNotResolve:
+        if not hasattr(builtins, components[0]):
+            raise
+        # Builtins are documented without a module prefix, so start from
+        # the module itself and let the prefix be stripped on resolution
+        return components, Cursor(builtins.__name__, builtins, instance=False)
     location = ".".join(components[:index])
     return components[index:], Cursor(location, value, instance=False)
 
@@ -254,7 +264,9 @@ def get_return_annotation(func: Callable) -> Any:
 
 
 def fully_qualified_name(thing: type | Callable) -> str:
-    """Construct the fully qualified name of a type."""
+    """Construct the fully qualified name of a type, omitting the builtins module."""
+    if thing.__module__ == builtins.__name__:
+        return thing.__qualname__
     return thing.__module__ + "." + thing.__qualname__
 
 

@@ -1,5 +1,8 @@
 print
 RuntimeError
+number
+int
+number.bit_length
 # split
 extensions = [
     "sphinx.ext.intersphinx",
@@ -14,3 +17,5 @@ Test project
 
    print("Hi")
    raise RuntimeError("Bye")
+   number = int("1")
+   number.bit_length()
