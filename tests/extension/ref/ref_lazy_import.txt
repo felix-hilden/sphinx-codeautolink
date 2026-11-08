@@ -1,0 +1,19 @@
+test_project
+test_project
+Foo
+test_project.Foo
+Foo
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   lazy import test_project
+   lazy from test_project import Foo
+
+   test_project.Foo
+   Foo
+
+.. automodule:: test_project

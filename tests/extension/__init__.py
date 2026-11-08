@@ -32,6 +32,7 @@ codeautolink_warn_on_no_backreference = False
 any_whitespace = re.compile(r"\s*")
 ref_tests = [(p.name, p) for p in Path(__file__).with_name("ref").glob("*.txt")]
 ref_xfails = {}
+ref_min_python = {"ref_lazy_import.txt": (3, 15)}
 
 
 def assert_links(file: Path, links: list):
@@ -63,6 +64,8 @@ def test_references(name: str, file: Path, tmp_path: Path):
     """
     if ref_xfails.get(file.name, False):
         pytest.xfail("Expected to fail.")
+    if sys.version_info < ref_min_python.get(file.name, (0,)):
+        pytest.skip("Requires a newer Python version.")
 
     links, conf, index = file.read_text("utf-8").split("# split")
     links = links.strip().split("\n")
