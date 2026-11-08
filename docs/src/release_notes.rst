@@ -18,6 +18,7 @@ Unreleased
   ``Foo | Bar`` to ``typing.Union`` on Python 3.14
 - Support Python 3.15 officially, and remove support for 3.10 (:issue:`206`)
 - Link assignments from builtins (:issue:`207`)
+- Avoid crashing in dict comprehensions with ``**`` unpacking (:issue:`208`)
 
 0.19.0 (2026-07-29)
 -------------------

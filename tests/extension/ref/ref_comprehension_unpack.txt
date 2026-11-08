@@ -1,0 +1,16 @@
+test_project
+test_project.mod_list
+test_project.mod_list
+test_project.mod_list
+# split
+# split
+Test project
+============
+
+.. code:: python
+
+   import test_project
+   [*test_project.mod_list for _ in test_project.mod_list]
+   {**d for d in test_project.mod_list}
+
+.. automodule:: test_project

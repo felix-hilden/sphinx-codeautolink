@@ -610,8 +610,9 @@ class ImportTrackerVisitor(ast.NodeVisitor):
         self.visit_generic_comp([node.elt], node.generators)
 
     def visit_DictComp(self, node: ast.DictComp) -> None:
-        """Delegate to generic comp."""
-        self.visit_generic_comp([node.key, node.value], node.generators)
+        """Delegate to generic comp, key is None when unpacking with ``**``."""
+        values = [v for v in (node.key, node.value) if v is not None]
+        self.visit_generic_comp(values, node.generators)
 
     def visit_GeneratorExp(self, node: ast.GeneratorExp) -> None:
         """Delegate to generic comp."""
